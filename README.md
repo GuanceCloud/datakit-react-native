@@ -15,7 +15,6 @@ import FtMobileAgent from "react-native-ft-mobile-agent";
 
 // ...
 
-const result = await FtMobileAgent.multiply(3, 7);
 ```
 
 ## Contributing
@@ -24,4 +23,4 @@ See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the 
 
 ## License
 
-MIT
+Apache 2.0

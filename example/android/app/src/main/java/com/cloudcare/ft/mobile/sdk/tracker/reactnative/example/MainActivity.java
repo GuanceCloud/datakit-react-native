@@ -1,4 +1,4 @@
-package com.example.reactnativeftmobileagent;
+package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 
 import com.facebook.react.ReactActivity;
 

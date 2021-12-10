@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.example.reactnativeftmobileagent">
+  package="com.cloudcare.ft.mobile.sdk.tracker.reactnative.example">
 
     <uses-permission android:name="android.permission.INTERNET" />
 

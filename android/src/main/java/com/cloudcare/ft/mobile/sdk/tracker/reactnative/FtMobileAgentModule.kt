@@ -1,4 +1,4 @@
-package com.reactnativeftmobileagent
+package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
