@@ -529,7 +529,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.reactnativeftmobileagent;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FtMobileAgentExample.app/FtMobileAgentExample";
 			};
@@ -548,7 +548,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.reactnativeftmobileagent;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FtMobileAgentExample.app/FtMobileAgentExample";
 			};
@@ -569,7 +569,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.reactnativeftmobileagent;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 				PRODUCT_NAME = FtMobileAgentExample;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -591,7 +591,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.reactnativeftmobileagent;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 				PRODUCT_NAME = FtMobileAgentExample;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
