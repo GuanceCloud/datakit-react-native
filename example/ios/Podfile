@@ -9,12 +9,12 @@ target 'FtMobileAgentExample' do
   use_react_native!(:path => config["reactNativePath"])
 
       pod 'react-native-ft-mobile-agent', :path => '../..'
-  
+
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-  use_flipper!
+  use_flipper!({ 'Flipper-Folly' => '2.3.0' })
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   post_install do |installer|
