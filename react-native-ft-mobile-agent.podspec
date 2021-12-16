@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
   
 
   s.dependency "React-Core"
+  s.dependency 'FTMobileSDK', '~> 1.3.1-alpha.6'
 end
