@@ -4,7 +4,6 @@ type FTMobileReactNativeType = {
   sdkConfig(serverUrl: String, context?: object): Promise<void>;
   bindRUMUserData(userId: String): Promise<void>;
   unbindRUMUserData(): Promise<void>;
-  testMethod(context?: object): Promise<void>;
 };
 
 class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
@@ -12,10 +11,6 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
 
   sdkConfig(serverUrl: String, context: object = {}): Promise<void> {
     return this.sdk.sdkConfig(serverUrl, context);
-  }
-
-  testMethod(context: object = {}): Promise<void> {
-    return this.sdk.testMethod(context);
   }
 
   bindRUMUserData(userId: String): Promise<void> {

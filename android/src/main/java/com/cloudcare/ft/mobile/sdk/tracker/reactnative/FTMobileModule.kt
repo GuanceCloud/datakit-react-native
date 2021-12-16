@@ -69,11 +69,5 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
 
   }
 
-  @ReactMethod
-  fun testMethod(context: ReadableMap, promise: Promise) {
-    Log.e("test", context.toString())
-    promise.resolve(4)
-  }
-
 
 }
