@@ -3,19 +3,22 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
-import com.facebook.react.ReactApplication;
+import com.reactnativenavigation.NavigationApplication;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
+import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.FtMobileAgentPackage;
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.FTMobilePackage;
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends NavigationApplication {
 
   private final ReactNativeHost mReactNativeHost =
-      new ReactNativeHost(this) {
+      new NavigationReactNativeHost(this) {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
@@ -27,7 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for FtMobileAgentExample:
           // packages.add(new MyReactNativePackage());
-          packages.add(new FtMobileAgentPackage());
+          packages.add(new FTMobilePackage());
           return packages;
         }
 
@@ -45,7 +48,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
+    
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager()); // Remove this line if you don't want Flipper enabled
   }
 

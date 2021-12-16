@@ -1,15 +1,14 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example;
 
-import com.facebook.react.ReactActivity;
+import android.os.Bundle;
+import android.util.Log;
 
-public class MainActivity extends ReactActivity {
+import com.reactnativenavigation.NavigationActivity;
 
-  /**
-   * Returns the name of the main component registered from JavaScript. This is used to schedule
-   * rendering of the component.
-   */
+public class MainActivity extends NavigationActivity {
+
   @Override
-  protected String getMainComponentName() {
-    return "FtMobileAgentExample";
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(null);
   }
 }
