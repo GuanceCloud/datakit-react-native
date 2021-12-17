@@ -10,33 +10,48 @@
 #import "FtMobileAgent.h"
 #import <FTMobileSDK/FTMobileAgent.h>
 #import <React/RCTConvert.h>
-
+#import <FTThreadDispatchManager.h>
 @implementation FTMobileReactNative
 RCT_EXPORT_MODULE()
-
-RCT_EXPORT_METHOD(sdkConfig:(NSString *)serverUrl arguments:(NSDictionary *)arguments){
-    FTMobileConfig *config = [[FTMobileConfig alloc]initWithMetricsUrl:serverUrl];
-    if ([arguments.allKeys containsObject:@"debug"]) {
-        config.enableSDKDebugLog = [RCTConvert BOOL:arguments[@"debug"]];
-    }
-    if ([arguments.allKeys containsObject:@"datakitUUID"]) {
-        config.XDataKitUUID = [RCTConvert NSString:arguments[@"datakitUUID"]];
-    }
-    if([arguments.allKeys containsObject:@"envType"]){
-        FTEnv env = (FTEnv)[RCTConvert int:arguments[@"envType"]];
-        if (env) {
-            config.env = env;
+RCT_REMAP_METHOD(sdkConfig,
+                 serverUrl:(NSString *)serverUrl
+                 context:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+    [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
+        FTMobileConfig *config = [[FTMobileConfig alloc]initWithMetricsUrl:serverUrl];
+        if ([context.allKeys containsObject:@"debug"]) {
+            config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
         }
-    }
-    [FTMobileAgent startWithConfigOptions:config];
+        if ([context.allKeys containsObject:@"datakitUUID"]) {
+            config.XDataKitUUID = [RCTConvert NSString:context[@"datakitUUID"]];
+        }
+        if([context.allKeys containsObject:@"envType"]){
+            FTEnv env = (FTEnv)[RCTConvert int:context[@"envType"]];
+            if (env) {
+                config.env = env;
+            }
+        }
+        [FTMobileAgent startWithConfigOptions:config];
+    }];
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(bindUser:(NSString*)userId){
+RCT_REMAP_METHOD(bindRUMUserData,
+                 userId:(NSString*)userId
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTMobileAgent sharedInstance] bindUserWithUserID:userId];
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(unbindUser){
+RCT_REMAP_METHOD(unbindRUMUserData,
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject
+                 ){
     [[FTMobileAgent sharedInstance] logout];
+    resolve(nil);
 }
 @end
 

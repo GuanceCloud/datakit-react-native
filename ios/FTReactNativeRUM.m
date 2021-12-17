@@ -14,66 +14,93 @@
 #import <React/RCTConvert.h>
 @implementation FTReactNativeRUM
 #pragma mark - RUM -
-RCT_EXPORT_METHOD(setConfig:(NSDictionary *)arguments){
-    NSString *rumAppId = [RCTConvert NSString:arguments[@"iOSAppId"]];
-    if (!rumAppId) {
-        return;
-    }
+RCT_REMAP_METHOD(setConfig,
+                 rumAppId:(NSString *)rumAppId context:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    
     FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
-    if ([arguments.allKeys containsObject:@"samplerate"]) {
-        rumConfig.samplerate  = [RCTConvert double:arguments[@"samplerate"]]*100;
+    if ([context.allKeys containsObject:@"samplerate"]) {
+        rumConfig.samplerate  = [RCTConvert double:context[@"samplerate"]]*100;
     }
-    if ([arguments.allKeys containsObject:@"enableNativeUserAction"]) {
-        rumConfig.enableTraceUserAction = [RCTConvert BOOL:arguments[@"enableNativeUserAction"]];
+    if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
+        rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
     }
-    if ([arguments.allKeys containsObject:@"enableNativeUserView"]) {
-        rumConfig.enableTraceUserView = [RCTConvert BOOL:arguments[@"enableNativeUserView"]];
+    if ([context.allKeys containsObject:@"enableNativeUserView"]) {
+        rumConfig.enableTraceUserView = [RCTConvert BOOL:context[@"enableNativeUserView"]];
     }
-    if ([arguments.allKeys containsObject:@"enableNativeUserResource"]) {
-        rumConfig.enableTraceUserResource = [RCTConvert BOOL:arguments[@"enableNativeUserResource"]];
+    if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
+        rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
     }
-    if ([arguments.allKeys containsObject:@"monitorType"]) {
-        rumConfig.monitorInfoType =(FTMonitorInfoType)[RCTConvert int:arguments[@"monitorType"]];
+    if ([context.allKeys containsObject:@"monitorType"]) {
+        rumConfig.monitorInfoType =(FTMonitorInfoType)[RCTConvert int:context[@"monitorType"]];
     }
-    if ([arguments.allKeys containsObject:@"globalContext"]) {
-        rumConfig.globalContext = [RCTConvert NSDictionary:arguments[@"globalContext"]];
+    if ([context.allKeys containsObject:@"globalContext"]) {
+        rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
     }
     [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
+    resolve(nil);
 }
-RCT_EXPORT_METHOD(startAction:(NSString *)actionName actionType:(NSString *)actionType){
+RCT_REMAP_METHOD(startAction,
+                 actionName:(NSString *)actionName actionType:(NSString *)actionType
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTExternalDataManager sharedManager] addActionWithName:actionName actionType:actionType];
+    resolve(nil);
 }
-RCT_EXPORT_METHOD(starView:(NSString *)viewName viewReferer:(NSString *)viewReferer){
+RCT_REMAP_METHOD(starView,
+                 viewName:(NSString *)viewName viewReferer:(NSString *)viewReferer
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTExternalDataManager sharedManager] startViewWithName:viewName viewReferrer:viewReferer loadDuration:@0];
+    resolve(nil);
 }
-RCT_EXPORT_METHOD(stopView){
+RCT_REMAP_METHOD(stopView,
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTExternalDataManager sharedManager] stopView];
+    resolve(nil);
 }
-RCT_EXPORT_METHOD(addError:(NSString *)stack message:(NSString *)message){
+RCT_REMAP_METHOD(addError,
+                 stack:(NSString *)stack message:(NSString *)message
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative" situation:AppStateUnknown message:message stack:stack];
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(startResource:(NSString *)key){
+RCT_REMAP_METHOD(startResource,
+                 startResource:(NSString *)key
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTExternalDataManager sharedManager] startResourceWithKey:key];
+    resolve(nil);
 }
-RCT_EXPORT_METHOD(stopResource:(NSString *)key){
+RCT_REMAP_METHOD(stopResource,
+                 stopResource:(NSString *)key
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     [[FTExternalDataManager sharedManager] stopResourceWithKey:key];
+    resolve(nil);
 }
-RCT_EXPORT_METHOD(addResource:(NSString *)key metrics:(NSDictionary *)metrics content:(NSDictionary *)content){
+RCT_REMAP_METHOD(addResource,
+                 addResource:(NSString *)key  content:(NSDictionary *)content
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     if (key.length==0 || content.allKeys.count == 0) {
         return;
     }
     FTResourceMetricsModel *metricsModel = nil;
-    if (metrics.allKeys.count>0) {
-        metricsModel = [[FTResourceMetricsModel alloc]init];
-        metricsModel.duration = [RCTConvert NSNumber:metrics[@"duration"]];
-        metricsModel.resource_dns = [RCTConvert NSNumber:metrics[@"resource_dns"]];
-        metricsModel.resource_tcp = [RCTConvert NSNumber:metrics[@"resource_tcp"]];
-        metricsModel.resource_ssl = [RCTConvert NSNumber:metrics[@"resource_ssl"]];
-        metricsModel.resource_ttfb = [RCTConvert NSNumber:metrics[@"resource_ttfb"]];
-        metricsModel.resource_trans = [RCTConvert NSNumber:metrics[@"resource_trans"]];
-        metricsModel.resource_first_byte = [RCTConvert NSNumber:metrics[@"resource_first_byte"]];
-    }
+    //    if (metrics.allKeys.count>0) {
+    //        metricsModel = [[FTResourceMetricsModel alloc]init];
+    //        metricsModel.duration = [RCTConvert NSNumber:metrics[@"duration"]];
+    //        metricsModel.resource_dns = [RCTConvert NSNumber:metrics[@"resource_dns"]];
+    //        metricsModel.resource_tcp = [RCTConvert NSNumber:metrics[@"resource_tcp"]];
+    //        metricsModel.resource_ssl = [RCTConvert NSNumber:metrics[@"resource_ssl"]];
+    //        metricsModel.resource_ttfb = [RCTConvert NSNumber:metrics[@"resource_ttfb"]];
+    //        metricsModel.resource_trans = [RCTConvert NSNumber:metrics[@"resource_trans"]];
+    //        metricsModel.resource_first_byte = [RCTConvert NSNumber:metrics[@"resource_first_byte"]];
+    //    }
     FTResourceContentModel *contentModel = [[FTResourceContentModel alloc]init];
     contentModel.url = [RCTConvert NSURL:content[@"url"]];
     contentModel.httpMethod = [RCTConvert NSString:content[@"httpMethod"]];
@@ -83,5 +110,6 @@ RCT_EXPORT_METHOD(addResource:(NSString *)key metrics:(NSDictionary *)metrics co
     contentModel.httpStatusCode = [RCTConvert int:content[@"resourceStatus"]];
     
     [[FTExternalDataManager sharedManager] addResourceWithKey:key metrics:metricsModel content:contentModel];
+    resolve(nil);
 }
 @end

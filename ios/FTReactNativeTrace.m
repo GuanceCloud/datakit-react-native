@@ -16,43 +16,62 @@
 @implementation FTReactNativeTrace
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(setConfig:(NSDictionary *)arguments){
+RCT_REMAP_METHOD(setConfig,
+                 context:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     FTTraceConfig *trace = [[FTTraceConfig alloc]init];
-    if ([arguments.allKeys containsObject:@"serviceName"]) {
-        trace.service = [RCTConvert NSString:arguments[@"serviceName"]];
+    if ([context.allKeys containsObject:@"serviceName"]) {
+        trace.service = [RCTConvert NSString:context[@"serviceName"]];
     }
-    if ([arguments.allKeys containsObject:@"samplerate"]) {
-        trace.samplerate =[RCTConvert double:arguments[@"service"]] * 100;
+    if ([context.allKeys containsObject:@"samplerate"]) {
+        trace.samplerate =[RCTConvert double:context[@"service"]] * 100;
     }
-    if ([arguments.allKeys containsObject:@"traceType"]) {
-        FTNetworkTraceType type = (FTNetworkTraceType)[RCTConvert int:arguments[@"traceType"]];
+    if ([context.allKeys containsObject:@"traceType"]) {
+        FTNetworkTraceType type = (FTNetworkTraceType)[RCTConvert int:context[@"traceType"]];
         if (type) {
             trace.networkTraceType = type;
         }
     }
-    trace.enableLinkRumData = [RCTConvert BOOL:arguments[@"enableLinkRumData"]];
-    trace.enableAutoTrace = [RCTConvert BOOL:arguments[@"enableAutoTrace"]];
+    trace.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
+    trace.enableAutoTrace = [RCTConvert BOOL:context[@"enableAutoTrace"]];
     [[FTMobileAgent sharedInstance] startTraceWithConfigOptions:trace];
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(getTraceHeader:(NSString *)key url:(NSString *)url callback:(RCTResponseSenderBlock)callback){
+RCT_REMAP_METHOD(getTraceHeader,
+                 key:(NSString *)key url:(NSString *)url
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     NSDictionary *traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
     if (traceHeader) {
-        callback(@[traceHeader]);
+        resolve(@[traceHeader]);
     }else{
-        callback(nil);
+        resolve(nil);
     }
 }
 
-RCT_EXPORT_METHOD(addTrace:(NSString *)key httpMethod:(NSString *)httpMethod requestHeader:(NSDictionary *)requestHeader arguments:(NSDictionary *)arguments){
-    
+RCT_REMAP_METHOD(addTrace,
+                 key:(NSString *)key
+                 httpMethod:(NSString *)httpMethod
+                 requestHeader:(NSDictionary *)requestHeader
+                 statusCode:(int)statusCode
+                 responseHeader:(NSDictionary *)responseHeader
+                 errorMessage:(NSString *)errorMessage
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     FTResourceContentModel *contentModel = [[FTResourceContentModel alloc]init];
     contentModel.httpMethod = httpMethod;
     contentModel.requestHeader = requestHeader;
-    contentModel.responseHeader = [RCTConvert NSDictionary:arguments[@"responseHeader"]];
-    contentModel.errorMessage = [RCTConvert NSString:arguments[@"errorMessage"]];
-    contentModel.httpStatusCode = [RCTConvert int:arguments[@"resourceStatus"]];
+    contentModel.httpStatusCode = statusCode;
+    if (responseHeader.allKeys.count>0) {
+        contentModel.responseHeader = responseHeader;
+    }
+    if (errorMessage.length>0) {
+        contentModel.errorMessage = errorMessage;
+    }
     [[FTExternalDataManager sharedManager] traceWithKey:key content:contentModel];
+    resolve(nil);
 }
 @end
 

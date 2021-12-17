@@ -12,46 +12,37 @@
 @implementation FTReactNativeLog
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(logConfig:(NSDictionary *)arguments){
+RCT_REMAP_METHOD(logConfig,
+                 context:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
     FTLoggerConfig *logger = [[FTLoggerConfig alloc]init];
-    if ([arguments.allKeys containsObject:@"samplerate"]) {
-        logger.samplerate  = [RCTConvert double:arguments[@"samplerate"]]*100;
+    if ([context.allKeys containsObject:@"samplerate"]) {
+        logger.samplerate  = [RCTConvert double:context[@"samplerate"]]*100;
     }
-    if ([arguments.allKeys containsObject:@"serviceName"]) {
-        logger.service = [RCTConvert NSString:arguments[@"serviceName"]];
+    if ([context.allKeys containsObject:@"serviceName"]) {
+        logger.service = [RCTConvert NSString:context[@"serviceName"]];
     }
-    NSArray<NSNumber *>*filters = [RCTConvert NSNumberArray:arguments[@"logLevelFilters"]];
+    NSArray<NSNumber *>*filters = [RCTConvert NSNumberArray:context[@"logLevelFilters"]];
     if (filters) {
         logger.logLevelFilter = filters;
     }
-    logger.enableCustomLog = [RCTConvert BOOL:arguments[@"enableCustomLog"]];
-    logger.enableLinkRumData = [RCTConvert BOOL:arguments[@"enableLinkRumData"]];
+    logger.enableCustomLog = [RCTConvert BOOL:context[@"enableCustomLog"]];
+    logger.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
     [[FTMobileAgent sharedInstance] startLoggerWithConfigOptions:logger];
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(logging:(NSString *)content status:(FTLogStatus)status){
-    [[FTMobileAgent sharedInstance] logging:content status:status];
-}
--(NSDictionary *)constantsToExport{
-    return @{
-              @"FTStatusInfo":@(FTStatusInfo),
-              @"FTStatusWarning":@(FTStatusWarning),
-              @"FTStatusError":@(FTStatusError),
-              @"FTStatusCritical":@(FTStatusCritical),
-              @"FTStatusOk":@(FTStatusOk),
-    };
-}
-+ (BOOL)requiresMainQueueSetup
-{
-  return YES;
+RCT_REMAP_METHOD(logging,
+                 content:(NSString *)content status:(int)status
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    FTLogStatus logStatus =(FTLogStatus)status;
+    if (logStatus) {
+        [[FTMobileAgent sharedInstance] logging:content status:logStatus];
+        
+    }
+    resolve(nil);
 }
 @end
-@implementation RCTConvert (FTLog)
 
-RCT_ENUM_CONVERTER(FTLogStatus, (@{@"FTStatusInfo":@(FTStatusInfo),
-                                @"FTStatusWarning":@(FTStatusWarning),
-                                @"FTStatusError":@(FTStatusError),
-                                @"FTStatusCritical":@(FTStatusCritical),
-                                @"FTStatusOk":@(FTStatusOk)
-                              }), FTStatusInfo, integerValue)
-@end
