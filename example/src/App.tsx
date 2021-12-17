@@ -6,7 +6,7 @@ import { View, Text, Button } from 'react-native';
 //   // FTReactNativeTrace,
 //   // FTReactNativeRUM,
 //   // FTReactNativeLog,
-// } from 'react-native-ft-mobile-agent';
+// } from 'react-native-mobile';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Config from 'react-native-config';

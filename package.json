@@ -1,5 +1,5 @@
 {
-  "name": "react-native-ft-mobile-agent",
+  "name": "@cloudcare/react-native-mobile",
   "version": "0.1.0",
   "description": "基于观测云 Android iOS React Native SDK",
   "main": "lib/commonjs/index",
@@ -13,7 +13,7 @@
     "android",
     "ios",
     "cpp",
-    "react-native-ft-mobile-agent.podspec",
+    "FTMobileReactNativeSDK.podspec",
     "!lib/typescript/example",
     "!android/build",
     "!ios/build",
@@ -32,13 +32,17 @@
     "bootstrap": "yarn example && yarn && yarn pods"
   },
   "keywords": [
+    "cloudcare",
     "react-native",
     "ios",
     "android"
   ],
-  "repository": "https://github.com/DataFlux-cn/datakit-react-native.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DataFlux-cn/datakit-react-native.git"
+  },
   "author": "Brandon <brandonfaustine@gmail.com> (https://github.com/Br4ndonZhang)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/DataFlux-cn/datakit-react-native.git/issues"
   },
@@ -150,5 +154,8 @@
       ]
     ]
   },
-  "dependencies": {}
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  }
 }

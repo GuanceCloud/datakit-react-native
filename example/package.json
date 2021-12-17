@@ -1,6 +1,6 @@
 {
-  "name": "react-native-ft-mobile-agent-example",
-  "description": "Example app for react-native-ft-mobile-agent",
+  "name": "react-native-mobile-example",
+  "description": "Example app for react-native-mobile",
   "version": "0.0.1",
   "private": true,
   "scripts": {

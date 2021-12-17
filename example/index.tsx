@@ -3,7 +3,7 @@ import App from './src/App';
 import { name as appName } from './app.json';
 import { Navigation } from 'react-native-navigation';
 import { navigation as navigationLib } from './app.json';
-import { FTMobileReactNative } from 'react-native-ft-mobile-agent';
+import { FTMobileReactNative } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
