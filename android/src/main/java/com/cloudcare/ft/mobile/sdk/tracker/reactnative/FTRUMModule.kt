@@ -25,7 +25,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
     val monitorType = map["extraMonitorTypeWithError"] as Int?
-    val globalContext = map["globalContext"] as Map<String, String>?
+    val globalContext = map["globalContext"] as ReadableMap?
 
     val rumConfig = FTRUMConfig().setRumAppId(rumAppId)
     if (sampleRate != null) {
@@ -48,8 +48,8 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
       rumConfig.extraMonitorTypeWithError = monitorType
     }
 
-    globalContext?.forEach {
-      rumConfig.addGlobalContext(it.key, it.value)
+    globalContext?.toHashMap()?.forEach {
+      rumConfig.addGlobalContext(it.key, it.value.toString())
     }
 
     FTSdk.initRUMWithConfig(rumConfig)
@@ -84,11 +84,13 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun startResource(key: String, promise: Promise) {
     FTRUMGlobalManager.get().startResource(key)
+    promise.resolve(null)
   }
 
   @ReactMethod
   fun stopResource(key: String, promise: Promise) {
     FTRUMGlobalManager.get().stopResource(key)
+    promise.resolve(null)
   }
 
   @ReactMethod
@@ -99,9 +101,48 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     context: ReadableMap,
     promise: Promise
   ) {
+    val map = context.toHashMap()
+    val responseHeader = map["responseHeader"] as ReadableMap?
+    val requestHeader = map["requestHeader"] as ReadableMap?
+    val method = map["resourceMethod"] as String?
+    val resourceStatus = map["resourceStatus"] as Int?
+    val responseBody = map["responseBody"] as String?
+    val responseConnection = map["responseConnection"] as String?
+    val responseContentType = map["responseContentType"] as String?
+    val responseContentEncoding = map["responseContentEncoding"] as String?
+    val fetchStartTime = map["fetchStartTime"] as Long?
+    val tcpStartTime = map["tcpStartTime"] as Long?
+    val tcpEndTime = map["tcpEndTime"] as Long?
+    val dnsStartTime = map["dnsStartTime"] as Long?
+    val dnsEndTime = map["dnsEndTime"] as Long?
+    val responseStartTime = map["responseStartTime"] as Long?
+    val responseEndTime = map["responseEndTime"] as Long?
+    val sslStartTime = map["sslStartTime"] as Long?
+    val sslEndTime = map["sslEndTime"] as Long?
+
     val params = ResourceParams()
+    params.responseHeader = responseHeader.toString()
+    params.resourceMethod = method
+    params.requestHeader = requestHeader.toString()
+    params.resourceStatus = resourceStatus ?: 0
+    params.responseBody = responseBody ?: ""
+    params.responseConnection = responseConnection ?: ""
+    params.responseContentType = responseContentType ?: ""
+    params.responseContentEncoding = responseContentEncoding ?: ""
+    params.url = url ?: ""
+
     val netStatusBean = NetStatusBean()
+    netStatusBean.fetchStartTime = fetchStartTime ?: -1
+    netStatusBean.tcpStartTime = tcpStartTime ?: -1
+    netStatusBean.tcpEndTime = tcpEndTime ?: -1
+    netStatusBean.dnsStartTime = dnsStartTime ?: -1
+    netStatusBean.dnsEndTime = dnsEndTime ?: -1
+    netStatusBean.responseStartTime = responseStartTime ?: -1
+    netStatusBean.responseEndTime = responseEndTime ?: -1
+    netStatusBean.sslStartTime = sslStartTime ?: -1
+    netStatusBean.sslEndTime = sslEndTime ?: -1
     FTRUMGlobalManager.get().addResource(key, params, netStatusBean)
+    promise.resolve(null)
 
   }
 }

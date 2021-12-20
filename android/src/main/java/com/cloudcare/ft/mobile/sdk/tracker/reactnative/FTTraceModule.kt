@@ -54,11 +54,26 @@ class FTTraceModule(reactContext: ReactApplicationContext) :
   fun addTrace(
     key: String,
     httpMethod: String,
-    requestHeader: Map<String, String>,
-    statusCode: Int?,
-    responseHeader: Map<String, String>?,
-    errorMessage: String?, promise: Promise
+    requestHeader: ReadableMap,
+    context: ReadableMap, promise: Promise
   ) {
+    val map = context.toHashMap()
+    val requestHeaderMap = HashMap<String, String>()
+    requestHeader.toHashMap().forEach {
+      requestHeaderMap[it.key] = it.value.toString()
+    }
+
+    val statusCode = map["statusCode"] as Int?
+    val responseHeader = map["responseHeader"] as ReadableMap?
+    val responseHeaderMap = HashMap<String, String>()
+
+    responseHeader?.toHashMap()?.forEach {
+      requestHeaderMap[it.key] = it.value.toString()
+    }
+    val errorMsg = map["errorMsg"] as String?
+
+    FTTraceManager.get().addTrace(key, httpMethod, requestHeaderMap, responseHeaderMap, statusCode
+      ?: 0, errorMsg)
     promise.resolve(null)
   }
 
