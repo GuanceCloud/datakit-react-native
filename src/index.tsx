@@ -77,6 +77,15 @@ export interface FTRUMConfig{
   monitorType?:MonitorType,
   globalContext?:object,
 }
+export interface FTRUMResource{
+  key:string,
+  url:string,
+  httpMethod:string,
+  requestHeader:object,
+  responseHeader?:object,
+  responseBody?:string,
+  resourceStatus?:number
+};
 type FTReactNativeRUMType = {
   setConfig(config:FTRUMConfig): Promise<void>;
   startAction(actionName:String,actionType:String): Promise<void>;
@@ -85,18 +94,12 @@ type FTReactNativeRUMType = {
   addError(stack: String, message: String): Promise<void>;
   startResource(key: String): Promise<void>;
   stopResource(key: String): Promise<void>;
-  addResource(
-    key: String,
-    url: String,
-    httpMethod: String,
-    context?: object,
-    ):Promise<void>;   
+  addResource(resource:FTRUMResource):Promise<void>;   
 }
 class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
 
   setConfig(config:FTRUMConfig): Promise<void>{
-    console.log(config);
     return this.rum.setConfig(config);
   }
   startAction(actionName:string,actionType:string): Promise<void>{
@@ -117,13 +120,8 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   stopResource(key: string): Promise<void>{
     return this.rum.stopResource(key);
   }
-  addResource(
-    key: String,
-    url: String,
-    httpMethod: String,
-    context: object = {},
-    ):Promise<void>{
-    return this.rum.addResource(key,url,httpMethod,context);
+  addResource(resource:FTRUMResource):Promise<void>{
+    return this.rum.addResource(resource);
   }   
 }
 
@@ -141,17 +139,18 @@ export interface FTTractConfig{
   enableLinkRUMData?:boolean,
   enableNativeAutoTrace?:boolean
 }
+export interface FTTraceResource{
+  key:string,
+  httpMethod:string,
+  requestHeader:object,
+  statusCode?:number,
+  responseHeader?:object,
+  errorMessage?:string
+};
 type FTReactNativeTraceType = {
   setConfig(config: FTTractConfig): Promise<void>;
   getTraceHeader(key: String, url: String): Promise<object>; 
-  addTrace(
-    key: String,
-    httpMethod: String,
-    requestHeader:Object,
-    statusCode?: Number,
-    responseHeader?: Object,
-    errorMessage?: String
-    ): Promise<void>;
+  addTrace(resource:FTTraceResource): Promise<void>;
 };
 
 class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
@@ -165,14 +164,8 @@ class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
     return this.trace.getTraceHeader(key,url);
   }
 
-  addTrace(
-    key:String,
-    httpMethod:String,
-    requestHeader:object,
-    statusCode:number = -1,
-    responseHeader:object = {},
-    errorMessage:String = ''){
-    return this.trace.addTrace(key,httpMethod,requestHeader,statusCode,responseHeader,errorMessage);
+  addTrace(resource:FTTraceResource){
+    return this.trace.addTrace(resource);
   }
 }
 
