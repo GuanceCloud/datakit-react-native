@@ -13,12 +13,12 @@
 #import <FTMobileSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
 @implementation FTReactNativeRUM
-#pragma mark - RUM -
+RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(setConfig,
-                 rumAppId:(NSString *)rumAppId context:(NSDictionary *)context
+                 context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    
+    NSString *rumAppId = [RCTConvert NSString:context[@"rumAppId"]];
     FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
     if ([context.allKeys containsObject:@"samplerate"]) {
         rumConfig.samplerate  = [RCTConvert double:context[@"samplerate"]]*100;

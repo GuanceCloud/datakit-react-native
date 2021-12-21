@@ -14,12 +14,12 @@
 @implementation FTMobileReactNative
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(sdkConfig,
-                 serverUrl:(NSString *)serverUrl
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
     [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
+        NSString *serverUrl = [RCTConvert NSString:context[@"serverUrl"]];
         FTMobileConfig *config = [[FTMobileConfig alloc]initWithMetricsUrl:serverUrl];
         if ([context.allKeys containsObject:@"debug"]) {
             config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
@@ -34,8 +34,8 @@ RCT_REMAP_METHOD(sdkConfig,
             }
         }
         [FTMobileAgent startWithConfigOptions:config];
+        resolve(nil);
     }];
-    resolve(nil);
 }
 
 RCT_REMAP_METHOD(bindRUMUserData,

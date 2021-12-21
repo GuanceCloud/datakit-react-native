@@ -1,15 +1,14 @@
 import * as React from 'react';
 
-import { View, Text, Button } from 'react-native';
-// import {
-//   FTMobileReactNative,
-//   // FTReactNativeTrace,
-//   // FTReactNativeRUM,
-//   // FTReactNativeLog,
-// } from 'react-native-ft-mobile-agent';
+import { View, Button } from 'react-native';
+import { FTMobileReactNative,} from 'react-native-ft-mobile-agent';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Config from 'react-native-config';
+import RUMScreen from './rum';
+import LogScreen from './logging';
+import TraceScreen from './tracing';
+
 
 class HomeScreen extends React.Component<{ navigation: any }> {
   componentDidMount() {
@@ -20,43 +19,50 @@ class HomeScreen extends React.Component<{ navigation: any }> {
   render() {
     let { navigation } = this.props;
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Home Screen</Text>
-        <Button
-          title="Go to Details"
-          onPress={() => navigation.navigate('Details')}
-        />
+      <View style={{ flex: 1, alignItems:'center',padding:20}}>
+      <Button
+      title="绑定用户"
+      onPress={() =>{
+        FTMobileReactNative.bindRUMUserData("react-native-user");
+      }}
+      />
+      <Button
+      title="解绑用户"
+      onPress={() => FTMobileReactNative.unbindRUMUserData()}
+      />
+      <Button
+      title="日志输出"
+      onPress={() => navigation.push('Log')}
+      />
+      <Button
+      title="网络链路追踪"
+      onPress={() => navigation.push('Trace')}
+      />
+      <Button
+      title="RUM数据采集"
+      onPress={() => navigation.push('RUM')}
+      />
       </View>
-    );
+      );
   }
 }
 
-class DetailsScreen extends React.Component<{ navigation: any }> {
-  render() {
-    let { navigation } = this.props;
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Details Screen</Text>
-        <Button
-          title="Go to Details... again"
-          onPress={() => navigation.push('Details')}
-        />
-      </View>
-    );
-  }
-}
+
+
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Details" component={DetailsScreen} />
-      </Stack.Navigator>
+    <Stack.Navigator initialRouteName="Home">
+    <Stack.Screen name="Home" component={HomeScreen}  />
+    <Stack.Screen name="Trace" component={TraceScreen} options={{title: "网络链路追踪"}}/>
+    <Stack.Screen name="Log" component={LogScreen} options={{title: "日志输出"}}/>
+    <Stack.Screen name="RUM" component={RUMScreen} options={({title: "RUM 数据采集"})}/>
+    </Stack.Navigator>
     </NavigationContainer>
-  );
+    );
 }
 
 export default App;
