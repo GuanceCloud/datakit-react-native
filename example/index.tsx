@@ -11,6 +11,7 @@ import { FTMobileReactNative,
   FTLogConfig,
   FTTractConfig,
   FTRUMConfig,
+  MonitorType,
 } from 'react-native-ft-mobile-agent';
 import Config from 'react-native-config';
 
@@ -60,6 +61,7 @@ async function initSDK() {
   console.log("Config.IOS_APP_ID" + rumid);
   var rumConfig:FTRUMConfig = {
     rumAppId:rumid,
+    monitorType:MonitorType.all
   }
   await FTReactNativeRUM.setConfig(rumConfig);
 }

@@ -66,7 +66,10 @@ class FTReactNativeLogWrapper implements FTReactNativeLogType {
 //FTReactNativeRUM
 /// 监控类型
 export enum MonitorType {
-  all,battery,memory,cpu
+  all=0xFFFFFFFF,
+  battery=1 << 1,
+  memory=1 << 2,
+  cpu=1 << 3,
 }
 export interface FTRUMConfig{
   rumAppId:string,
