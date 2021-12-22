@@ -48,7 +48,7 @@ RCT_REMAP_METHOD(startAction,
     [[FTExternalDataManager sharedManager] addActionWithName:actionName actionType:actionType];
     resolve(nil);
 }
-RCT_REMAP_METHOD(starView,
+RCT_REMAP_METHOD(startView,
                  viewName:(NSString *)viewName viewReferer:(NSString *)viewReferer
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
@@ -84,23 +84,23 @@ RCT_REMAP_METHOD(stopResource,
     resolve(nil);
 }
 RCT_REMAP_METHOD(addResource,
-                 addResource:(NSString *)key  content:(NSDictionary *)content
+                 addResource:(NSString *)key content:(NSDictionary *)content metrics:(NSDictionary *)metrics
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
     if (key.length==0 || content.allKeys.count == 0) {
         return;
     }
     FTResourceMetricsModel *metricsModel = nil;
-    //    if (metrics.allKeys.count>0) {
-    //        metricsModel = [[FTResourceMetricsModel alloc]init];
-    //        metricsModel.duration = [RCTConvert NSNumber:metrics[@"duration"]];
-    //        metricsModel.resource_dns = [RCTConvert NSNumber:metrics[@"resource_dns"]];
-    //        metricsModel.resource_tcp = [RCTConvert NSNumber:metrics[@"resource_tcp"]];
-    //        metricsModel.resource_ssl = [RCTConvert NSNumber:metrics[@"resource_ssl"]];
-    //        metricsModel.resource_ttfb = [RCTConvert NSNumber:metrics[@"resource_ttfb"]];
-    //        metricsModel.resource_trans = [RCTConvert NSNumber:metrics[@"resource_trans"]];
-    //        metricsModel.resource_first_byte = [RCTConvert NSNumber:metrics[@"resource_first_byte"]];
-    //    }
+    if (metrics.allKeys.count>0) {
+        metricsModel = [[FTResourceMetricsModel alloc]init];
+        metricsModel.duration = [RCTConvert NSNumber:metrics[@"duration"]];
+        metricsModel.resource_dns = [RCTConvert NSNumber:metrics[@"resource_dns"]];
+        metricsModel.resource_tcp = [RCTConvert NSNumber:metrics[@"resource_tcp"]];
+        metricsModel.resource_ssl = [RCTConvert NSNumber:metrics[@"resource_ssl"]];
+        metricsModel.resource_ttfb = [RCTConvert NSNumber:metrics[@"resource_ttfb"]];
+        metricsModel.resource_trans = [RCTConvert NSNumber:metrics[@"resource_trans"]];
+        metricsModel.resource_first_byte = [RCTConvert NSNumber:metrics[@"resource_first_byte"]];
+    }
     FTResourceContentModel *contentModel = [[FTResourceContentModel alloc]init];
     contentModel.url = [RCTConvert NSURL:content[@"url"]];
     contentModel.httpMethod = [RCTConvert NSString:content[@"httpMethod"]];

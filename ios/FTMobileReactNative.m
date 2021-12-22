@@ -28,10 +28,7 @@ RCT_REMAP_METHOD(sdkConfig,
             config.XDataKitUUID = [RCTConvert NSString:context[@"datakitUUID"]];
         }
         if([context.allKeys containsObject:@"envType"]){
-            FTEnv env = (FTEnv)[RCTConvert int:context[@"envType"]];
-            if (env) {
-                config.env = env;
-            }
+            config.env = [RCTConvert int:context[@"envType"]];
         }
         [FTMobileAgent startWithConfigOptions:config];
         resolve(nil);

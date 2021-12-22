@@ -28,10 +28,7 @@ RCT_REMAP_METHOD(setConfig,
         trace.samplerate =[RCTConvert double:context[@"service"]] * 100;
     }
     if ([context.allKeys containsObject:@"traceType"]) {
-        FTNetworkTraceType type = (FTNetworkTraceType)[RCTConvert int:context[@"traceType"]];
-        if (type) {
-            trace.networkTraceType = type;
-        }
+        trace.networkTraceType =  (FTNetworkTraceType)[RCTConvert int:context[@"traceType"]];
     }
     trace.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
     trace.enableAutoTrace = [RCTConvert BOOL:context[@"enableAutoTrace"]];
@@ -52,25 +49,17 @@ RCT_REMAP_METHOD(getTraceHeader,
 }
 
 RCT_REMAP_METHOD(addTrace,
-                 key:(NSString *)key
-                 httpMethod:(NSString *)httpMethod
-                 requestHeader:(NSDictionary *)requestHeader
-                 statusCode:(int)statusCode
-                 responseHeader:(NSDictionary *)responseHeader
-                 errorMessage:(NSString *)errorMessage
+                 resource:(NSDictionary*)resource
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
     FTResourceContentModel *contentModel = [[FTResourceContentModel alloc]init];
-    contentModel.httpMethod = httpMethod;
-    contentModel.requestHeader = requestHeader;
-    contentModel.httpStatusCode = statusCode;
-    if (responseHeader.allKeys.count>0) {
-        contentModel.responseHeader = responseHeader;
-    }
-    if (errorMessage.length>0) {
-        contentModel.errorMessage = errorMessage;
-    }
-    [[FTExternalDataManager sharedManager] traceWithKey:key content:contentModel];
+    contentModel.httpMethod = [RCTConvert NSString:resource[@"httpMethod"]];
+    contentModel.requestHeader =[RCTConvert NSDictionary:resource[@"requestHeader"]];
+    contentModel.httpStatusCode = [RCTConvert int:resource[@"statusCode"]];
+    contentModel.responseHeader = [RCTConvert NSDictionary:resource[@"responseHeader"]];
+    contentModel.errorMessage = [RCTConvert NSString:resource[@"errorMessage"]];
+
+    [[FTExternalDataManager sharedManager] traceWithKey:[RCTConvert NSString:resource[@"key"]] content:contentModel];
     resolve(nil);
 }
 @end

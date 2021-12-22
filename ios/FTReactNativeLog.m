@@ -27,6 +27,9 @@ RCT_REMAP_METHOD(logConfig,
     if (filters) {
         logger.logLevelFilter = filters;
     }
+    if([context.allKeys containsObject:@"discardStrategy"]){
+        logger.discardType = [RCTConvert int:context[@"discardStrategy"]];
+    }
     logger.enableCustomLog = [RCTConvert BOOL:context[@"enableCustomLog"]];
     logger.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
     [[FTMobileAgent sharedInstance] startLoggerWithConfigOptions:logger];
