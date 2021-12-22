@@ -20,28 +20,11 @@ class HomeScreen extends React.Component<{ navigation: any }> {
     let { navigation } = this.props;
     return (
       <View style={{ flex: 1, alignItems:'center',padding:20}}>
-      <Button
-      title="绑定用户"
-      onPress={() =>{
-        FTMobileReactNative.bindRUMUserData("react-native-user");
-      }}
-      />
-      <Button
-      title="解绑用户"
-      onPress={() => FTMobileReactNative.unbindRUMUserData()}
-      />
-      <Button
-      title="日志输出"
-      onPress={() => navigation.push('Log')}
-      />
-      <Button
-      title="网络链路追踪"
-      onPress={() => navigation.push('Trace')}
-      />
-      <Button
-      title="RUM数据采集"
-      onPress={() => navigation.push('RUM')}
-      />
+      <Button title="绑定用户" onPress={() => FTMobileReactNative.bindRUMUserData("react-native-user")}/>
+      <Button title="解绑用户" onPress={() => FTMobileReactNative.unbindRUMUserData()}/>
+      <Button title="日志输出" onPress={() => navigation.push('Log')}/>
+      <Button title="网络链路追踪" onPress={() => navigation.push('Trace')}/>
+      <Button title="RUM数据采集" onPress={() => navigation.push('RUM')}/>
       </View>
       );
   }

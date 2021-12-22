@@ -4,13 +4,13 @@ import { name as appName } from './app.json';
 import { Navigation } from 'react-native-navigation';
 import { navigation as navigationLib } from './app.json';
 import { FTMobileReactNative,
-         FTReactNativeLog,
-         FTReactNativeTrace,
-         FTReactNativeRUM,
-         FTMobileConfig,
-         FTLogConfig,
-         FTTractConfig,
-         FTRUMConfig,
+  FTReactNativeLog,
+  FTReactNativeTrace,
+  FTReactNativeRUM,
+  FTMobileConfig,
+  FTLogConfig,
+  FTTractConfig,
+  FTRUMConfig,
 } from 'react-native-ft-mobile-agent';
 import Config from 'react-native-config';
 
@@ -29,11 +29,11 @@ Navigation.events().registerAppLaunchedListener(() => {
           },
         },
         children: [
-          {
-            component: {
-              name: appName,
-            },
+        {
+          component: {
+            name: appName,
           },
+        },
         ],
       },
     },
@@ -46,20 +46,20 @@ async function initSDK() {
     serverUrl:Config.SERVER_URL,
     debug:true
   };
- await FTMobileReactNative.sdkConfig(config);
+  await FTMobileReactNative.sdkConfig(config);
   var logConfig:FTLogConfig = {
-     enableCustomLog:true,
-     enableLinkRumData:true,
+    enableCustomLog:true,
+    enableLinkRumData:true,
   }
-  FTReactNativeLog.logConfig(logConfig);
+  await FTReactNativeLog.logConfig(logConfig);
   var traceConfig:FTTractConfig = {
 
   };
-  FTReactNativeTrace.setConfig(traceConfig);
+  await FTReactNativeTrace.setConfig(traceConfig);
   var rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
   console.log("Config.IOS_APP_ID" + rumid);
   var rumConfig:FTRUMConfig = {
     rumAppId:rumid,
   }
-  FTReactNativeRUM.setConfig(rumConfig);
+  await FTReactNativeRUM.setConfig(rumConfig);
 }

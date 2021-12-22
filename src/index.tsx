@@ -86,15 +86,24 @@ export interface FTRUMResource{
   responseBody?:string,
   resourceStatus?:number
 };
+export interface FTRUMResourceMetrics{
+  duration?:number,
+  resource_dns?:number,
+  resource_tcp?:number,
+  resource_ssl?:number,
+  resource_ttfb?:number,
+  resource_trans?:number,
+  resource_first_byte?:number,
+};
 type FTReactNativeRUMType = {
   setConfig(config:FTRUMConfig): Promise<void>;
-  startAction(actionName:String,actionType:String): Promise<void>;
-  statView(viewName: String, viewReferer: String): Promise<void>;
+  startAction(actionName:string,actionType:string): Promise<void>;
+  startView(viewName: string, viewReferer: string): Promise<void>;
   stopView(): Promise<void>;
-  addError(stack: String, message: String): Promise<void>;
-  startResource(key: String): Promise<void>;
-  stopResource(key: String): Promise<void>;
-  addResource(resource:FTRUMResource):Promise<void>;   
+  addError(stack: string, message: string): Promise<void>;
+  startResource(key: string): Promise<void>;
+  stopResource(key: string): Promise<void>;
+  addResource(key:string, resource:FTRUMResource,metrics?:FTRUMResourceMetrics):Promise<void>;   
 }
 class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
@@ -105,8 +114,8 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   startAction(actionName:string,actionType:string): Promise<void>{
     return this.rum.startAction(actionName,actionType);
   }
-  statView(viewName: string, viewReferer: string): Promise<void>{
-    return this.rum.statView(viewName,viewReferer);
+  startView(viewName: string, viewReferer: string): Promise<void>{
+    return this.rum.startView(viewName,viewReferer);
   }
   stopView(): Promise<void>{
     return this.rum.stopView();
@@ -120,8 +129,8 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   stopResource(key: string): Promise<void>{
     return this.rum.stopResource(key);
   }
-  addResource(resource:FTRUMResource):Promise<void>{
-    return this.rum.addResource(resource);
+  addResource(key:string, resource:FTRUMResource,metrics:FTRUMResourceMetrics={}):Promise<void>{
+    return this.rum.addResource(key,resource,metrics);
   }   
 }
 
