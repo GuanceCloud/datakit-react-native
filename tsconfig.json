@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "react-native-ft-mobile-agent": ["./src/index"]
+      "@cloudcare/react-native-mobile": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

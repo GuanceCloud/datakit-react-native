@@ -1,6 +1,5 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
-import android.util.Log
 import com.facebook.react.bridge.*
 import com.ft.sdk.EnvType
 import com.ft.sdk.FTSDKConfig
