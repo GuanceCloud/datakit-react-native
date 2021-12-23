@@ -3,7 +3,7 @@ import * as React from 'react';
 import { View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { FTMobileReactNative} from 'react-native-ft-mobile-agent';
+import { FTMobileReactNative} from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';

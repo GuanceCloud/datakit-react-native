@@ -12,7 +12,7 @@ import { FTMobileReactNative,
   FTTractConfig,
   FTRUMConfig,
   MonitorType,
-} from 'react-native-ft-mobile-agent';
+} from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
