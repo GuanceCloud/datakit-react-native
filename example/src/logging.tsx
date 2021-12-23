@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ScrollView,View,Button } from 'react-native';
-import { FTReactNativeLog,FTLogStatus} from 'react-native-ft-mobile-agent';
+import { FTReactNativeLog,FTLogStatus} from '@cloudcare/react-native-mobile';
 import { styles} from './utils';
 
 class LogScreen extends React.Component<{ navigation: any }> {

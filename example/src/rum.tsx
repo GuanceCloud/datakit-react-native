@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Button,ScrollView } from 'react-native';
-import { FTReactNativeRUM,FTRUMResource} from 'react-native-ft-mobile-agent';
+import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 
 class RUMScreen extends React.Component<{ navigation: any }> {
