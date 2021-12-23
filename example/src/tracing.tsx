@@ -36,7 +36,6 @@ class TraceScreen extends React.Component<{ navigation: any }> {
       err = error;
     }finally{
       var resource:FTTraceResource = {
-        key:key,
         httpMethod:fetchOptions.method,
         requestHeader:fetchOptions.headers,
       };
@@ -47,7 +46,7 @@ class TraceScreen extends React.Component<{ navigation: any }> {
       if (err) {
         resource.errorMessage = err.toString();
       }
-      FTReactNativeTrace.addTrace(resource);
+      FTReactNativeTrace.addTrace(key,resource);
     }
   }
 

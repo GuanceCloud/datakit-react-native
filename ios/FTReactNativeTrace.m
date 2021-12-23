@@ -49,6 +49,7 @@ RCT_REMAP_METHOD(getTraceHeader,
 }
 
 RCT_REMAP_METHOD(addTrace,
+                 key:(NSString *)key
                  resource:(NSDictionary*)resource
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
@@ -59,7 +60,7 @@ RCT_REMAP_METHOD(addTrace,
     contentModel.responseHeader = [RCTConvert NSDictionary:resource[@"responseHeader"]];
     contentModel.errorMessage = [RCTConvert NSString:resource[@"errorMessage"]];
 
-    [[FTExternalDataManager sharedManager] traceWithKey:[RCTConvert NSString:resource[@"key"]] content:contentModel];
+    [[FTExternalDataManager sharedManager] traceWithKey:key content:contentModel];
     resolve(nil);
 }
 @end

@@ -42,7 +42,6 @@ Navigation.events().registerAppLaunchedListener(() => {
 });
 
 async function initSDK() {
-  console.log(Config.IOS_APP_ID);
   var config:FTMobileConfig ={
     serverUrl:Config.SERVER_URL,
     debug:true
@@ -54,14 +53,17 @@ async function initSDK() {
   }
   await FTReactNativeLog.logConfig(logConfig);
   var traceConfig:FTTractConfig = {
-
+      enableNativeAutoTrace:false,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
   var rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
-  console.log("Config.IOS_APP_ID" + rumid);
+  console.log(rumid);
   var rumConfig:FTRUMConfig = {
     rumAppId:rumid,
-    monitorType:MonitorType.all
+    monitorType:MonitorType.all,
+    enableNativeUserAction:false,
+    enableNativeUserResource:false,
+    enableNativeUserView:false,
   }
   await FTReactNativeRUM.setConfig(rumConfig);
 }

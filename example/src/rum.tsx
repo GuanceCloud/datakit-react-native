@@ -58,7 +58,6 @@ class RUMScreen extends React.Component<{ navigation: any }> {
             }finally{
                   var resource:FTRUMResource = {
                         url:url,
-                        key:key,
                         httpMethod:fetchOptions.method,
                         requestHeader:fetchOptions.headers,
                   };
