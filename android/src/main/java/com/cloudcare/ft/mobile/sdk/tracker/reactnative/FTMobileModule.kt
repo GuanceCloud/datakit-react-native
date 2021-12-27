@@ -1,5 +1,6 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
 import com.ft.sdk.EnvType
 import com.ft.sdk.FTSDKConfig
@@ -13,11 +14,12 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun sdkConfig(serverUrl: String, context: ReadableMap, promise: Promise) {
+  fun sdkConfig(context: ReadableMap, promise: Promise) {
     val map = context.toHashMap()
+    val serverUrl = map["serverUrl"] as String
     val debug = map["debug"] as Boolean?
     val datakitUUID = map["datakitUUID"] as String?
-    val env = map["env"] as Int?
+    val env = ReactNativeUtils.convertToNativeInt(map["env"])
     val useOAID = map["useOAID"] as Boolean?
 
     val envType: EnvType = when (env) {
