@@ -1,9 +1,7 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
+import com.facebook.react.bridge.*
 import com.ft.sdk.FTLogger
 import com.ft.sdk.FTLoggerConfig
 import com.ft.sdk.FTSdk
@@ -17,14 +15,15 @@ class FTLogModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun logConfig(
-    sampleRate: Float?,
-    serviceName: String?,
-    enableLinkRumData: Boolean?,
-    enableCustomLog: Boolean?, discardStrategy: Int?,
-    logTypeArr: List<Int>?,
-    promise: Promise
-  ) {
+  fun logConfig(context: ReadableMap, promise: Promise) {
+
+    val map = context.toHashMap();
+    val discardStrategy = ReactNativeUtils.convertToNativeInt(map["discardStrategy"])
+    val sampleRate = map["sampleRate"] as Float?
+    val serviceName = map["serviceName"] as String?
+    val logTypeReadArr = map["logTypeArr"] as ReadableArray?
+    val enableLinkRumData = map["enableLinkRumData"] as Boolean?
+    val enableCustomLog = map["enableCustomLog"] as Boolean?
 
     val logCacheDiscard: LogCacheDiscard =
       when (discardStrategy) {
@@ -43,6 +42,8 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     if (serviceName != null) {
       logConfig.serviceName = serviceName
     }
+
+    val logTypeArr = logTypeReadArr?.toArrayList()
 
     if (logTypeArr != null) {
       val arr: Array<Status?> = arrayOfNulls(logTypeArr.size)

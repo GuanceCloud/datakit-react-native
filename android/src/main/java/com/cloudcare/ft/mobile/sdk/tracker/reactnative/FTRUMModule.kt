@@ -1,5 +1,6 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
 import com.ft.sdk.FTRUMConfig
 import com.ft.sdk.FTRUMGlobalManager
@@ -16,15 +17,14 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun setConfig(
-    rumAppId: String, context: ReadableMap, promise: Promise
-  ) {
+  fun setConfig(context: ReadableMap, promise: Promise) {
     val map = context.toHashMap()
+    val rumAppId = map["rumAppId"] as String
     val sampleRate = map["sampleRate"] as Float?
     val enableNativeUserAction = map["enableNativeUserAction"] as Boolean?
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
-    val monitorType = map["extraMonitorTypeWithError"] as Int?
+    val monitorType = ReactNativeUtils.convertToNativeInt(map["extraMonitorTypeWithError"])
     val globalContext = map["globalContext"] as ReadableMap?
 
     val rumConfig = FTRUMConfig().setRumAppId(rumAppId)
@@ -64,7 +64,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun statView(viewName: String, viewReferer: String, promise: Promise) {
+  fun startView(viewName: String, viewReferer: String, promise: Promise) {
     FTRUMGlobalManager.get().startView(viewName, viewReferer)
     promise.resolve(null)
   }
@@ -94,31 +94,28 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun addResource(
-    key: String,
-    url: String,
-    httpMethod: String,
-    context: ReadableMap,
-    promise: Promise
-  ) {
-    val map = context.toHashMap()
-    val responseHeader = map["responseHeader"] as ReadableMap?
-    val requestHeader = map["requestHeader"] as ReadableMap?
-    val method = map["resourceMethod"] as String?
-    val resourceStatus = map["resourceStatus"] as Int?
-    val responseBody = map["responseBody"] as String?
-    val responseConnection = map["responseConnection"] as String?
-    val responseContentType = map["responseContentType"] as String?
-    val responseContentEncoding = map["responseContentEncoding"] as String?
-    val fetchStartTime = map["fetchStartTime"] as Long?
-    val tcpStartTime = map["tcpStartTime"] as Long?
-    val tcpEndTime = map["tcpEndTime"] as Long?
-    val dnsStartTime = map["dnsStartTime"] as Long?
-    val dnsEndTime = map["dnsEndTime"] as Long?
-    val responseStartTime = map["responseStartTime"] as Long?
-    val responseEndTime = map["responseEndTime"] as Long?
-    val sslStartTime = map["sslStartTime"] as Long?
-    val sslEndTime = map["sslEndTime"] as Long?
+  fun addResource(key: String, resourceContext: ReadableMap, metricsContext: ReadableMap, promise: Promise) {
+    val resourceMap = resourceContext.toHashMap()
+    val url = resourceMap["url"] as String?
+    val responseHeader = resourceMap["responseHeader"] as HashMap<String,String>?
+    val requestHeader = resourceMap["requestHeader"] as HashMap<String,String>?
+    val method = resourceMap["resourceMethod"] as String?
+    val resourceStatus = ReactNativeUtils.convertToNativeInt(resourceMap["resourceStatus"])
+    val responseBody = resourceMap["responseBody"] as String?
+    val responseConnection = resourceMap["responseConnection"] as String?
+    val responseContentType = resourceMap["responseContentType"] as String?
+    val responseContentEncoding = resourceMap["responseContentEncoding"] as String?
+
+    val metricsMap = metricsContext.toHashMap()
+    val fetchStartTime = ReactNativeUtils.convertToNativeLong(metricsMap["fetchStartTime"])
+    val tcpStartTime = ReactNativeUtils.convertToNativeLong(metricsMap["tcpStartTime"])
+    val tcpEndTime = ReactNativeUtils.convertToNativeLong(metricsMap["tcpEndTime"])
+    val dnsStartTime = ReactNativeUtils.convertToNativeLong(metricsMap["dnsStartTime"])
+    val dnsEndTime = ReactNativeUtils.convertToNativeLong(metricsMap["dnsEndTime"])
+    val responseStartTime = ReactNativeUtils.convertToNativeLong(metricsMap["responseStartTime"])
+    val responseEndTime = ReactNativeUtils.convertToNativeLong(metricsMap["responseEndTime"])
+    val sslStartTime = ReactNativeUtils.convertToNativeLong(metricsMap["sslStartTime"])
+    val sslEndTime = ReactNativeUtils.convertToNativeLong(metricsMap["sslEndTime"])
 
     val params = ResourceParams()
     params.responseHeader = responseHeader.toString()

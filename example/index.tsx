@@ -1,10 +1,11 @@
-import { AppRegistry,Platform } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import App from './src/App';
 import {startReactNativeNavigation} from './src/RNNApp';
 import { name as appName } from './app.json';
 import { Navigation } from 'react-native-navigation';
 import { navigation as navigationLib } from './app.json';
-import { FTMobileReactNative,
+import {
+  FTMobileReactNative,
   FTReactNativeLog,
   FTReactNativeTrace,
   FTReactNativeRUM,
@@ -45,30 +46,36 @@ if(navigationLib == "react-navigation"){
   initSDK();
   startReactNativeNavigation();
 }
-function initSDK()  {
-  var config:FTMobileConfig ={
-    serverUrl:Config.SERVER_URL,
-    debug:true
+
+function initSDK() {
+  let config: FTMobileConfig = {
+    serverUrl: Config.SERVER_URL,
+    debug: true,
   };
-  FTMobileReactNative.sdkConfig(config).then(()=>{
-    var logConfig:FTLogConfig = {
-      enableCustomLog:true,
-      enableLinkRumData:true,
-    }
-    FTReactNativeLog.logConfig(logConfig);
-    var traceConfig:FTTractConfig = {
-      enableNativeAutoTrace:false,
+  FTMobileReactNative.sdkConfig(config).then(() => {
+    let logConfig: FTLogConfig = {
+      enableCustomLog: true,
+      enableLinkRumData: true,
     };
-    FTReactNativeTrace.setConfig(traceConfig);
-    var rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
-    var rumConfig:FTRUMConfig = {
-      rumAppId:rumid,
-      monitorType:MonitorType.all,
-      enableNativeUserAction:false,
-      enableNativeUserResource:false,
-      enableNativeUserView:false,
-    }
-    FTReactNativeRUM.setConfig(rumConfig);
+    return FTReactNativeLog.logConfig(logConfig);
+  }).then(() => {
+    let traceConfig: FTTractConfig = {
+      enableNativeAutoTrace: false,
+    };
+    return FTReactNativeTrace.setConfig(traceConfig);
+  }).then(() => {
+    let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
+    console.log(rumid);
+    let rumConfig: FTRUMConfig = {
+      rumAppId: rumid,
+      monitorType: MonitorType.all,
+      enableNativeUserAction: false,
+      enableNativeUserResource: false,
+      enableNativeUserView: false,
+    };
+    return FTReactNativeRUM.setConfig(rumConfig);
+
+  }).then(() => {
+    console.log('config complete');
   });
-  
 }
