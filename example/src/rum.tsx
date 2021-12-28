@@ -3,7 +3,7 @@ import { View, Button,ScrollView } from 'react-native';
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 
-class RUMScreen extends React.Component<{ navigation: any }> {
+class RUMScreen extends React.Component {
       render() {
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
@@ -35,6 +35,11 @@ class RUMScreen extends React.Component<{ navigation: any }> {
                   <View  style={styles.list}>
                   <Button title="Add Error" onPress={()=>{
                         FTReactNativeRUM.addError("error stack","error message");
+                  }}/>
+                  </View>
+                  <View  style={styles.list}>
+                  <Button title="Add Console Error" onPress={()=>{
+                        console.error("Add Console Error");
                   }}/>
                   </View>
                   </ScrollView>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ScrollView,View, Button } from 'react-native';
 import { FTReactNativeTrace,FTTraceResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
-class TraceScreen extends React.Component<{ navigation: any }> {
+class TraceScreen extends React.Component {
 
   render() {
     return (
