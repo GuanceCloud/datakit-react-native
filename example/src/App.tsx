@@ -1,5 +1,5 @@
 import * as React from 'react';
-
+import type { NavigationContainerRef } from '@react-navigation/native';
 import { View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
 import { styles } from './utils';
+import {FTRumReactNavigationTracking} from './FTRumReactNavigationTracking';
 
 
 class HomeScreen extends React.Component<{ navigation: any }> {
@@ -37,10 +38,12 @@ class HomeScreen extends React.Component<{ navigation: any }> {
 
 
 const Stack = createNativeStackNavigator();
-
+const navigationRef: React.RefObject<NavigationContainerRef<ReactNavigation.RootParamList>> = React.createRef();
 function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef} onReady={() => {
+      FTRumReactNavigationTracking.startTrackingViews(navigationRef.current);
+    }}>
       <Stack.Navigator initialRouteName='Home'>
         <Stack.Screen name='Home' component={HomeScreen} />
         <Stack.Screen name='Trace' component={TraceScreen} options={{ title: '网络链路追踪' }} />

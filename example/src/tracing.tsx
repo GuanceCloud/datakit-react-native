@@ -3,7 +3,15 @@ import { ScrollView,View, Button } from 'react-native';
 import { FTReactNativeTrace,FTTraceResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class TraceScreen extends React.Component {
-
+  static options(props) {
+    return {
+      topBar: {
+        title: {
+          text: "网络链路追踪"
+        }
+      }
+    };
+  }
   render() {
     return (
       <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>

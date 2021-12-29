@@ -1,9 +1,18 @@
-import * as React from 'react';
+  import * as React from 'react';
 import { ScrollView,View,Button } from 'react-native';
 import { FTReactNativeLog,FTLogStatus} from '@cloudcare/react-native-mobile';
 import { styles} from './utils';
 
 class LogScreen extends React.Component{
+   static options(props) {
+    return {
+      topBar: {
+        title: {
+          text: "日志输出"
+        }
+      }
+    };
+  }
    render() {
 
     return(

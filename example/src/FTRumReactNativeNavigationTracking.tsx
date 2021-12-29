@@ -1,6 +1,6 @@
 import React from 'react'
-import { ComponentDidAppearEvent, Navigation } from 'react-native-navigation';
-import { FTReactNativeRUM } from './index';
+import { ComponentDidAppearEvent, Navigation ,PreviewCompletedEvent} from 'react-native-navigation';
+import { FTReactNativeRUM } from '@cloudcare/react-native-mobile';
 
 
 /**
@@ -10,7 +10,7 @@ export class FTRumReactNativeNavigationTracking {
 
     private static isTracking = false
     private static trackedComponentIds : Array<any> = [];
-    private static trackedComponentNames : Array<string> = [];
+    private static trackedComponentName : string = "";
 
     private static originalCreateElement: any = undefined
 
@@ -19,7 +19,6 @@ export class FTRumReactNativeNavigationTracking {
      * 开始采集页面的生命周期
      */
     static startTracking(): void {
-        // extra safety to avoid wrapping more than 1 time this function
         if (FTRumReactNativeNavigationTracking.isTracking) {
             return
         }
@@ -34,18 +33,27 @@ export class FTRumReactNativeNavigationTracking {
                     {
                         componentDidAppear: (event: ComponentDidAppearEvent) => {
                             const screenName = event.componentName;
-                            const referer = FTRumReactNativeNavigationTracking.getViewReferer();
+                            const referer = FTRumReactNativeNavigationTracking.trackedComponentName;
                             FTReactNativeRUM.startView(screenName,referer);
+                            FTRumReactNativeNavigationTracking.trackedComponentName = screenName;
                         },
                         componentDidDisappear: () => {
                             FTReactNativeRUM.stopView();
-                            if(FTRumReactNativeNavigationTracking.trackedComponentNames.length>0){
-                             FTRumReactNativeNavigationTracking.trackedComponentNames.pop();   
-                            }
                         },
+                        previewCompleted:(event:PreviewCompletedEvent) => {
+                           console.log('PreviewCompletedEvent: ' + event.componentName);
+                        }
                     },
+                    componentId,
                 );
-                FTRumReactNativeNavigationTracking.trackedComponentIds.push(componentId);
+                Navigation.events().registerCommandListener((name:string,params:any) => {
+                   if (name == 'push') {
+                       console.log('push: ' + params.componentName);
+                   }else if(name == 'pop'){
+                       console.log('pop: ' + params.componentName);
+                   }
+                });
+               FTRumReactNativeNavigationTracking.trackedComponentIds.push(componentId);
             }
 
             return original(element, props, ...children)
@@ -64,19 +72,6 @@ export class FTRumReactNativeNavigationTracking {
             React.createElement = FTRumReactNativeNavigationTracking.originalCreateElement;
         }
         FTRumReactNativeNavigationTracking.trackedComponentIds.splice(0, FTRumReactNativeNavigationTracking.trackedComponentIds.length)
-        FTRumReactNativeNavigationTracking.trackedComponentNames.splice(0, FTRumReactNativeNavigationTracking.trackedComponentNames.length)
         FTRumReactNativeNavigationTracking.isTracking = false
-    }
-    /**
-     * 获取上一页面的名称
-     */
-    private static getViewReferer():string{
-     if (FTRumReactNativeNavigationTracking.originalCreateElement == undefined) {
-         return '';
-     }else if (FTRumReactNativeNavigationTracking.trackedComponentNames.length == 0) {
-         return '';
-     }else{
-         return FTRumReactNativeNavigationTracking.trackedComponentNames[FTRumReactNativeNavigationTracking.trackedComponentNames.length-1];
-     }
     }
 }
