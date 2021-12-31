@@ -1,5 +1,6 @@
 import { NativeModules } from 'react-native';
-import { FTRumErrorTracking} from './FTRumErrorTracking';
+import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
+import { FTRumActionTracking} from './rum/FTRumActionTracking';
 
 /**
  * 监控类型。
@@ -125,6 +126,7 @@ import { FTRumErrorTracking} from './FTRumErrorTracking';
 
    setConfig(config:FTRUMConfig): Promise<void>{
      FTRumErrorTracking.startTracking();
+     FTRumActionTracking.startTracking();
      return this.rum.setConfig(config);
    }
    startAction(actionName:string,actionType:string): Promise<void>{

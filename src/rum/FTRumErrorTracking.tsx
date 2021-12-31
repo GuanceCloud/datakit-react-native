@@ -1,5 +1,5 @@
 import type { ErrorHandlerCallback } from 'react-native';
-import { FTReactNativeRUM } from './index';
+import { FTReactNativeRUM } from '../index';
 
 export class FTRumErrorTracking {
   private static isTracking = false;
