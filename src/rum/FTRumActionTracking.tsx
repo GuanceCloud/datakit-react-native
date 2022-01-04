@@ -37,16 +37,31 @@ export class FTRumActionTracking {
 
 	private static handleTargetEvent(targetNode:any | null){
 		if (targetNode) {
-			const title = targetNode.memoizedProps?.title?'['+targetNode.memoizedProps?.title+']':'';
-			let elementType = targetNode.elementType;
-			let elementTypeName = null
+			let elementTypeName = targetNode.memoizedProps?.accessibilityRole;
+			let subTitle = '';
+			let children = targetNode.memoizedProps?.children;
+			while (children){
+				if(Array.isArray(children) && children.length>0 && children[0]){
+                  children = children[0];
+				}else if(typeof children === 'object' && children.props && children.props.children){
+				 children = children.props.children;
+				}else if(typeof children === 'string'){
+                 subTitle = children;
+                 children = null;
+				}else{
+					children = null;
+				}
+			}
+			if(!elementTypeName){
+				let elementType = targetNode.elementType;
 			if (typeof elementType === "string") {
 				elementTypeName = elementType
 			} else if (elementType && typeof elementType.name === "string") {
 				elementTypeName = elementType.name
 			}
+			}
 			if (elementTypeName) {
-				FTReactNativeRUM.startAction('['+elementTypeName+']'+title,'click');
+				FTReactNativeRUM.startAction('['+elementTypeName+']'+subTitle,'click');
 			}
 		}
 	}
