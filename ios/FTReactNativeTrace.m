@@ -42,7 +42,7 @@ RCT_REMAP_METHOD(getTraceHeader,
                  rejecter:(RCTPromiseRejectBlock)reject){
     NSDictionary *traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
     if (traceHeader) {
-        resolve(@[traceHeader]);
+        resolve(traceHeader);
     }else{
         resolve(nil);
     }

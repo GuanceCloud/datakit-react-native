@@ -1,6 +1,7 @@
 import { NativeModules } from 'react-native';
 import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
+import { FTResourceTracking} from './rum/FTResourceTracking';
 
 /**
  * 监控类型。
@@ -15,15 +16,21 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * 设置 RUM 追踪条件。
  * @param rumAppId appId，监测中申请
  * @param sampleRate 采样率
+ * @param enableTrackUserAction 是否自动采集 react-native 控件点击事件
+ * @param enableTrackUserResource 是否自动采集 react-native Resource
+ * @param enableTrackError  是否自动采集 react-native Error
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
- * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 Flutter 应用建议关闭
- * @param enableNativeUserResource 是否开始 Native Resource 自动追踪，纯 Flutter 应用建议关闭
+ * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
+ * @param enableNativeUserResource 是否开始 Native Resource 自动追踪，纯 react-native 应用建议关闭
  * @param monitorType 监控补充类型
  * @param globalContext 自定义全局参数
  */
  export interface FTRUMConfig{
    rumAppId:string,
    sampleRate?:number,
+   enableTrackUserAction?:boolean,
+   enableTrackUserResource?:boolean,
+   enableTrackError?:boolean,
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
@@ -75,7 +82,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    setConfig(config:FTRUMConfig): Promise<void>;
   /**
    * 执行 action 。
-   * @param actionName action 名称
+   * @param actionName action 名称 可配合 accessibilityLabel 设置actionName
    * @param actionType action 类型
    * @returns a Promise.
    */
@@ -125,8 +132,16 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
 
    setConfig(config:FTRUMConfig): Promise<void>{
-     FTRumErrorTracking.startTracking();
-     FTRumActionTracking.startTracking();
+     if(config.enableTrackError){
+        FTRumErrorTracking.startTracking(); 
+     }
+     if(config.enableTrackUserAction){
+        FTRumActionTracking.startTracking(); 
+     }
+     if(config.enableNativeUserResource){
+       FTResourceTracking.isEnableRumTracking = true;
+       FTResourceTracking.startTracking();
+     }
      return this.rum.setConfig(config);
    }
    startAction(actionName:string,actionType:string): Promise<void>{

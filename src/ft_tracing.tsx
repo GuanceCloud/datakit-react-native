@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-
+import { FTResourceTracking} from './rum/FTResourceTracking';
 //FTReactNativeTrace
 
 /**
@@ -67,6 +67,8 @@ import { NativeModules } from 'react-native';
    private trace: FTReactNativeTraceType = NativeModules.FTReactNativeTrace;
 
    setConfig(config:FTTractConfig): Promise<void>{
+     FTResourceTracking.isEnableTracing = true;
+     FTResourceTracking.startTracking();
      return this.trace.setConfig(config);
    }
   /**

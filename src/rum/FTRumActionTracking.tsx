@@ -37,32 +37,46 @@ export class FTRumActionTracking {
 
 	private static handleTargetEvent(targetNode:any | null){
 		if (targetNode) {
-			let elementTypeName = targetNode.memoizedProps?.accessibilityRole;
+			const  elementTypeName = FTRumActionTracking.resolveActionName(targetNode);
+			if (elementTypeName) {
+				FTReactNativeRUM.startAction(elementTypeName,'click');
+			}
+		}
+	}
+
+	private static resolveActionName(targetNode:any): string | null {
+		const accessibilityLabel = targetNode.memoizedProps?.accessibilityLabel
+		if(accessibilityLabel != null){
+			return  accessibilityLabel;
+		}
+		const accessibilityRole = targetNode.memoizedProps?.accessibilityRole;
 			let subTitle = '';
 			let children = targetNode.memoizedProps?.children;
 			while (children){
 				if(Array.isArray(children) && children.length>0 && children[0]){
-                  children = children[0];
+					children = children[0];
 				}else if(typeof children === 'object' && children.props && children.props.children){
-				 children = children.props.children;
+					children = children.props.children;
 				}else if(typeof children === 'string'){
-                 subTitle = children;
-                 children = null;
+					subTitle = children;
+					children = null;
 				}else{
 					children = null;
 				}
 			}
-			if(!elementTypeName){
+			let elementTypeName = accessibilityRole;
+			if(!accessibilityRole){
 				let elementType = targetNode.elementType;
-			if (typeof elementType === "string") {
-				elementTypeName = elementType
-			} else if (elementType && typeof elementType.name === "string") {
-				elementTypeName = elementType.name
+				if (typeof elementType === "string") {
+					elementTypeName = elementType
+				} else if (elementType && typeof elementType.name === "string") {
+					elementTypeName = elementType.name
+				}
 			}
+			if(elementTypeName){
+				return '['+elementTypeName+']'+subTitle;
 			}
-			if (elementTypeName) {
-				FTReactNativeRUM.startAction('['+elementTypeName+']'+subTitle,'click');
-			}
-		}
+			return null;
+   
 	}
 }

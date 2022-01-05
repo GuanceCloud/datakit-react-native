@@ -69,6 +69,9 @@ function initSDK() {
     let rumConfig: FTRUMConfig = {
       rumAppId: rumid,
       monitorType: MonitorType.all,
+      enableTrackUserAction:true,
+      enableTrackUserResource:true,
+      enableTrackError:true,
       enableNativeUserAction: false,
       enableNativeUserResource: false,
       enableNativeUserView: false,

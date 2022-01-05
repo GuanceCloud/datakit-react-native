@@ -2,7 +2,6 @@ import * as React from 'react';
 import { View, Button,ScrollView } from 'react-native';
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
-
 class RUMScreen extends React.Component {
       static options(props) {
             return {
@@ -17,8 +16,8 @@ class RUMScreen extends React.Component {
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
                   <View  style={styles.list}>
-                  <Button title="Action 点击" onPress={()=>{
-                        FTReactNativeRUM.startAction("[Button][Action 点击]","click");
+                  <Button title="Action 点击" accessibilityLabel = "RUM Click" onPress={()=>{
+                        console.log('Action 点击');
                   }}
                   /></View>
                   <View  style={styles.list}>
