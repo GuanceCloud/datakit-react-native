@@ -132,13 +132,14 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
 
    setConfig(config:FTRUMConfig): Promise<void>{
+     console.log('FTRUMConfig');
      if(config.enableTrackError){
         FTRumErrorTracking.startTracking(); 
      }
      if(config.enableTrackUserAction){
         FTRumActionTracking.startTracking(); 
      }
-     if(config.enableNativeUserResource){
+     if(config.enableTrackUserResource){
        FTResourceTracking.isEnableRumTracking = true;
        FTResourceTracking.startTracking();
      }
