@@ -38,10 +38,9 @@ function  getResponseBody(xhr: XMLHttpRequest): Promise<string>{
 			case 'arraybuffer':
 			return Promise.resolve(String.fromCharCode.apply(null, new Uint8Array(response)));
 			case 'document':
+			// react-native 暂不支持
 			return Promise.resolve('');
-
 			case 'json':
-
 			return Promise.resolve(JSON.stringify(response));
 			default:
 			return Promise.resolve('');
@@ -103,7 +102,6 @@ export class FTResourceTracking {
 
 				let traceHeader = await FTReactNativeTrace.getTraceHeader(key,this._url);
 				this._headers = Object.assign(traceHeader,this._headers); 
-				this.responseType = 'arraybuffer';
 			}
 			
 			if(FTResourceTracking.isEnableRumTracking){

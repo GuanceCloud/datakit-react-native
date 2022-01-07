@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Button,ScrollView } from 'react-native';
+import { View, Button,ScrollView ,AsyncStorage} from 'react-native';
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class RUMScreen extends React.Component {
@@ -18,6 +18,7 @@ class RUMScreen extends React.Component {
                   <View  style={styles.list}>
                   <Button title="Action 点击" accessibilityLabel = "RUM Click" onPress={()=>{
                         console.log('Action 点击');
+                        FTReactNativeRUM.startAction('actionName','actionType');
                   }}
                   /></View>
                   <View  style={styles.list}>
@@ -48,6 +49,17 @@ class RUMScreen extends React.Component {
                   <View  style={styles.list}>
                   <Button title="Add Console Error" onPress={()=>{
                         console.error("Add Console Error");
+                  }}/>
+                  </View>
+                  <View  style={styles.list}>
+                  <Button title="动态设置 globalContext " onPress={()=>{
+                        AsyncStorage.setItem("track_id","dynamic_id",(error)=>{
+                              if (error){
+                                    console.log('存储失败' + error);
+                              }else {
+                                    console.log('存储成功');
+                              }
+                        })
                   }}/>
                   </View>
                   </ScrollView>

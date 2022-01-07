@@ -16,7 +16,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  * 设置 RUM 追踪条件。
  * @param rumAppId appId，监测中申请
  * @param sampleRate 采样率
- * @param enableTrackUserAction 是否自动采集 react-native 控件点击事件
+ * @param enableTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
  * @param enableTrackUserResource 是否自动采集 react-native Resource
  * @param enableTrackError  是否自动采集 react-native Error
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
@@ -82,7 +82,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    setConfig(config:FTRUMConfig): Promise<void>;
   /**
    * 执行 action 。
-   * @param actionName action 名称 可配合 accessibilityLabel 设置actionName
+   * @param actionName action 名称 
    * @param actionType action 类型
    * @returns a Promise.
    */

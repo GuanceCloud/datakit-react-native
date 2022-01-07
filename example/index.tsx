@@ -1,4 +1,6 @@
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry, Platform ,AsyncStorage} from 'react-native';
+// import {AsyncStorage} from '@react-native-community/async-storage'
+import { NativeModules } from 'react-native';
 import App from './src/App';
 import {startReactNativeNavigation} from './src/RNNApp';
 import { name as appName } from './app.json';
@@ -76,7 +78,33 @@ function initSDK() {
       enableNativeUserResource: false,
       enableNativeUserView: false,
     };
-    return FTReactNativeRUM.setConfig(rumConfig);
+    // 静态设置 globalContext
+    let nativeContext =  NativeModules.FTGlobalContext;
+    return new Promise(function(resolve) {
+      nativeContext.getGlobalContext((error:any,context:object)=>{
+        if (error) {
+          console.error(error);
+        } else if(context != null){
+          rumConfig.globalContext = context;
+        }
+        resolve(FTReactNativeRUM.setConfig(rumConfig)); 
+      });
+    })
+    /** 动态设置 globalContext
+      return new Promise(function(resolve) {
+       AsyncStorage.getItem("track_id",(error,result)=>{
+        if (result === null){
+          console.log('获取失败' + error);
+        }else {
+          console.log('获取成功' + result);
+          if( result != undefined){
+            rumConfig.globalContext = {"track_id":result};
+          }    
+        }
+        resolve(FTReactNativeRUM.setConfig(rumConfig)); 
+      })
+     })
+     * */
 
   }).then(() => {
     console.log('config complete');
