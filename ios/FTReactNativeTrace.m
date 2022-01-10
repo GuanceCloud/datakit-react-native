@@ -31,7 +31,7 @@ RCT_REMAP_METHOD(setConfig,
         trace.networkTraceType =  (FTNetworkTraceType)[RCTConvert int:context[@"traceType"]];
     }
     trace.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
-    trace.enableAutoTrace = [RCTConvert BOOL:context[@"enableAutoTrace"]];
+    trace.enableAutoTrace = [RCTConvert BOOL:context[@"enableNativeAutoTrace"]];
     [[FTMobileAgent sharedInstance] startTraceWithConfigOptions:trace];
     resolve(nil);
 }
