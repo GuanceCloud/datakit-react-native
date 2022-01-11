@@ -62,7 +62,8 @@ function initSDK() {
     return FTReactNativeLog.logConfig(logConfig);
   }).then(() => {
     let traceConfig: FTTractConfig = {
-      enableNativeAutoTrace: false,
+      enableLinkRUMData:true,
+      enableTraceUserResource:true,
     };
     return FTReactNativeTrace.setConfig(traceConfig);
   }).then(() => {
@@ -75,7 +76,6 @@ function initSDK() {
       enableTrackUserResource:true,
       enableTrackError:true,
       enableNativeUserAction: false,
-      enableNativeUserResource: false,
       enableNativeUserView: false,
     };
     // 静态设置 globalContext
