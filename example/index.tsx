@@ -63,8 +63,9 @@ function initSDK() {
   }).then(() => {
     let traceConfig: FTTractConfig = {
       enableLinkRUMData:true,
-      enableTraceUserResource:true,
+      enableNativeAutoTrace:true,
     };
+    traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
     return FTReactNativeTrace.setConfig(traceConfig);
   }).then(() => {
     let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
@@ -72,12 +73,13 @@ function initSDK() {
     let rumConfig: FTRUMConfig = {
       rumAppId: rumid,
       monitorType: MonitorType.all,
-      enableTrackUserAction:true,
-      enableTrackUserResource:true,
-      enableTrackError:true,
+      enableAutoTrackUserAction:true,
+      enableAutoTrackError:true,
       enableNativeUserAction: false,
       enableNativeUserView: false,
+      enableNativeUserResource:true,
     };
+    rumConfig.enableAutoTrackUserResource =Platform.OS === 'ios'? false:true;
     // 静态设置 globalContext
     let nativeContext =  NativeModules.FTGlobalContext;
     return new Promise(function(resolve) {

@@ -16,22 +16,24 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  * 设置 RUM 追踪条件。
  * @param rumAppId appId，监测中申请
  * @param sampleRate 采样率
- * @param enableTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
- * @param enableTrackUserResource 是否自动采集 react-native Resource
+ * @param enableAutoTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
+ * @param enableAutoTrackUserResource 是否自动采集 react-native Resource
  * @param enableTrackError  是否自动采集 react-native Error
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
+ * @param enableNativeUserResource 是否开始 Native Resource 自动追踪，纯 react-native 应用建议关闭
  * @param monitorType 监控补充类型
  * @param globalContext 自定义全局参数
  */
  export interface FTRUMConfig{
    rumAppId:string,
    sampleRate?:number,
-   enableTrackUserAction?:boolean,
-   enableTrackUserResource?:boolean,
-   enableTrackError?:boolean,
+   enableAutoTrackUserAction?:boolean,
+   enableAutoTrackUserResource?:boolean,
+   enableAutoTrackError?:boolean,
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
+   enableNativeUserResource?:boolean,
    monitorType?:MonitorType,
    globalContext?:object,
  }
@@ -131,13 +133,13 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
 
    setConfig(config:FTRUMConfig): Promise<void>{
      console.log('FTRUMConfig');
-     if(config.enableTrackError){
+     if(config.enableAutoTrackError){
         FTRumErrorTracking.startTracking(); 
      }
-     if(config.enableTrackUserAction){
+     if(config.enableAutoTrackUserAction){
         FTRumActionTracking.startTracking(); 
      }
-     if(config.enableTrackUserResource){
+     if(config.enableAutoTrackUserResource){
        FTResourceTracking.isEnableRumTracking = true;
        FTResourceTracking.startTracking();
      }
