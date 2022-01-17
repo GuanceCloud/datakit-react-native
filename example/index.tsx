@@ -1,6 +1,5 @@
 import { AppRegistry, Platform ,AsyncStorage} from 'react-native';
 // import {AsyncStorage} from '@react-native-community/async-storage'
-import { NativeModules } from 'react-native';
 import App from './src/App';
 import {startReactNativeNavigation} from './src/RNNApp';
 import { name as appName } from './app.json';
@@ -81,17 +80,9 @@ function initSDK() {
     };
     rumConfig.enableAutoTrackUserResource =Platform.OS === 'ios'? false:true;
     // 静态设置 globalContext
-    let nativeContext =  NativeModules.FTGlobalContext;
-    return new Promise(function(resolve) {
-      nativeContext.getGlobalContext((error:any,context:object)=>{
-        if (error) {
-          console.error(error);
-        } else if(context != null){
-          rumConfig.globalContext = context;
-        }
-        resolve(FTReactNativeRUM.setConfig(rumConfig)); 
-      });
-    })
+    //.env.dubug、.env.release 等配置的环境文件中设置
+    rumConfig.globalContext = {"track_id":Config.TRACK_ID};
+    return FTReactNativeRUM.setConfig(rumConfig);
     /** 动态设置 globalContext
       return new Promise(function(resolve) {
        AsyncStorage.getItem("track_id",(error,result)=>{
