@@ -1,5 +1,5 @@
-import { AppRegistry, Platform ,AsyncStorage} from 'react-native';
-// import {AsyncStorage} from '@react-native-community/async-storage'
+import { AppRegistry, Platform } from 'react-native';
+// import AsyncStorage from '@react-native-community/async-storage'
 import App from './src/App';
 import {startReactNativeNavigation} from './src/RNNApp';
 import { name as appName } from './app.json';

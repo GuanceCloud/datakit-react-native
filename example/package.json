@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/native-stack": "^6.2.5",
+    "@react-native-community/async-storage": "^1.12.1",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-config": "^1.4.5",
