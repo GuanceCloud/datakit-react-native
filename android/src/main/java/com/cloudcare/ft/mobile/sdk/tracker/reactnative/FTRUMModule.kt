@@ -25,7 +25,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
     val monitorType = ReactNativeUtils.convertToNativeInt(map["extraMonitorTypeWithError"])
-    val globalContext = map["globalContext"] as ReadableMap?
+    val globalContext = map["globalContext"] as HashMap<String, Any>?
 
     val rumConfig = FTRUMConfig().setRumAppId(rumAppId)
     if (sampleRate != null) {
@@ -48,7 +48,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
       rumConfig.extraMonitorTypeWithError = monitorType
     }
 
-    globalContext?.toHashMap()?.forEach {
+    globalContext?.forEach {
       rumConfig.addGlobalContext(it.key, it.value.toString())
     }
 
