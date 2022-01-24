@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, Button,ScrollView ,AsyncStorage} from 'react-native';
+import { View, Button,ScrollView} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage'
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class RUMScreen extends React.Component {
@@ -88,7 +89,11 @@ class RUMScreen extends React.Component {
                         requestHeader:fetchOptions.headers,
                   };
                   if (res) {
-                        resource.responseHeader = res.headers;
+                        var header:{[k:string]:any} = {};
+                        res.headers.forEach((value:any, name:any)=>{
+                          header[name] = value
+                        });
+                        resource.responseHeader = header;
                         resource.resourceStatus = res.status;
                         resource.responseBody = await res.text();
                   }
