@@ -19,15 +19,15 @@ PODS:
     - DoubleConversion
     - glog
   - FTMobileReactNativeSDK (0.1.0):
-    - FTMobileSDK (~> 1.3.1-alpha.9)
+    - FTMobileSDK (~> 1.3.1-alpha.10)
     - React-Core
-  - FTMobileSDK (1.3.1-alpha.9):
-    - FTMobileSDK/Core (= 1.3.1-alpha.9)
-  - FTMobileSDK/Common (1.3.1-alpha.9)
-  - FTMobileSDK/Core (1.3.1-alpha.9):
+  - FTMobileSDK (1.3.1-alpha.10):
+    - FTMobileSDK/Core (= 1.3.1-alpha.10)
+  - FTMobileSDK/Common (1.3.1-alpha.10)
+  - FTMobileSDK/Core (1.3.1-alpha.10):
     - FTMobileSDK/Common
     - FTMobileSDK/FTMobileAgent
-  - FTMobileSDK/FTMobileAgent (1.3.1-alpha.9):
+  - FTMobileSDK/FTMobileAgent (1.3.1-alpha.10):
     - FTMobileSDK/Common
   - glog (0.3.5)
   - HMSegmentedControl (1.5.6)
@@ -274,6 +274,8 @@ PODS:
     - React-Core
     - React-RCTImage
     - React-RCTText
+  - RNCAsyncStorage (1.12.1):
+    - React-Core
   - RNScreens (3.10.1):
     - React-Core
     - React-RCTImage
@@ -311,6 +313,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeNavigation (from `../node_modules/react-native-navigation`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -379,6 +382,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeNavigation:
     :path: "../node_modules/react-native-navigation"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-community/async-storage"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   Yoga:
@@ -390,8 +395,8 @@ SPEC CHECKSUMS:
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  FTMobileReactNativeSDK: 3dc368a5f13fb034cdc1dab553ee071dc1202e52
-  FTMobileSDK: d6c5e4ce7c6696ee3eaf673775cd9fd6cfc5b949
+  FTMobileReactNativeSDK: b177aeec6a5adc5b8e9939ed2d59f163a9d8a1dd
+  FTMobileSDK: fa6ddb5488281f56d67abeb682fb87efe46465f3
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
@@ -417,6 +422,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   ReactNativeNavigation: f8c246051be2019555ef5162bfb85918b2779372
+  RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
