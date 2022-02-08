@@ -29,12 +29,19 @@ export class FTRumReactNativeNavigationTracking {
                 && !FTRumReactNativeNavigationTracking.trackedComponentIds.includes(props.componentId)
             ) {
                 const componentId = props.componentId
+                var startTime:number; 
                 Navigation.events().registerComponentListener(
-                    {
+                    {   
+                        componentWillAppear:() => {
+                           startTime = new Date().getTime(); 
+                           console.log("startTime:"+startTime);
+                        },
                         componentDidAppear: (event: ComponentDidAppearEvent) => {
                             const screenName = event.componentName;
                             const referer = FTRumReactNativeNavigationTracking.trackedComponentName;
-                            FTReactNativeRUM.startView(screenName,referer);
+                            const endTime =  new Date().getTime(); 
+                            const duration = (endTime - startTime)*1000;
+                            FTReactNativeRUM.startView(screenName,referer,duration);
                             FTRumReactNativeNavigationTracking.trackedComponentName = screenName;
                         },
                         componentDidDisappear: () => {

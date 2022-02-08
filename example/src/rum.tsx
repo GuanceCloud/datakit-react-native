@@ -24,7 +24,7 @@ class RUMScreen extends React.Component {
                   /></View>
                   <View  style={styles.list}>
                   <Button title="View Start" onPress={()=>{
-                        FTReactNativeRUM.startView("RUM","");
+                        FTReactNativeRUM.startView("RUM","",0);
                   }}
                   /></View>
                   <View  style={styles.list}>

@@ -64,7 +64,7 @@ export class FTRumReactNavigationTracking {
                 FTRumReactNavigationTracking.trackedComponentName = '';
             } else if (appStateStatus === 'active' || appStateStatus == undefined) {
                 
-                FTReactNativeRUM.startView(screenName,FTRumReactNavigationTracking.trackedComponentName);
+                FTReactNativeRUM.startView(screenName,FTRumReactNavigationTracking.trackedComponentName,0);
                 FTRumReactNavigationTracking.trackedComponentName = screenName;
 
             }

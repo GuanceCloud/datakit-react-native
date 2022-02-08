@@ -93,7 +93,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    * @param viewReferer 前一个界面名称
    * @returns a Promise.
    */
-   startView(viewName: string, viewReferer: string): Promise<void>;
+   startView(viewName: string, viewReferer: string, loadDuration: number): Promise<void>;
   /**
    * view 结束。
    * @returns a Promise.
@@ -148,8 +148,8 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    startAction(actionName:string,actionType:string): Promise<void>{
      return this.rum.startAction(actionName,actionType);
    }
-   startView(viewName: string, viewReferer: string): Promise<void>{
-     return this.rum.startView(viewName,viewReferer);
+   startView(viewName: string, viewReferer: string, loadDuration:number): Promise<void>{
+     return this.rum.startView(viewName,viewReferer,loadDuration);
    }
    stopView(): Promise<void>{
      return this.rum.stopView();

@@ -50,9 +50,10 @@ RCT_REMAP_METHOD(startAction,
 }
 RCT_REMAP_METHOD(startView,
                  viewName:(NSString *)viewName viewReferer:(NSString *)viewReferer
+                 loadDuration:(nonnull NSNumber *)loadDuration
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] startViewWithName:viewName viewReferrer:viewReferer loadDuration:@0];
+    [[FTExternalDataManager sharedManager] startViewWithName:viewName viewReferrer:viewReferer loadDuration:loadDuration];
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopView,
