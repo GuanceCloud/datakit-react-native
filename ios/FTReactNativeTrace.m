@@ -21,26 +21,23 @@ RCT_REMAP_METHOD(setConfig,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
     FTTraceConfig *trace = [[FTTraceConfig alloc]init];
-    if ([context.allKeys containsObject:@"serviceName"]) {
-        trace.service = [RCTConvert NSString:context[@"serviceName"]];
-    }
     if ([context.allKeys containsObject:@"samplerate"]) {
-        trace.samplerate =[RCTConvert double:context[@"service"]] * 100;
+        trace.samplerate =[RCTConvert double:context[@"samplerate"]] * 100;
     }
     if ([context.allKeys containsObject:@"traceType"]) {
         trace.networkTraceType =  (FTNetworkTraceType)[RCTConvert int:context[@"traceType"]];
     }
-    trace.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
+    trace.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRUMData"]];
     trace.enableAutoTrace = [RCTConvert BOOL:context[@"enableNativeAutoTrace"]];
     [[FTMobileAgent sharedInstance] startTraceWithConfigOptions:trace];
     resolve(nil);
 }
 
 RCT_REMAP_METHOD(getTraceHeader,
-                 key:(NSString *)key url:(NSString *)url
+                 url:(NSString *)url
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    NSDictionary *traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
+    NSDictionary *traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderUrl:[NSURL URLWithString:url]];
     if (traceHeader) {
         resolve(traceHeader);
     }else{
@@ -48,20 +45,5 @@ RCT_REMAP_METHOD(getTraceHeader,
     }
 }
 
-RCT_REMAP_METHOD(addTrace,
-                 key:(NSString *)key
-                 resource:(NSDictionary*)resource
-                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject){
-    FTResourceContentModel *contentModel = [[FTResourceContentModel alloc]init];
-    contentModel.httpMethod = [RCTConvert NSString:resource[@"httpMethod"]];
-    contentModel.requestHeader =[RCTConvert NSDictionary:resource[@"requestHeader"]];
-    contentModel.httpStatusCode = [RCTConvert int:resource[@"statusCode"]];
-    contentModel.responseHeader = [RCTConvert NSDictionary:resource[@"responseHeader"]];
-    contentModel.errorMessage = [RCTConvert NSString:resource[@"errorMessage"]];
-
-    [[FTExternalDataManager sharedManager] traceWithKey:key content:contentModel];
-    resolve(nil);
-}
 @end
 

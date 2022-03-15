@@ -15,6 +15,7 @@ import {
   FTTractConfig,
   FTRUMConfig,
   MonitorType,
+  TraceType
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
@@ -63,6 +64,8 @@ function initSDK() {
     let traceConfig: FTTractConfig = {
       enableLinkRUMData:true,
       enableNativeAutoTrace:true,
+      traceType:TraceType.ddTrace,
+      enableLinkRUMData:true,
     };
     traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
     return FTReactNativeTrace.setConfig(traceConfig);

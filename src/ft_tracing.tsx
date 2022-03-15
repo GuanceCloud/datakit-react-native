@@ -7,13 +7,15 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  */
  export enum TraceType {
    ddTrace,
-   zipkin,
-   jaeger
+   zipkinMulti,
+   zipkinSingle,
+   traceparent,
+   skywalking,
+   jaeger,
  };
 /**
  * 配置 trace 。
  * @param sampleRate 采样率
- * @param serviceName 服务名
  * @param traceType 链路类型
  * @param enableLinkRUMData 是否与 RUM 数据关联
  * @param enableAutoTrace 是否开启自动追踪 
@@ -22,7 +24,6 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  */
  export interface FTTractConfig{
    sampleRate?:number,
-   serviceName?:string,
    traceType?:TraceType,
    enableLinkRUMData?:boolean,
    enableAutoTrace?:boolean,
@@ -52,18 +53,10 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    setConfig(config: FTTractConfig): Promise<void>; 
   /**
    * 获取 trace http 请求头数据。
-   * @param key 唯一 id
    * @param url 请求地址
    * @returns trace 添加的请求头参数  
    */
-   getTraceHeader(key: String, url: String): Promise<object>;
-  /**
-   * 上传 Trace 数据。
-   * @param key 唯一 id
-   * @param resource trace 数据
-   * @returns a Promise.
-   */ 
-   addTrace(key:string,resource:FTTraceResource): Promise<void>;
+   getTraceHeader(url: String): Promise<object>;
  };
 
  class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
@@ -82,12 +75,8 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    * @param url 请求地址
    * @returns a Promise.
    */
-   getTraceHeader(key:String,url:String): Promise<object>{
-     return this.trace.getTraceHeader(key,url);
-   }
-
-   addTrace(key:string,resource:FTTraceResource){
-     return this.trace.addTrace(key,resource);
+   getTraceHeader(url:String): Promise<object>{
+     return this.trace.getTraceHeader(url);
    }
  }
  export const FTReactNativeTrace:FTReactNativeTraceType = new FTReactNativeTraceWrapper(); 
