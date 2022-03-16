@@ -1,8 +1,9 @@
 import * as React from 'react';
 import type { NavigationContainerRef } from '@react-navigation/native';
-import { View, Button } from 'react-native';
+import { View, Button ,Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FTMobileReactNative } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 import RUMScreen from './rum';
@@ -11,6 +12,16 @@ import TraceScreen from './tracing';
 import { styles } from './utils';
 import {FTRumReactNavigationTracking} from './FTRumReactNavigationTracking';
 
+function Home() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Home' }}/>
+      <Tab.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
+      <Tab.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>
+
+    </Tab.Navigator>
+  );
+}
 
 class HomeScreen extends React.Component<{ navigation: any }> {
   componentDidMount() {
@@ -26,11 +37,42 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <View  style={styles.space}/>
         <Button title='解绑用户' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
         <View  style={styles.space}/>
-        <Button title='日志输出' onPress={() => navigation.push('Log')} />
+        <Button title='日志输出' onPress={() => navigation.navigate('Log')} />
         <View  style={styles.space}/>
-        <Button title='网络链路追踪' onPress={() => navigation.push('Trace')} />
+        <Button title='网络链路追踪' onPress={() => navigation.navigate('Trace')} />
         <View  style={styles.space}/>
-        <Button title='RUM数据采集' onPress={() => navigation.push('RUM')} />
+        <Button title='RUM数据采集' onPress={() => navigation.navigate('RUM')} />
+      </View>
+    );
+  }
+}
+class Messages extends React.Component<{ navigation: any }> {
+  render() {
+        let { navigation } = this.props;
+    return (
+      <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
+          <Button title='MessagesDetail' onPress={() => navigation.navigate('Deatil')} />
+
+      </View>
+    );
+  }
+}
+class Mine extends React.Component<{ navigation: any }> {
+  render() {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
+        <Text>{"Mine"}</Text>
+
+      </View>
+    );
+  }
+}
+class MessagesDetail extends React.Component<{ navigation: any }> {
+
+  render() {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
+        <Text>{"message"}</Text>
       </View>
     );
   }
@@ -38,17 +80,25 @@ class HomeScreen extends React.Component<{ navigation: any }> {
 
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
 const navigationRef: React.RefObject<NavigationContainerRef<ReactNavigation.RootParamList>> = React.createRef();
+
+
+
 function App() {
   return (
     <NavigationContainer ref={navigationRef} onReady={() => {
-      FTRumReactNavigationTracking.startTrackingViews(navigationRef.current);
+      // FTRumReactNavigationTracking.startTrackingViews(navigationRef.current);
     }}>
-      <Stack.Navigator initialRouteName='Home'>
-        <Stack.Screen name='Home' component={HomeScreen} />
+      <Stack.Navigator   screenListeners={FTRumReactNavigationTracking.StackListener} initialRouteName='Home'>
+        <Stack.Screen name='Home' component={Home}  options={{ headerShown: false }} />
         <Stack.Screen name='Trace' component={TraceScreen} options={{ title: '网络链路追踪' }} />
         <Stack.Screen name='Log' component={LogScreen} options={{ title: '日志输出' }} />
         <Stack.Screen name='RUM' component={RUMScreen} options={({ title: 'RUM 数据采集' })} />
+        <Stack.Screen name='Deatil' component={MessagesDetail}/>
+        <Stack.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
+        <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

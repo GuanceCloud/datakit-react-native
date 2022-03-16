@@ -29,12 +29,19 @@ export class FTRumReactNativeNavigationTracking {
                 && !FTRumReactNativeNavigationTracking.trackedComponentIds.includes(props.componentId)
             ) {
                 const componentId = props.componentId
+                var startTime:number|null = null; 
                 Navigation.events().registerComponentListener(
-                    {
+                    {   
+                        componentWillAppear:() => {
+                           startTime = new Date().getTime(); 
+                           console.log("startTime:"+startTime);
+                        },
                         componentDidAppear: (event: ComponentDidAppearEvent) => {
                             const screenName = event.componentName;
                             const referer = FTRumReactNativeNavigationTracking.trackedComponentName;
-                            FTReactNativeRUM.startView(screenName,referer);
+                            const endTime =  new Date().getTime(); 
+                            const duration = startTime != null ?(endTime - startTime)*1000:0;
+                            FTReactNativeRUM.startView(screenName,referer,duration);
                             FTRumReactNativeNavigationTracking.trackedComponentName = screenName;
                         },
                         componentDidDisappear: () => {
@@ -46,13 +53,7 @@ export class FTRumReactNativeNavigationTracking {
                     },
                     componentId,
                 );
-                Navigation.events().registerCommandListener((name:string,params:any) => {
-                   if (name == 'push') {
-                       console.log('push: ' + params.componentName);
-                   }else if(name == 'pop'){
-                       console.log('pop: ' + params.componentName);
-                   }
-                });
+  
                FTRumReactNativeNavigationTracking.trackedComponentIds.push(componentId);
             }
 

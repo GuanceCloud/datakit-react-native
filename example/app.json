@@ -1,5 +1,5 @@
 {
   "name": "FtMobileAgentExample",
   "displayName": "FtMobileAgent Example",
-  "navigation": "react-navigation"
+  "navigation": "react-native-navigation"
 }

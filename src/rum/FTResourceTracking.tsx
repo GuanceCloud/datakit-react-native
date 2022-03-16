@@ -100,7 +100,7 @@ export class FTResourceTracking {
 			this._traceKey = key;
 			if(FTResourceTracking.isEnableTracing){
 
-				let traceHeader = await FTReactNativeTrace.getTraceHeader(key,this._url);
+				let traceHeader = await FTReactNativeTrace.getTraceHeader(this._url);
 				this._headers = Object.assign(traceHeader,this._headers); 
 			}
 			
@@ -148,22 +148,6 @@ export class FTResourceTracking {
 		}
 	}
 	private static reportXhr(xhrProxy: any,errorMessage?:string): void {
-		if(FTResourceTracking.isEnableTracing){
-			let traceResource:FTTraceResource={
-				httpMethod:xhrProxy._method,
-				requestHeader:xhrProxy._headers,
-				statusCode:xhrProxy.status,
-			}
-
-			if(xhrProxy.responseHeaders != undefined){
-				traceResource.responseHeader = xhrProxy.responseHeaders;
-			}
-			if(xhrProxy._hasError == true && errorMessage){
-				traceResource.errorMessage = errorMessage;
-			}
-			FTReactNativeTrace.addTrace(xhrProxy._traceKey,traceResource);
-		}
-
 		if(FTResourceTracking.isEnableRumTracking){
 			addResource(xhrProxy);
 		}
