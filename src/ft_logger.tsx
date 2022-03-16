@@ -17,6 +17,7 @@ import { NativeModules } from 'react-native';
  * @param enableCustomLog 是否开启自定义日志
  * @param discardStrategy 日志丢弃策略
  * @param logLevelFilters 日志等级过滤
+ * @param globalContext 自定义全局参数
  */
  export interface FTLogConfig{
    sampleRate?: number,
@@ -25,6 +26,7 @@ import { NativeModules } from 'react-native';
    enableCustomLog?: boolean, 
    discardStrategy?: FTLogCacheDiscard,
    logLevelFilters?: Array<FTLogStatus>,
+   globalContext?:object,
  };
 
  type FTReactNativeLogType = {

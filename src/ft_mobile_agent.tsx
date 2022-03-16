@@ -13,13 +13,15 @@ export enum EnvType {
  * @param debug 设置是否允许打印日志，默认false
  * @param datakitUUID 请求HTTP请求头X-Datakit-UUID 数据采集端  如果用户不设置会自动配置
  * @param envType 环境，默认prod
+ * @param globalContext 自定义全局参数
  */
  export interface FTMobileConfig {
    serverUrl: string,
    useOAID?: string,
    debug?:boolean,
    datakitUUID?:string,
-   envType?:EnvType
+   envType?:EnvType,
+   globalContext?:object,
  }
 
 

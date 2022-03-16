@@ -22,7 +22,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  * @param enableNativeAutoTrace 是否开启原生网络网络自动追踪 iOS NSURLSession ,Android OKhttp
 
  */
- export interface FTTractConfig{
+ export interface FTTraceConfig{
    sampleRate?:number,
    traceType?:TraceType,
    enableLinkRUMData?:boolean,
@@ -50,7 +50,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    * @param config trace 配置参数。
    * @returns a Promise.
    */
-   setConfig(config: FTTractConfig): Promise<void>; 
+   setConfig(config: FTTraceConfig): Promise<void>; 
   /**
    * 获取 trace http 请求头数据。
    * @param url 请求地址
@@ -62,7 +62,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
    private trace: FTReactNativeTraceType = NativeModules.FTReactNativeTrace;
 
-   setConfig(config:FTTractConfig): Promise<void>{
+   setConfig(config:FTTraceConfig): Promise<void>{
      if(config.enableAutoTrace){
        FTResourceTracking.isEnableTracing = true;
        FTResourceTracking.startTracking();

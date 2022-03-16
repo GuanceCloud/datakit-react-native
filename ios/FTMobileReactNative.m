@@ -30,6 +30,9 @@ RCT_REMAP_METHOD(sdkConfig,
         if([context.allKeys containsObject:@"envType"]){
             config.env = [RCTConvert int:context[@"envType"]];
         }
+        if ([context.allKeys containsObject:@"globalContext"]) {
+            config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
+        }
         [FTMobileAgent startWithConfigOptions:config];
         resolve(nil);
     }];

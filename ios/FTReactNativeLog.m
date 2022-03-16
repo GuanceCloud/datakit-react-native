@@ -30,6 +30,9 @@ RCT_REMAP_METHOD(logConfig,
     if([context.allKeys containsObject:@"discardStrategy"]){
         logger.discardType = [RCTConvert int:context[@"discardStrategy"]];
     }
+    if ([context.allKeys containsObject:@"globalContext"]) {
+        logger.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
+    }
     logger.enableCustomLog = [RCTConvert BOOL:context[@"enableCustomLog"]];
     logger.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
     [[FTMobileAgent sharedInstance] startLoggerWithConfigOptions:logger];

@@ -12,7 +12,7 @@ import {
   FTReactNativeRUM,
   FTMobileConfig,
   FTLogConfig,
-  FTTractConfig,
+  FTTraceConfig,
   FTRUMConfig,
   MonitorType,
   TraceType
@@ -53,15 +53,17 @@ function initSDK() {
   let config: FTMobileConfig = {
     serverUrl: Config.SERVER_URL,
     debug: true,
+    globalContext :{"sdk_example":"example1"},
   };
   FTMobileReactNative.sdkConfig(config).then(() => {
     let logConfig: FTLogConfig = {
       enableCustomLog: true,
       enableLinkRumData: true,
+      globalContext :{"log_example":"example2"},
     };
     return FTReactNativeLog.logConfig(logConfig);
   }).then(() => {
-    let traceConfig: FTTractConfig = {
+    let traceConfig: FTTraceConfig = {
       enableLinkRUMData:true,
       enableNativeAutoTrace:true,
       traceType:TraceType.ddTrace,
