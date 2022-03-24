@@ -24,6 +24,7 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     val logTypeReadArr = map["logTypeArr"] as ReadableArray?
     val enableLinkRumData = map["enableLinkRumData"] as Boolean?
     val enableCustomLog = map["enableCustomLog"] as Boolean?
+    val globalContext = map["globalContext"] as HashMap<String, Any>?
 
     val logCacheDiscard: LogCacheDiscard =
       when (discardStrategy) {
@@ -59,6 +60,10 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     }
     if (enableCustomLog != null) {
       logConfig.isEnableCustomLog = enableCustomLog
+    }
+
+    globalContext?.forEach {
+      logConfig.addGlobalContext(it.key, it.value.toString())
     }
 
 

@@ -21,6 +21,8 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val datakitUUID = map["datakitUUID"] as String?
     val env = ReactNativeUtils.convertToNativeInt(map["env"])
     val useOAID = map["useOAID"] as Boolean?
+    val globalContext = map["globalContext"] as HashMap<String, Any>?
+
 
     val envType: EnvType = when (env) {
       EnvType.PROD.ordinal -> {
@@ -49,6 +51,10 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     }
     if (useOAID != null) {
       sdkConfig.isUseOAID = useOAID
+    }
+
+    globalContext?.forEach {
+      sdkConfig.addGlobalContext(it.key, it.value.toString())
     }
 
     FTSdk.install(sdkConfig)
