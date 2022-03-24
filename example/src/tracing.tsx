@@ -17,7 +17,7 @@ class TraceScreen extends React.Component {
       <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
       <View style={styles.list}>
       <Button title="网络链路追踪" onPress={() => {
-        this.getHttp("https://www.baidu.com");
+        this.getHttp("http://testing-ft2x-api.cloudcare.cn/api/v1/account/permissions");
       }}
       /></View>
       </ScrollView>
