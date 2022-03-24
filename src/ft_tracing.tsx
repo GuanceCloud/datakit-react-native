@@ -56,7 +56,7 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    * @param url 请求地址
    * @returns trace 添加的请求头参数  
    */
-   getTraceHeader(url: String): Promise<object>;
+   getTraceHeader(key:String, url: String): Promise<object>;
  };
 
  class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
@@ -75,8 +75,8 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    * @param url 请求地址
    * @returns a Promise.
    */
-   getTraceHeader(url:String): Promise<object>{
-     return this.trace.getTraceHeader(url);
+   getTraceHeader(key:String, url: String): Promise<object>{
+     return this.trace.getTraceHeader(key,url);
    }
  }
  export const FTReactNativeTrace:FTReactNativeTraceType = new FTReactNativeTraceWrapper(); 

@@ -13,6 +13,7 @@
 #import <FTMobileSDK/FTResourceMetricsModel.h>
 #import <FTMobileSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
+#import <FTMobileSDK/FTTraceManager.h>
 @implementation FTReactNativeTrace
 RCT_EXPORT_MODULE()
 
@@ -34,10 +35,11 @@ RCT_REMAP_METHOD(setConfig,
 }
 
 RCT_REMAP_METHOD(getTraceHeader,
+                 key:(NSString *)key
                  url:(NSString *)url
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    NSDictionary *traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderUrl:[NSURL URLWithString:url]];
+    NSDictionary *traceHeader = [[FTTraceManager sharedInstance] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
     if (traceHeader) {
         resolve(traceHeader);
     }else{
