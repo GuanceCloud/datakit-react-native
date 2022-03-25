@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ScrollView,View, Button } from 'react-native';
-import { FTReactNativeTrace,FTTraceResource} from '@cloudcare/react-native-mobile';
+import { FTReactNativeTrace} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class TraceScreen extends React.Component {
   static options(props) {
@@ -26,36 +26,27 @@ class TraceScreen extends React.Component {
 
   
   async getHttp(url:string){
-    const key = Utils.getUUID();
-    const traceHeader =await FTReactNativeTrace.getTraceHeader(key,url);
     
     const fetchOptions = {
       method: 'GET',
-      headers:Object.assign({
+      headers:{
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      },traceHeader) ,
+      } ,
     };
-    var res : Response;
-    var err : any;
-    try{
-      res = await fetch(url, fetchOptions);
-    }catch(error){
-      err = error;
-    }finally{
-      var resource:FTTraceResource = {
-        httpMethod:fetchOptions.method,
-        requestHeader:fetchOptions.headers,
-      };
-      if (res) {
-        resource.responseHeader = res.headers;
-        resource.statusCode = res.status;
-      }
-      if (err) {
-        resource.errorMessage = err.toString();
-      }
-      FTReactNativeTrace.addTrace(key,resource);
-    }
+    
+    fetch(url, fetchOptions).then((response:any)=>{
+            if (response.ok) {
+                return response.json();
+            }
+        }).then((json)=>{
+            console.log(JSON.stringify(json));
+        }).catch((error:any)=>{
+
+            console.error(error.arrayBuffer());
+        });
+
+    
   }
 
 

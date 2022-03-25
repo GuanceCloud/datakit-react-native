@@ -1,9 +1,11 @@
-import {FTReactNativeTrace,FTReactNativeRUM,FTRUMResource ,FTTraceResource} from '../index';
+import {FTReactNativeTrace,FTReactNativeRUM,FTRUMResource } from '../index';
+let FileReader = require('react-native/Libraries/Blob/FileReader.js');
 function addResource(xhrProxy:any):void{
 	let rumResource:FTRUMResource = {
 		url:xhrProxy._url,
 		httpMethod:xhrProxy._method,
 		requestHeader:xhrProxy._headers,
+		responseHeader:xhrProxy.responseHeaders,
 		resourceStatus:xhrProxy.status,
 	}
 	FTReactNativeRUM.stopResource(xhrProxy._traceKey);
@@ -26,7 +28,7 @@ function  getResponseBody(xhr: XMLHttpRequest): Promise<string>{
 			return Promise.resolve(xhr.responseText);
 			case 'blob':
 			return new Promise(function(resolve) {
-				let reader = new FileReader()
+				let reader = new FileReader();
 				reader.readAsText(response);
 				reader.onload = function() {
 					resolve(this.result)
@@ -36,7 +38,12 @@ function  getResponseBody(xhr: XMLHttpRequest): Promise<string>{
 				}
 			});  
 			case 'arraybuffer':
-			return Promise.resolve(String.fromCharCode.apply(null, new Uint8Array(response)));
+			let   uInt8Array = new Uint8Array(response);
+			var dataString = "";
+			for (var i = 0; i < uInt8Array.length; i++) {
+				dataString += String.fromCharCode(uInt8Array[i]);
+			}
+			return Promise.resolve(dataString);
 			case 'document':
 			// react-native 暂不支持
 			return Promise.resolve('');
@@ -100,20 +107,20 @@ export class FTResourceTracking {
 			this._traceKey = key;
 			if(FTResourceTracking.isEnableTracing){
 
-				let traceHeader = await FTReactNativeTrace.getTraceHeader(this._url);
+				let traceHeader = await FTReactNativeTrace.getTraceHeader(key,this._url);
 				this._headers = Object.assign(traceHeader,this._headers); 
 			}
 			
 			if(FTResourceTracking.isEnableRumTracking){
 				FTReactNativeRUM.startResource(key);
 			}
-			FTResourceTracking.proxyOnReadyStateChange(this, xhrType);
+			FTResourceTracking.proxyOnReadyStateChange(this);
 
 			return originalXhrSend.apply(this, arguments as any);
 		}
 		
 	}
-	private static proxyOnReadyStateChange(xhrProxy: any, xhrType: any): void {
+	private static proxyOnReadyStateChange(xhrProxy: any): void {
 		const originalOnload = xhrProxy.onload
 		const originalOnerror =  xhrProxy.onerror
 		const originalOnabort = xhrProxy.onabort
@@ -125,14 +132,14 @@ export class FTResourceTracking {
 			}
 		}
 		xhrProxy.onerror = function(){
-			FTResourceTracking.reportXhr(xhrProxy,"Network error");
+			FTResourceTracking.reportXhr(xhrProxy);
 
 			if(originalOnerror){
 				originalOnerror.apply(xhrProxy, arguments as any);
 			}
 		}
 		xhrProxy.onabort = function(){
-			FTResourceTracking.reportXhr(xhrProxy,"Network abort");
+			FTResourceTracking.reportXhr(xhrProxy);
 
 			if(originalOnabort){
 				originalOnabort.apply(xhrProxy, arguments as any);
@@ -143,11 +150,11 @@ export class FTResourceTracking {
 			if(originalOntimeout){
 				originalOntimeout.apply(xhrProxy, arguments as any);
 			}
-			FTResourceTracking.reportXhr(xhrProxy,"Network timeout");
+			FTResourceTracking.reportXhr(xhrProxy);
 
 		}
 	}
-	private static reportXhr(xhrProxy: any,errorMessage?:string): void {
+	private static reportXhr(xhrProxy: any): void {
 		if(FTResourceTracking.isEnableRumTracking){
 			addResource(xhrProxy);
 		}

@@ -67,7 +67,6 @@ function initSDK() {
       enableLinkRUMData:true,
       enableNativeAutoTrace:true,
       traceType:TraceType.ddTrace,
-      enableLinkRUMData:true,
     };
     traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
     return FTReactNativeTrace.setConfig(traceConfig);
