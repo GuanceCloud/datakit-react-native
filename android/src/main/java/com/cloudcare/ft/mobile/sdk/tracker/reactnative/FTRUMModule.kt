@@ -65,7 +65,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun startView(viewName: String, viewReferer: String, duration: Double, promise: Promise) {
-    FTRUMGlobalManager.get().startView(viewName, viewReferer)
+    FTRUMGlobalManager.get().startView(viewName)
     promise.resolve(null)
   }
 
