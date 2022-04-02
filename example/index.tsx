@@ -56,21 +56,22 @@ function initSDK() {
     globalContext :{"sdk_example":"example1"},
   };
   FTMobileReactNative.sdkConfig(config).then(() => {
+    // log 设置
     let logConfig: FTLogConfig = {
       enableCustomLog: true,
       enableLinkRumData: true,
       globalContext :{"log_example":"example2"},
     };
-    return FTReactNativeLog.logConfig(logConfig);
-  }).then(() => {
+    FTReactNativeLog.logConfig(logConfig);
+    // trace 设置
     let traceConfig: FTTraceConfig = {
       enableLinkRUMData:true,
       enableNativeAutoTrace:true,
       traceType:TraceType.ddTrace,
     };
     traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
-    return FTReactNativeTrace.setConfig(traceConfig);
-  }).then(() => {
+    FTReactNativeTrace.setConfig(traceConfig);
+    // rum 设置
     let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
     console.log(rumid);
     let rumConfig: FTRUMConfig = {
@@ -86,8 +87,8 @@ function initSDK() {
     // 静态设置 globalContext
     //.env.dubug、.env.release 等配置的环境文件中设置
     rumConfig.globalContext = {"track_id":Config.TRACK_ID};
-    return FTReactNativeRUM.setConfig(rumConfig);
-    /** 动态设置 globalContext
+    FTReactNativeRUM.setConfig(rumConfig);
+     /** 动态设置 globalContext
       return new Promise(function(resolve) {
        AsyncStorage.getItem("track_id",(error,result)=>{
         if (result === null){
@@ -102,8 +103,7 @@ function initSDK() {
       })
      })
      * */
-
-  }).then(() => {
-    console.log('config complete');
-  });
-}
+   }).then(() => {
+     console.log('config complete');
+   });
+ }
