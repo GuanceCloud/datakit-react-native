@@ -11,15 +11,26 @@ npm install @cloudcare/react-native-mobile
 ## Usage
 
 ```js
-import FtMobileAgent from "@cloudcare/react-native-mobile";
+import {
+  FTMobileReactNative,
+  FTReactNativeLog,
+  FTReactNativeTrace,
+  FTReactNativeRUM,
+  FTMobileConfig,
+  FTLogConfig,
+  FTTraceConfig,
+  FTRUMConfig,
+  MonitorType,
+  TraceType
+} from '@cloudcare/react-native-mobile';
 
 // ...
 
 ```
 
-## Contributing
+## More
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+[View Doc Here](https://www.yuque.com/dataflux/doc/gza592)
 
 ## License
 

@@ -64,7 +64,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun startView(viewName: String, viewReferer: String, promise: Promise) {
+  fun startView(viewName: String, viewReferer: String, duration: Double, promise: Promise) {
     FTRUMGlobalManager.get().startView(viewName, viewReferer)
     promise.resolve(null)
   }
@@ -97,8 +97,8 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   fun addResource(key: String, resourceContext: ReadableMap, metricsContext: ReadableMap, promise: Promise) {
     val resourceMap = resourceContext.toHashMap()
     val url = resourceMap["url"] as String?
-    val responseHeader = resourceMap["responseHeader"] as HashMap<String,String>?
-    val requestHeader = resourceMap["requestHeader"] as HashMap<String,String>?
+    val responseHeader = resourceMap["responseHeader"] as HashMap<String, String>?
+    val requestHeader = resourceMap["requestHeader"] as HashMap<String, String>?
     val method = resourceMap["resourceMethod"] as String?
     val resourceStatus = ReactNativeUtils.convertToNativeInt(resourceMap["resourceStatus"])
     val responseBody = resourceMap["responseBody"] as String?
