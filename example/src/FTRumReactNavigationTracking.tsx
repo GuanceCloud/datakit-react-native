@@ -18,7 +18,6 @@ export class FTRumReactNavigationTracking {
 
     private static appStateListener: AppStateListener;
 
-    private static trackedComponentName : string = "";
 
     static  trackRout:Route<string, any | undefined> | undefined = undefined;
     private static  currentTargetKey:string|  undefined = undefined; 
@@ -112,10 +111,8 @@ export class FTRumReactNavigationTracking {
         if (key != null && screenName != null) {
             if (appStateStatus === 'background') {
                 FTReactNativeRUM.stopView();
-                FTRumReactNavigationTracking.trackedComponentName = '';
             } else if (appStateStatus === 'active' || appStateStatus == undefined) {
-                FTReactNativeRUM.startView(screenName,FTRumReactNavigationTracking.trackedComponentName,duration);
-                FTRumReactNavigationTracking.trackedComponentName = screenName;
+                FTReactNativeRUM.startView(screenName,duration);
 
             }
         }

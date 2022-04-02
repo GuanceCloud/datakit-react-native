@@ -10,8 +10,6 @@ export class FTRumReactNativeNavigationTracking {
 
     private static isTracking = false
     private static trackedComponentIds : Array<any> = [];
-    private static trackedComponentName : string = "";
-
     private static originalCreateElement: any = undefined
 
 
@@ -38,11 +36,9 @@ export class FTRumReactNativeNavigationTracking {
                         },
                         componentDidAppear: (event: ComponentDidAppearEvent) => {
                             const screenName = event.componentName;
-                            const referer = FTRumReactNativeNavigationTracking.trackedComponentName;
                             const endTime =  new Date().getTime(); 
                             const duration = startTime != null ?(endTime - startTime)*1000:0;
-                            FTReactNativeRUM.startView(screenName,referer,duration);
-                            FTRumReactNativeNavigationTracking.trackedComponentName = screenName;
+                            FTReactNativeRUM.startView(screenName,duration);
                         },
                         componentDidDisappear: () => {
                             FTReactNativeRUM.stopView();
