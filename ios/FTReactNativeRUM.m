@@ -11,6 +11,8 @@
 #import <FTMobileSDK/FTExternalDataManager.h>
 #import <FTMobileSDK/FTResourceMetricsModel.h>
 #import <FTMobileSDK/FTResourceContentModel.h>
+#import <FTMobileSDK/FTGlobalRumManager.h>
+#import <FTMobileSDK/FTRUMManager.h>
 #import <React/RCTConvert.h>
 @implementation FTReactNativeRUM
 RCT_EXPORT_MODULE()
@@ -45,28 +47,29 @@ RCT_REMAP_METHOD(startAction,
                  actionName:(NSString *)actionName actionType:(NSString *)actionType
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] addActionWithName:actionName actionType:actionType];
+    [FTGlobalRumManager.sharedInstance.rumManger addClickActionWithName:actionName];
     resolve(nil);
 }
 RCT_REMAP_METHOD(startView,
-                 viewName:(NSString *)viewName viewReferer:(NSString *)viewReferer
+                 viewName:(NSString *)viewName
                  loadDuration:(nonnull NSNumber *)loadDuration
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] startViewWithName:viewName viewReferrer:viewReferer loadDuration:loadDuration];
+    [FTGlobalRumManager.sharedInstance.rumManger startViewWithName:viewName loadDuration:loadDuration];
+
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopView,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] stopView];
+    [FTGlobalRumManager.sharedInstance.rumManger stopView];
     resolve(nil);
 }
 RCT_REMAP_METHOD(addError,
                  stack:(NSString *)stack message:(NSString *)message
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative" situation:AppStateUnknown message:message stack:stack];
+    [FTGlobalRumManager.sharedInstance.rumManger addErrorWithType:@"reactnative" message:message stack:stack];
     resolve(nil);
 }
 
@@ -74,7 +77,7 @@ RCT_REMAP_METHOD(startResource,
                  startResource:(NSString *)key
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] startResourceWithKey:key];
+    [FTGlobalRumManager.sharedInstance.rumManger startResource:key];
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopResource,
