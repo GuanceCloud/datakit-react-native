@@ -38,7 +38,8 @@ export class FTRumReactNativeNavigationTracking {
                             const screenName = event.componentName;
                             const endTime =  new Date().getTime(); 
                             const duration = startTime != null ?(endTime - startTime)*1000:0;
-                            FTReactNativeRUM.startView(screenName,duration);
+                            FTReactNativeRUM.onCreateView(screenName,duration);
+                            FTReactNativeRUM.startView(screenName);
                         },
                         componentDidDisappear: () => {
                             FTReactNativeRUM.stopView();

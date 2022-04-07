@@ -88,11 +88,18 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    */
    startAction(actionName:string,actionType:string): Promise<void>;
   /**
+   * view加载时长。
+   * @param viewName view 名称 
+   * @param loadTime view 加载时长
+   * @returns a Promise.
+   */
+   onCreateView(viewName:string,loadTime:number): Promise<void>;
+  /**
    * view 开始。
    * @param viewName 界面名称
    * @returns a Promise.
    */
-   startView(viewName: string, loadDuration: number): Promise<void>;
+   startView(viewName: string): Promise<void>;
   /**
    * view 结束。
    * @returns a Promise.
@@ -147,8 +154,11 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    startAction(actionName:string,actionType:string): Promise<void>{
      return this.rum.startAction(actionName,actionType);
    }
-   startView(viewName: string,loadDuration:number): Promise<void>{
-     return this.rum.startView(viewName,loadDuration);
+   onCreateView(viewName:string,loadTime:number): Promise<void>{
+     return this.rum.onCreateView(viewName,loadTime);
+   }
+   startView(viewName: string): Promise<void>{
+     return this.rum.startView(viewName);
    }
    stopView(): Promise<void>{
      return this.rum.stopView();

@@ -50,13 +50,18 @@ RCT_REMAP_METHOD(startAction,
     [FTGlobalRumManager.sharedInstance.rumManger addClickActionWithName:actionName];
     resolve(nil);
 }
-RCT_REMAP_METHOD(startView,
-                 viewName:(NSString *)viewName
-                 loadDuration:(nonnull NSNumber *)loadDuration
+RCT_REMAP_METHOD(onCreateView,
+                 viewName:(NSString *)viewName loadTime:(NSNumber *)loadTime
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger startViewWithName:viewName loadDuration:loadDuration];
-
+    [FTGlobalRumManager.sharedInstance.rumManger onCreateView:viewName loadTime:loadTime];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(startView,
+                 viewName:(NSString *)viewName
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [FTGlobalRumManager.sharedInstance.rumManger startViewWithName:viewName];
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopView,
