@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import { FTMobileReactNative} from '@cloudcare/react-native-mobile';
+import { FTMobileReactNative,FTReactNativeLog,FTLogStatus} from '@cloudcare/react-native-mobile';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
@@ -32,6 +32,8 @@ function registerScreens() {
 
 
 const HomeScreen = (props) => {
+  FTReactNativeLog.logging("react-native-navigation HomeScreen start",FTLogStatus.info);
+
   return (
     <View style={{
       flex: 1,

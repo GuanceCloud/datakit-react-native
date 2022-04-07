@@ -15,79 +15,88 @@ import {
   FTTraceConfig,
   FTRUMConfig,
   MonitorType,
-  TraceType
+  TraceType,
+  FTLogStatus
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
-if(navigationLib == "react-navigation"){
-  initSDK();
-  AppRegistry.registerComponent(appName, () => App);
+initSDK().then(()=>{
+  runApp();
+});
 
-  Navigation.events().registerAppLaunchedListener(() => {
-    Navigation.setRoot({
-      root: {
-        stack: {
-          options: {
-            topBar: {
-              visible: false,
+function runApp(){
+  if(navigationLib == "react-navigation"){
+    FTReactNativeLog.logging("start react-navigation",FTLogStatus.info);
+    AppRegistry.registerComponent(appName, () => App);
+
+    Navigation.events().registerAppLaunchedListener(() => {
+      Navigation.setRoot({
+        root: {
+          stack: {
+            options: {
+              topBar: {
+                visible: false,
+              },
             },
-          },
-          children: [
-          {
-            component: {
-              name: appName,
+            children: [
+            {
+              component: {
+                name: appName,
+              },
             },
+            ],
           },
-          ],
         },
-      },
+      });
     });
-  });
-}else if(navigationLib == "react-native-navigation"){
-  initSDK();
-  startReactNativeNavigation();
+  }else if(navigationLib == "react-native-navigation"){
+    FTReactNativeLog.logging("start react-native-navigation",FTLogStatus.info);
+    startReactNativeNavigation();  
+  }
 }
 
 function initSDK() {
-  let config: FTMobileConfig = {
-    serverUrl: Config.SERVER_URL,
-    debug: true,
-    globalContext :{"sdk_example":"example1"},
-  };
-  FTMobileReactNative.sdkConfig(config).then(() => {
-    // log 设置
-    let logConfig: FTLogConfig = {
-      enableCustomLog: true,
-      enableLinkRumData: true,
-      globalContext :{"log_example":"example2"},
+  return new Promise(resolve=>{
+
+    let config: FTMobileConfig = {
+      serverUrl: Config.SERVER_URL,
+      debug: true,
+      globalContext :{"sdk_example":"example1"},
     };
-    FTReactNativeLog.logConfig(logConfig);
-    // trace 设置
-    let traceConfig: FTTraceConfig = {
-      enableLinkRUMData:true,
-      enableNativeAutoTrace:true,
-      traceType:TraceType.ddTrace,
-    };
-    traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
-    FTReactNativeTrace.setConfig(traceConfig);
-    // rum 设置
-    let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
-    console.log(rumid);
-    let rumConfig: FTRUMConfig = {
-      rumAppId: rumid,
-      monitorType: MonitorType.all,
-      enableAutoTrackUserAction:true,
-      enableAutoTrackError:true,
-      enableNativeUserAction: false,
-      enableNativeUserView: false,
-      enableNativeUserResource:true,
-    };
-    rumConfig.enableAutoTrackUserResource =Platform.OS === 'ios'? false:true;
-    // 静态设置 globalContext
-    //.env.dubug、.env.release 等配置的环境文件中设置
-    rumConfig.globalContext = {"track_id":Config.TRACK_ID};
-    FTReactNativeRUM.setConfig(rumConfig);
+    FTMobileReactNative.sdkConfig(config).then(() => {
+      // log 设置
+      let logConfig: FTLogConfig = {
+        enableCustomLog: true,
+        enableLinkRumData: true,
+        globalContext :{"log_example":"example2"},
+      };
+      FTReactNativeLog.logConfig(logConfig);
+      // trace 设置
+      let traceConfig: FTTraceConfig = {
+        enableLinkRUMData:true,
+        enableNativeAutoTrace:true,
+        traceType:TraceType.ddTrace,
+      };
+      traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
+      FTReactNativeTrace.setConfig(traceConfig);
+      // rum 设置
+      let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
+      console.log(rumid);
+      let rumConfig: FTRUMConfig = {
+        rumAppId: rumid,
+        monitorType: MonitorType.all,
+        enableAutoTrackUserAction:true,
+        enableAutoTrackError:true,
+        enableNativeUserAction: false,
+        enableNativeUserView: false,
+        enableNativeUserResource:true,
+      };
+      rumConfig.enableAutoTrackUserResource =Platform.OS === 'ios'? false:true;
+      // 静态设置 globalContext
+      //.env.dubug、.env.release 等配置的环境文件中设置
+      rumConfig.globalContext = {"track_id":Config.TRACK_ID};
+      FTReactNativeRUM.setConfig(rumConfig);
      /** 动态设置 globalContext
       return new Promise(function(resolve) {
        AsyncStorage.getItem("track_id",(error,result)=>{
@@ -105,5 +114,7 @@ function initSDK() {
      * */
    }).then(() => {
      console.log('config complete');
+     resolve(true);
    });
- }
+ });
+}
