@@ -11,15 +11,15 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.67.4)
   - fmt (6.2.1)
   - FTMobileReactNativeSDK (0.1.1):
-    - FTMobileSDK (~> 1.3.4-alpha.2)
+    - FTMobileSDK (~> 1.3.4-alpha.3)
     - React-Core
-  - FTMobileSDK (1.3.4-alpha.2):
-    - FTMobileSDK/Core (= 1.3.4-alpha.2)
-  - FTMobileSDK/Common (1.3.4-alpha.2)
-  - FTMobileSDK/Core (1.3.4-alpha.2):
+  - FTMobileSDK (1.3.4-alpha.3):
+    - FTMobileSDK/Core (= 1.3.4-alpha.3)
+  - FTMobileSDK/Common (1.3.4-alpha.3)
+  - FTMobileSDK/Core (1.3.4-alpha.3):
     - FTMobileSDK/Common
     - FTMobileSDK/FTMobileAgent
-  - FTMobileSDK/FTMobileAgent (1.3.4-alpha.2):
+  - FTMobileSDK/FTMobileAgent (1.3.4-alpha.3):
     - FTMobileSDK/Common
   - glog (0.3.5)
   - HMSegmentedControl (1.5.6)
@@ -472,8 +472,8 @@ SPEC CHECKSUMS:
   FBLazyVector: f7b0632c6437e312acf6349288d9aa4cb6d59030
   FBReactNativeSpec: 0f4e1f4cfeace095694436e7c7fcc5bf4b03a0ff
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  FTMobileReactNativeSDK: 643a881d2446fb4de98460ed0ef165c849ade790
-  FTMobileSDK: 859df92ab02f0d6884d6d8c6dd58180bc5c7b968
+  FTMobileReactNativeSDK: 36e754741f1bf70ef8c34effca36b144f4933326
+  FTMobileSDK: 2183cef894a3b7e072f1b48983e53d8ebf7c11bc
   glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685

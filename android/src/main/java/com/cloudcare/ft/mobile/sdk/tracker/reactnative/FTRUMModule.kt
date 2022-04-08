@@ -62,9 +62,14 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     promise.resolve(null)
 
   }
+  @ReactMethod
+  fun onCreateView(viewName:String,duration:Double, promise: Promise){
+      FTRUMGlobalManager.get().onCreateView(viewName,duration.toLong())
+      promise.resolve(null)
+  }
 
   @ReactMethod
-  fun startView(viewName: String, viewReferer: String, duration: Double, promise: Promise) {
+  fun startView(viewName: String, promise: Promise) {
     FTRUMGlobalManager.get().startView(viewName)
     promise.resolve(null)
   }

@@ -50,13 +50,19 @@ RCT_REMAP_METHOD(startAction,
     [FTGlobalRumManager.sharedInstance.rumManger addClickActionWithName:actionName];
     resolve(nil);
 }
-RCT_REMAP_METHOD(startView,
+RCT_REMAP_METHOD(onCreateView,
                  viewName:(NSString *)viewName
-                 loadDuration:(nonnull NSNumber *)loadDuration
+                 loadTime:(nonnull NSNumber *)loadTime
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger startViewWithName:viewName loadDuration:loadDuration];
-
+    [FTGlobalRumManager.sharedInstance.rumManger onCreateView:viewName loadTime:loadTime];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(startView,
+                 viewName:(NSString *)viewName
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [FTGlobalRumManager.sharedInstance.rumManger startViewWithName:viewName];
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopView,
@@ -112,7 +118,7 @@ RCT_REMAP_METHOD(addResource,
     contentModel.responseHeader = [RCTConvert NSDictionary:content[@"responseHeader"]];
     contentModel.responseBody = [RCTConvert NSString:content[@"responseBody"]];
     contentModel.httpStatusCode = [RCTConvert int:content[@"resourceStatus"]];
-    
+
     [[FTExternalDataManager sharedManager] addResourceWithKey:key metrics:metricsModel content:contentModel];
     resolve(nil);
 }

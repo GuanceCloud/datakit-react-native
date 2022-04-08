@@ -112,7 +112,8 @@ export class FTRumReactNavigationTracking {
             if (appStateStatus === 'background') {
                 FTReactNativeRUM.stopView();
             } else if (appStateStatus === 'active' || appStateStatus == undefined) {
-                FTReactNativeRUM.startView(screenName,duration);
+                FTReactNativeRUM.onCreateView(screenName,duration);
+                FTReactNativeRUM.startView(screenName);
 
             }
         }

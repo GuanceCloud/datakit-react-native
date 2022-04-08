@@ -1,10 +1,11 @@
 import * as React from 'react';
 import type { NavigationContainerRef } from '@react-navigation/native';
+import { View, Button ,Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { Button, Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { FTMobileReactNative } from '@cloudcare/react-native-mobile';
+import { FTMobileReactNative,FTReactNativeLog,FTLogStatus } from '@cloudcare/react-native-mobile';
+import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
@@ -23,9 +24,16 @@ function Home() {
 }
 
 class HomeScreen extends React.Component<{ navigation: any }> {
+  componentDidMount() {
+    // FTMobileReactNative.bindRUMUserData('reactUser');
+    console.log(Config.IOS_APP_ID);
+    FTReactNativeLog.logging("react-navigation HomeScreen start",FTLogStatus.info);
+  }
 
   render() {
     let { navigation } = this.props;
+        FTReactNativeLog.logging("react-navigation HomeScreen render",FTLogStatus.info);
+
     return (
       <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
         <Button title='绑定用户' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
