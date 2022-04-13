@@ -73,7 +73,6 @@ async function initSDK() {
     enableNativeAutoTrace: true,
     traceType: TraceType.ddTrace,
   };
-  traceConfig.enableAutoTrace = Platform.OS === 'ios' ? false : true;
   await FTReactNativeTrace.setConfig(traceConfig);
 
   // rum 设置
@@ -84,11 +83,10 @@ async function initSDK() {
     monitorType: MonitorType.all,
     enableAutoTrackUserAction: true,
     enableAutoTrackError: true,
-    enableNativeUserAction: false,
+    enableNativeUserAction: true,
     enableNativeUserView: false,
     enableNativeUserResource: true,
   };
-  rumConfig.enableAutoTrackUserResource = Platform.OS === 'ios' ? false : true;
   // 静态设置 globalContext
   //.env.dubug、.env.release 等配置的环境文件中设置
   rumConfig.globalContext = { 'track_id': Config.TRACK_ID };

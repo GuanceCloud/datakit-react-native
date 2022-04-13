@@ -1,11 +1,19 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
+import android.util.Log
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
+import com.facebook.react.modules.network.OkHttpClientFactory
+import com.facebook.react.modules.network.OkHttpClientProvider
+import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.ft.sdk.FTSdk
 import com.ft.sdk.FTTraceConfig
 import com.ft.sdk.FTTraceManager
 import com.ft.sdk.TraceType
+import okhttp3.Call
+import okhttp3.EventListener
+import okhttp3.OkHttpClient
+
 
 class FTTraceModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -41,10 +49,10 @@ class FTTraceModule(reactContext: ReactApplicationContext) :
     if (enableLinkRUMData != null) {
       traceConfig.isEnableLinkRUMData = enableLinkRUMData
     }
-
     if (enableNativeAutoTrace != null) {
       traceConfig.isEnableAutoTrace = enableNativeAutoTrace
     }
+
 
 //    if (serviceName != null) {
 //      traceConfig.serviceName = serviceName

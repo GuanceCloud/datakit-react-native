@@ -3,9 +3,6 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils
 class ReactNativeUtils {
 
   companion object {
-
-    private const val TAG = "ReactNativeUtils"
-
     /**
      * react native number 转化 int
      */
