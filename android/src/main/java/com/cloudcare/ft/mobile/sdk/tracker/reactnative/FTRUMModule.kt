@@ -1,7 +1,11 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
+import android.util.Log
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
+import com.facebook.react.modules.network.OkHttpClientFactory
+import com.facebook.react.modules.network.OkHttpClientProvider
+import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.ft.sdk.FTRUMConfig
 import com.ft.sdk.FTRUMGlobalManager
 import com.ft.sdk.FTSdk
@@ -9,9 +13,25 @@ import com.ft.sdk.garble.bean.AppState
 import com.ft.sdk.garble.bean.ErrorType
 import com.ft.sdk.garble.bean.NetStatusBean
 import com.ft.sdk.garble.bean.ResourceParams
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 
 class FTRUMModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
+
+  init {
+    OkHttpClientProvider.setOkHttpClientFactory {
+      OkHttpClient.Builder()
+        .addNetworkInterceptor(Interceptor { chain ->
+          Log.e("BrandonTest", "log here")
+          chain.proceed(chain.request())
+        })
+        .cookieJar(ReactCookieJarContainer())
+        .build()
+    }
+
+  }
+
   override fun getName(): String {
     return "FTReactNativeRUM"
   }
@@ -64,8 +84,14 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun startView(viewName: String, viewReferer: String, duration: Double, promise: Promise) {
-    FTRUMGlobalManager.get().startView(viewName, viewReferer)
+  fun onCreateView(viewName: String, duration: Double, promise: Promise) {
+    FTRUMGlobalManager.get().onCreateView(viewName, duration.toLong())
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun startView(viewName: String, promise: Promise) {
+    FTRUMGlobalManager.get().startView(viewName)
     promise.resolve(null)
   }
 
