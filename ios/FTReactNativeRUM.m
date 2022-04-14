@@ -31,8 +31,8 @@ RCT_REMAP_METHOD(setConfig,
     if ([context.allKeys containsObject:@"enableNativeUserView"]) {
         rumConfig.enableTraceUserView = [RCTConvert BOOL:context[@"enableNativeUserView"]];
     }
-    if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
-        rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
+    if ([context.allKeys containsObject:@"enableAutoTrackUserResource"]) {
+        rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableAutoTrackUserResource"]];
     }
     if ([context.allKeys containsObject:@"monitorType"]) {
         rumConfig.monitorInfoType =(FTMonitorInfoType)[RCTConvert int:context[@"monitorType"]];

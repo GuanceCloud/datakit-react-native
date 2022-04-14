@@ -1,7 +1,6 @@
 import { NativeModules } from 'react-native';
 import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
-import { FTResourceTracking} from './rum/FTResourceTracking';
 
 /**
  * 监控类型。
@@ -21,7 +20,6 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  * @param enableTrackError  是否自动采集 react-native Error
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
- * @param enableNativeUserResource 是否开始 Native Resource 自动追踪，纯 react-native 应用建议关闭
  * @param monitorType 监控补充类型
  * @param globalContext 自定义全局参数
  */
@@ -33,7 +31,6 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    enableAutoTrackError?:boolean,
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
-   enableNativeUserResource?:boolean,
    monitorType?:MonitorType,
    globalContext?:object,
  }
@@ -144,10 +141,6 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
      }
      if(config.enableAutoTrackUserAction){
         FTRumActionTracking.startTracking(); 
-     }
-     if(config.enableAutoTrackUserResource){
-       FTResourceTracking.isEnableRumTracking = true;
-       FTResourceTracking.startTracking();
      }
      return this.rum.setConfig(config);
    }

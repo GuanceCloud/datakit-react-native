@@ -1,5 +1,4 @@
 import { NativeModules } from 'react-native';
-import { FTResourceTracking} from './rum/FTResourceTracking';
 //FTReactNativeTrace
 
 /**
@@ -19,15 +18,12 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
  * @param traceType 链路类型
  * @param enableLinkRUMData 是否与 RUM 数据关联
  * @param enableAutoTrace 是否开启自动追踪 
- * @param enableNativeAutoTrace 是否开启原生网络网络自动追踪 iOS NSURLSession ,Android OKhttp
-
  */
  export interface FTTraceConfig{
    sampleRate?:number,
    traceType?:TraceType,
    enableLinkRUMData?:boolean,
    enableAutoTrace?:boolean,
-   enableNativeAutoTrace?:boolean
  };
 /**
  * trace 采集数据
@@ -63,10 +59,6 @@ import { FTResourceTracking} from './rum/FTResourceTracking';
    private trace: FTReactNativeTraceType = NativeModules.FTReactNativeTrace;
 
    setConfig(config:FTTraceConfig): Promise<void>{
-     if(config.enableAutoTrace){
-       FTResourceTracking.isEnableTracing = true;
-       FTResourceTracking.startTracking();
-     }
      return this.trace.setConfig(config);
    }
   /**

@@ -21,9 +21,9 @@ import {
 import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
-initSDK().then(()=>{
-  runApp();
-});
+initSDK();
+runApp();
+
 
 function runApp(){
   if(navigationLib == "react-navigation"){
@@ -75,10 +75,9 @@ function initSDK() {
       // trace 设置
       let traceConfig: FTTraceConfig = {
         enableLinkRUMData:true,
-        enableNativeAutoTrace:true,
+        enableAutoTrace:true,
         traceType:TraceType.ddTrace,
       };
-      traceConfig.enableAutoTrace =Platform.OS === 'ios'? false:true;
       FTReactNativeTrace.setConfig(traceConfig);
       // rum 设置
       let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
@@ -90,9 +89,8 @@ function initSDK() {
         enableAutoTrackError:true,
         enableNativeUserAction: false,
         enableNativeUserView: false,
-        enableNativeUserResource:true,
+        enableAutoTrackUserResource:true,
       };
-      rumConfig.enableAutoTrackUserResource =Platform.OS === 'ios'? false:true;
       // 静态设置 globalContext
       //.env.dubug、.env.release 等配置的环境文件中设置
       rumConfig.globalContext = {"track_id":Config.TRACK_ID};
