@@ -17,13 +17,13 @@ import { NativeModules } from 'react-native';
  * @param sampleRate 采样率
  * @param traceType 链路类型
  * @param enableLinkRUMData 是否与 RUM 数据关联
- * @param enableAutoTrace 是否开启自动追踪 
+ * @param enableNativeAutoTrace 是否开启自动追踪 
  */
  export interface FTTraceConfig{
    sampleRate?:number,
    traceType?:TraceType,
    enableLinkRUMData?:boolean,
-   enableAutoTrace?:boolean,
+   enableNativeAutoTrace?:boolean,
  };
 /**
  * trace 采集数据

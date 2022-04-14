@@ -70,7 +70,7 @@ async function initSDK() {
   // trace 设置
   let traceConfig: FTTraceConfig = {
     enableLinkRUMData: true,
-    enableAutoTrace: true,
+    enableNativeAutoTrace: true,
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
@@ -82,10 +82,10 @@ async function initSDK() {
     rumAppId: rumid,
     monitorType: MonitorType.all,
     enableAutoTrackUserAction: true,
-    enableAutoTrackUserResource:true,
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
+    enableNativeUserResource: true,
   };
   // 静态设置 globalContext
   //.env.dubug、.env.release 等配置的环境文件中设置
