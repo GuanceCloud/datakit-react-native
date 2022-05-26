@@ -1,3 +1,6 @@
+# 0.2.2
+* Android Native SDK 调整
+
 # 0.2.1
 * demo 修改
 * Native SDK 调整
