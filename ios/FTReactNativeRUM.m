@@ -11,8 +11,6 @@
 #import <FTMobileSDK/FTExternalDataManager.h>
 #import <FTMobileSDK/FTResourceMetricsModel.h>
 #import <FTMobileSDK/FTResourceContentModel.h>
-#import <FTMobileSDK/FTGlobalRumManager.h>
-#import <FTMobileSDK/FTRUMManager.h>
 #import <React/RCTConvert.h>
 @implementation FTReactNativeRUM
 RCT_EXPORT_MODULE()
@@ -22,8 +20,8 @@ RCT_REMAP_METHOD(setConfig,
                  rejecter:(RCTPromiseRejectBlock)reject){
     NSString *rumAppId = [RCTConvert NSString:context[@"rumAppId"]];
     FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
-    if ([context.allKeys containsObject:@"samplerate"]) {
-        rumConfig.samplerate  = [RCTConvert double:context[@"samplerate"]]*100;
+    if ([context.allKeys containsObject:@"sampleRate"]) {
+        rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
     }
     if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
         rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
@@ -34,8 +32,14 @@ RCT_REMAP_METHOD(setConfig,
     if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
         rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
     }
-    if ([context.allKeys containsObject:@"monitorType"]) {
-        rumConfig.monitorInfoType =(FTMonitorInfoType)[RCTConvert int:context[@"monitorType"]];
+    if ([context.allKeys containsObject:@"errorMonitorType"]) {
+        rumConfig.errorMonitorType =(FTErrorMonitorType)[RCTConvert int:context[@"errorMonitorType"]];
+    }
+    if ([context.allKeys containsObject:@"deviceMonitorType"]) {
+        rumConfig.deviceMetricsMonitorType =(FTDeviceMetricsMonitorType)[RCTConvert int:context[@"deviceMonitorType"]];
+    }
+    if ([context.allKeys containsObject:@"detectFrequency"]) {
+        rumConfig.monitorFrequency =(FTMonitorFrequency)[RCTConvert int:context[@"detectFrequency"]];
     }
     if ([context.allKeys containsObject:@"globalContext"]) {
         rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
@@ -44,53 +48,53 @@ RCT_REMAP_METHOD(setConfig,
     resolve(nil);
 }
 RCT_REMAP_METHOD(startAction,
-                 actionName:(NSString *)actionName actionType:(NSString *)actionType
+                 actionName:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger addClickActionWithName:actionName];
+    [[FTExternalDataManager sharedManager] addActionName:actionName actionType:actionType property:property];
     resolve(nil);
 }
 RCT_REMAP_METHOD(onCreateView,
-                 viewName:(NSString *)viewName
-                 loadTime:(nonnull NSNumber *)loadTime
+                  viewName:(NSString *)viewName loadTime:(NSNumber *)loadTime
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger onCreateView:viewName loadTime:loadTime];
+    [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:loadTime];
     resolve(nil);
 }
 RCT_REMAP_METHOD(startView,
-                 viewName:(NSString *)viewName
+                  viewName:(NSString *)viewName property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger startViewWithName:viewName];
+    [[FTExternalDataManager sharedManager] startViewWithName:viewName property:property];
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopView,
+                 property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger stopView];
+    [[FTExternalDataManager sharedManager] stopViewWithProperty:property];
     resolve(nil);
 }
 RCT_REMAP_METHOD(addError,
-                 stack:(NSString *)stack message:(NSString *)message
+                 stack:(NSString *)stack message:(NSString *)message property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger addErrorWithType:@"reactnative" message:message stack:stack];
+    [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative" message:message stack:stack property:property];
     resolve(nil);
 }
 
 RCT_REMAP_METHOD(startResource,
-                 startResource:(NSString *)key
+                 startResource:(NSString *)key property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTGlobalRumManager.sharedInstance.rumManger startResource:key];
+    [[FTExternalDataManager sharedManager] startResourceWithKey:key property:property];
     resolve(nil);
 }
 RCT_REMAP_METHOD(stopResource,
-                 stopResource:(NSString *)key
+                 stopResource:(NSString *)key property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] stopResourceWithKey:key];
+    [[FTExternalDataManager sharedManager] stopResourceWithKey:key property:property];
     resolve(nil);
 }
 RCT_REMAP_METHOD(addResource,
@@ -118,7 +122,7 @@ RCT_REMAP_METHOD(addResource,
     contentModel.responseHeader = [RCTConvert NSDictionary:content[@"responseHeader"]];
     contentModel.responseBody = [RCTConvert NSString:content[@"responseBody"]];
     contentModel.httpStatusCode = [RCTConvert int:content[@"resourceStatus"]];
-
+    
     [[FTExternalDataManager sharedManager] addResourceWithKey:key metrics:metricsModel content:contentModel];
     resolve(nil);
 }

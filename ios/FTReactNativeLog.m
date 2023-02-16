@@ -17,11 +17,8 @@ RCT_REMAP_METHOD(logConfig,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
     FTLoggerConfig *logger = [[FTLoggerConfig alloc]init];
-    if ([context.allKeys containsObject:@"samplerate"]) {
-        logger.samplerate  = [RCTConvert double:context[@"samplerate"]]*100;
-    }
-    if ([context.allKeys containsObject:@"serviceName"]) {
-        logger.service = [RCTConvert NSString:context[@"serviceName"]];
+    if ([context.allKeys containsObject:@"sampleRate"]) {
+        logger.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
     }
     NSArray<NSNumber *>*filters = [RCTConvert NSNumberArray:context[@"logLevelFilters"]];
     if (filters) {
@@ -40,11 +37,11 @@ RCT_REMAP_METHOD(logConfig,
 }
 
 RCT_REMAP_METHOD(logging,
-                 content:(NSString *)content status:(int)status
+                  content:(NSString *)content status:(int)status property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
     FTLogStatus logStatus =(FTLogStatus)status;
-    [[FTMobileAgent sharedInstance] logging:content status:logStatus];
+    [[FTMobileAgent sharedInstance] logging:content status:logStatus property:property];
     resolve(nil);
 }
 @end

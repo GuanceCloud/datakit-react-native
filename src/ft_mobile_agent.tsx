@@ -9,18 +9,18 @@ export enum EnvType {
 /**
  * 配置启动 SDK 参数。
  * @param serverUrl 数据上报地址
- * @param useOAID 是否使用 OAID 唯一识别，默认false,开启后替换 deviceUUID 进行使用
  * @param debug 设置是否允许打印日志，默认false
  * @param datakitUUID 请求HTTP请求头X-Datakit-UUID 数据采集端  如果用户不设置会自动配置
  * @param envType 环境，默认prod
+ * @param service 设置所属业务或服务的名称 默认：`df_rum_ios`、`df_rum_android`
  * @param globalContext 自定义全局参数
  */
  export interface FTMobileConfig {
    serverUrl: string,
-   useOAID?: string,
    debug?:boolean,
    datakitUUID?:string,
    envType?:EnvType,
+   service?:string,
    globalContext?:object,
  }
 
@@ -36,9 +36,12 @@ type FTMobileReactNativeType = {
   /**
    * 绑定用户。
    * @param userId 用户ID。
+   * @param userName 用户姓名。
+   * @param userEmail 用户邮箱
+   * @param extra  用户的额外信息
    * @returns a Promise.
    */
-   bindRUMUserData(userId: string): Promise<void>; 
+   bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void>; 
   /**
    * 解绑用户。
    * @returns a Promise.
@@ -51,8 +54,8 @@ type FTMobileReactNativeType = {
    sdkConfig(config:FTMobileConfig): Promise<void> {
      return this.sdk.sdkConfig(config);
    }
-   bindRUMUserData(userId: string): Promise<void> {
-     return this.sdk.bindRUMUserData(userId);
+   bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {
+     return this.sdk.bindRUMUserData(userId,userName,userEmail,extra);
    }
    unbindRUMUserData(): Promise<void> {
      return this.sdk.unbindRUMUserData();

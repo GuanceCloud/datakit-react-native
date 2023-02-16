@@ -24,6 +24,9 @@ RCT_REMAP_METHOD(sdkConfig,
         if ([context.allKeys containsObject:@"debug"]) {
             config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
         }
+        if ([context.allKeys containsObject:@"service"]) {
+            config.service = [RCTConvert NSString:context[@"service"]];
+        }
         if ([context.allKeys containsObject:@"datakitUUID"]) {
             config.XDataKitUUID = [RCTConvert NSString:context[@"datakitUUID"]];
         }
@@ -39,10 +42,10 @@ RCT_REMAP_METHOD(sdkConfig,
 }
 
 RCT_REMAP_METHOD(bindRUMUserData,
-                 userId:(NSString*)userId
+                  userId:(NSString*)userId userName:(NSString*)userName userEmail:(NSString*)userEmail extra:(NSDictionary *)extra
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTMobileAgent sharedInstance] bindUserWithUserID:userId];
+    [[FTMobileAgent sharedInstance] bindUserWithUserID:userId userName:userName userEmail:userEmail extra:extra];
     resolve(nil);
 }
 

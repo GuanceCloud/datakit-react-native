@@ -3,14 +3,28 @@ import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
 
 /**
- * 监控类型。
+ * 错误监控类型。
  */
- export enum MonitorType {
+ export enum ErrorMonitorType {
    all=0xFFFFFFFF,
    battery=1 << 1,
    memory=1 << 2,
    cpu=1 << 3,
  }
+  /**
+  * 页面监控补充类型
+  */
+ export enum DeviceMetricsMonitorType {
+    all=0xFFFFFFFF,
+    battery=1 << 1,
+    memory=1 << 2,
+    cpu=1 << 3,
+    fps=1 << 4
+ } 
+ /**
+  * 设备信息监控周期。
+  */
+ export enum DetectFrequency { normal, frequent, rare }
 /**
  * 设置 RUM 追踪条件。
  * @param rumAppId appId，监测中申请
@@ -20,7 +34,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
  * @param enableNativeUserResource 是否自动采集 react-native Resource
- * @param monitorType 监控补充类型
+ * @param errorMonitorType 错误监控补充类型
+ * @param deviceMonitorType 页面监控补充类型
+ * @param detectFrequency 监控频率
  * @param globalContext 自定义全局参数
  */
  export interface FTRUMConfig{
@@ -31,7 +47,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
-   monitorType?:MonitorType,
+   errorMonitorType?:ErrorMonitorType,
+   deviceMonitorType?:DeviceMetricsMonitorType,
+   detectFrequency?:DetectFrequency
    globalContext?:object,
  }
 /**
@@ -81,9 +99,10 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    * 执行 action 。
    * @param actionName action 名称 
    * @param actionType action 类型
+   * @param property 事件上下文(可选)
    * @returns a Promise.
    */
-   startAction(actionName:string,actionType:string): Promise<void>;
+   startAction(actionName:string,actionType:string,property?:object): Promise<void>;
   /**
    * view加载时长。
    * @param viewName view 名称 
@@ -94,33 +113,38 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
   /**
    * view 开始。
    * @param viewName 界面名称
+   * @param property 事件上下文(可选)
    * @returns a Promise.
    */
-   startView(viewName: string): Promise<void>;
+   startView(viewName: string, property?: object): Promise<void>;
   /**
    * view 结束。
+   * @param property 事件上下文(可选)
    * @returns a Promise.
    */
-   stopView(): Promise<void>;
+   stopView(property?:object): Promise<void>;
   /**
    * 异常捕获与日志收集。
    * @param stack 堆栈日志
    * @param message 错误信息
+   * @param property 事件上下文(可选)
    * @returns a Promise.
    */
-   addError(stack: string, message: string): Promise<void>;
+   addError(stack: string, message: string,property?:object): Promise<void>;
   /**
    * 开始资源请求。
    * @param key 唯一 id
+   * @param property 事件上下文(可选)
    * @returns a Promise.
    */
-   startResource(key: string): Promise<void>;
+   startResource(key: string,property?:object): Promise<void>;
   /**
    * 结束资源请求。
    * @param key 唯一 id
+   * @param property 事件上下文(可选)
    * @returns a Promise.
    */
-   stopResource(key: string): Promise<void>;
+   stopResource(key: string,property?:object): Promise<void>;
   /**
    * 发送资源数据指标。
    * @param key 唯一 id
@@ -144,26 +168,26 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
      }
      return this.rum.setConfig(config);
    }
-   startAction(actionName:string,actionType:string): Promise<void>{
-     return this.rum.startAction(actionName,actionType);
+   startAction(actionName:string,actionType:string,property?:object): Promise<void>{
+     return this.rum.startAction(actionName,actionType,property);
    }
    onCreateView(viewName:string,loadTime:number): Promise<void>{
      return this.rum.onCreateView(viewName,loadTime);
    }
-   startView(viewName: string): Promise<void>{
-     return this.rum.startView(viewName);
+   startView(viewName: string, property?:object): Promise<void>{
+     return this.rum.startView(viewName,property);
    }
-   stopView(): Promise<void>{
-     return this.rum.stopView();
+   stopView(property?:object): Promise<void>{
+     return this.rum.stopView(property);
    }
-   addError(stack: string, message: string): Promise<void>{
-     return this.rum.addError(stack,message);
+   addError(stack: string, message: string,property?:object): Promise<void>{
+     return this.rum.addError(stack,message,property);
    }
-   startResource(key: string): Promise<void>{
-     return this.rum.startResource(key);
+   startResource(key: string,property?:object): Promise<void>{
+     return this.rum.startResource(key,property);
    }
-   stopResource(key: string): Promise<void>{
-     return this.rum.stopResource(key);
+   stopResource(key: string,property?:object): Promise<void>{
+     return this.rum.stopResource(key,property);
    }
    addResource(key:string, resource:FTRUMResource,metrics:FTRUMResourceMetrics={}):Promise<void>{
      return this.rum.addResource(key,resource,metrics);

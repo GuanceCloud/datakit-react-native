@@ -22,36 +22,12 @@ RCT_REMAP_METHOD(setConfig,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
     FTTraceConfig *trace = [[FTTraceConfig alloc]init];
-    if ([context.allKeys containsObject:@"samplerate"]) {
-        trace.samplerate =[RCTConvert double:context[@"samplerate"]] * 100;
+    if ([context.allKeys containsObject:@"sampleRate"]) {
+        trace.samplerate =[RCTConvert double:context[@"sampleRate"]] * 100;
     }
     if ([context.allKeys containsObject:@"traceType"]) {
         int traceType = [RCTConvert int:context[@"traceType"]];
-        FTNetworkTraceType type;
-        switch (traceType) {
-            case 0:
-                type = FTNetworkTraceTypeDDtrace;
-                break;
-            case 1:
-                type = FTNetworkTraceTypeZipkinMultiHeader;
-                break;
-            case 2:
-                type = FTNetworkTraceTypeZipkinSingleHeader;
-                break;
-            case 3:
-                type = FTNetworkTraceTypeTraceparent;
-                break;
-            case 4:
-                type = FTNetworkTraceTypeSkywalking;
-                break;
-            case 5:
-                type = FTNetworkTraceTypeJaeger;
-                break;
-            default:
-                type = FTNetworkTraceTypeDDtrace;
-                break;
-        }
-        trace.networkTraceType = type;
+        trace.networkTraceType = traceType;
     }
     trace.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRUMData"]];
     trace.enableAutoTrace = [RCTConvert BOOL:context[@"enableNativeAutoTrace"]];

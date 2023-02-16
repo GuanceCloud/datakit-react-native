@@ -23,13 +23,18 @@ class RUMScreen extends React.Component {
                   }}
                   /></View>
                   <View  style={styles.list}>
+                  <Button title="View onCreateView" onPress={()=>{
+                        FTReactNativeRUM.onCreateView("RUM",100000000);
+                  }}
+                  /></View>
+                  <View  style={styles.list}>
                   <Button title="View Start" onPress={()=>{
-                        FTReactNativeRUM.startView("RUM","",0);
+                        FTReactNativeRUM.startView("RUM",{"startView_property":"rn_demo"});
                   }}
                   /></View>
                   <View  style={styles.list}>
                   <Button title="View Stop" onPress={()=>{
-                        FTReactNativeRUM.stopView();
+                        FTReactNativeRUM.stopView({"stopView_property":"rn_demo"});
                   }}
                   /></View>
                   <View  style={styles.list}>
@@ -44,7 +49,7 @@ class RUMScreen extends React.Component {
                   }}/></View>
                   <View  style={styles.list}>
                   <Button title="Add Error" onPress={()=>{
-                        FTReactNativeRUM.addError("error stack","error message");
+                        FTReactNativeRUM.addError("error stack","error message",{"error_property":"rn_demo"});
                   }}/>
                   </View>
                   <View  style={styles.list}>
@@ -71,7 +76,7 @@ class RUMScreen extends React.Component {
       
       async getHttp(url:string){
             const key = Utils.getUUID();
-            FTReactNativeRUM.startResource(key);
+            FTReactNativeRUM.startResource(key,{"startResource_property_demo":"rn_demo"});
             const fetchOptions = {
                   method: 'GET',
                   headers:{
@@ -97,7 +102,7 @@ class RUMScreen extends React.Component {
                         resource.resourceStatus = res.status;
                         resource.responseBody = await res.text();
                   }
-                  FTReactNativeRUM.stopResource(key);
+                  FTReactNativeRUM.stopResource(key,{"endResource_property_demo":"rn_demo"});
                   FTReactNativeRUM.addResource(key,resource);
             }
       }

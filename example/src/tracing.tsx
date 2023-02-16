@@ -26,15 +26,16 @@ class TraceScreen extends React.Component {
 
   
   async getHttp(url:string){
-    
+    // 未开启自动采集时，可以手动获取 trace 功能所需的请求头
+    const key = Utils.getUUID();
+    var traceHeader = await FTReactNativeTrace.getTraceHeader(key,url);
     const fetchOptions = {
       method: 'GET',
-      headers:{
+      headers:Object.assign({
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      } ,
+      },traceHeader) ,
     };
-    
     fetch(url, fetchOptions).then((response:any)=>{
             if (response.ok) {
                 return response.json();

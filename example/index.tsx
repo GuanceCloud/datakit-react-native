@@ -14,7 +14,9 @@ import {
   FTReactNativeTrace,
   FTRUMConfig,
   FTTraceConfig,
-  MonitorType,
+  ErrorMonitorType,
+  DeviceMetricsMonitorType,
+  DetectFrequency,
   TraceType,
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
@@ -80,12 +82,14 @@ async function initSDK() {
   console.log(rumid);
   let rumConfig: FTRUMConfig = {
     rumAppId: rumid,
-    monitorType: MonitorType.all,
     enableAutoTrackUserAction: true,
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
     enableNativeUserResource: true,
+    errorMonitorType:ErrorMonitorType.all,
+    deviceMonitorType:DeviceMetricsMonitorType.all,
+    detectFrequency:DetectFrequency.rare
   };
   // 静态设置 globalContext
   //.env.dubug、.env.release 等配置的环境文件中设置
