@@ -55,10 +55,10 @@ RCT_REMAP_METHOD(startAction,
     resolve(nil);
 }
 RCT_REMAP_METHOD(onCreateView,
-                  viewName:(NSString *)viewName loadTime:(NSNumber *)loadTime
+                  viewName:(NSString *)viewName loadTime:(double)loadTime
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:loadTime];
+    [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:@(loadTime)];
     resolve(nil);
 }
 RCT_REMAP_METHOD(startView,
