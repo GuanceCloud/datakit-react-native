@@ -18,7 +18,7 @@ RCT_REMAP_METHOD(setConfig,
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    NSString *rumAppId = [RCTConvert NSString:context[@"rumAppId"]];
+    NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
     FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
     if ([context.allKeys containsObject:@"sampleRate"]) {
         rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;

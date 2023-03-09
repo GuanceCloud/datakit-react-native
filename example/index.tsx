@@ -78,10 +78,9 @@ async function initSDK() {
   await FTReactNativeTrace.setConfig(traceConfig);
 
   // rum 设置
-  let rumid = String(Platform.OS === 'ios' ? Config.IOS_APP_ID : Config.ANDROID_APP_ID);
-  console.log(rumid);
   let rumConfig: FTRUMConfig = {
-    rumAppId: rumid,
+    androidAppId: Config.ANDROID_APP_ID,
+    iOSAppId:Config.IOS_APP_ID,
     enableAutoTrackUserAction: true,
     enableAutoTrackError: true,
     enableNativeUserAction: true,

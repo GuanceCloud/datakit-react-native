@@ -27,7 +27,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  export enum DetectFrequency { normal, frequent, rare }
 /**
  * 设置 RUM 追踪条件。
- * @param rumAppId appId，监测中申请
+ * @param androidAppId appId，监测中申请
+ * @param iOSAppId appId，监测中申请
  * @param sampleRate 采样率
  * @param enableAutoTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
  * @param enableTrackError  是否自动采集 react-native Error
@@ -40,7 +41,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param globalContext 自定义全局参数
  */
  export interface FTRUMConfig{
-   rumAppId:string,
+   androidAppId:string,
+   iOSAppId:string,
    sampleRate?:number,
    enableAutoTrackUserAction?:boolean,
    enableAutoTrackError?:boolean,
@@ -157,7 +159,6 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
 
  class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
    private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
-
    setConfig(config:FTRUMConfig): Promise<void>{
      console.log('FTRUMConfig');
      if(config.enableAutoTrackError){
