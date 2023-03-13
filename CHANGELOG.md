@@ -1,3 +1,7 @@
+# 0.2.3
+* 适配 iOS SDK 1.3.10-beta.1
+* 适配 Android 1.3.9-beta02
+
 # 0.2.2
 * Android Native SDK 调整
 
