@@ -20,7 +20,7 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val debug = map["debug"] as Boolean?
     val datakitUUID = map["datakitUUID"] as String?
     val env = ReactNativeUtils.convertToNativeInt(map["env"])
-    val useOAID = map["useOAID"] as Boolean?
+    val serviceName = map["serviceName"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
 
 
@@ -49,8 +49,8 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     if (datakitUUID != null) {
       sdkConfig.setXDataKitUUID(datakitUUID)
     }
-    if (useOAID != null) {
-      sdkConfig.isUseOAID = useOAID
+    if (serviceName != null) {
+      sdkConfig.serviceName = serviceName;
     }
 
     globalContext?.forEach {

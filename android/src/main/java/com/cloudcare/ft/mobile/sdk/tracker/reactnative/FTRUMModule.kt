@@ -3,7 +3,6 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 import android.util.Log
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
-import com.facebook.react.modules.network.OkHttpClientFactory
 import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.ft.sdk.FTRUMConfig
@@ -39,7 +38,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun setConfig(context: ReadableMap, promise: Promise) {
     val map = context.toHashMap()
-    val rumAppId = map["rumAppId"] as String
+    val rumAppId = map["androidAppId"] as String
     val sampleRate = map["sampleRate"] as Float?
     val enableNativeUserAction = map["enableNativeUserAction"] as Boolean?
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
@@ -77,8 +76,12 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun startAction(actionName: String, actionType: String, promise: Promise) {
-    FTRUMGlobalManager.get().startAction(actionName, actionType)
+  fun startAction(actionName: String, actionType: String, map: ReadableMap?, promise: Promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get().startAction(actionName, actionType, map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().startAction(actionName, actionType)
+    }
     promise.resolve(null)
 
   }
@@ -90,37 +93,64 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun startView(viewName: String, promise: Promise) {
-    FTRUMGlobalManager.get().startView(viewName)
+  fun startView(viewName: String, map: ReadableMap?, promise: Promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get().startView(viewName, map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().startView(viewName)
+    }
     promise.resolve(null)
   }
 
   @ReactMethod
-  fun stopView(promise: Promise) {
-    FTRUMGlobalManager.get().stopView()
+  fun stopView(map: ReadableMap?, promise: Promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get().stopView(map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().stopView()
+    }
     promise.resolve(null)
   }
 
   @ReactMethod
-  fun addError(stack: String, message: String, promise: Promise) {
-    FTRUMGlobalManager.get().addError(stack, message, ErrorType.JAVA, AppState.RUN)
+  fun addError(stack: String, message: String, map: ReadableMap?, promise: Promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get()
+        .addError(stack, message, ErrorType.JAVA, AppState.RUN, map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().addError(stack, message, ErrorType.JAVA, AppState.RUN)
+    }
     promise.resolve(null)
   }
 
   @ReactMethod
-  fun startResource(key: String, promise: Promise) {
-    FTRUMGlobalManager.get().startResource(key)
+  fun startResource(key: String, map: ReadableMap?, promise: Promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get().startResource(key, map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().startResource(key)
+
+    }
     promise.resolve(null)
   }
 
   @ReactMethod
-  fun stopResource(key: String, promise: Promise) {
-    FTRUMGlobalManager.get().stopResource(key)
+  fun stopResource(key: String, map: ReadableMap?, promise: Promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get().stopResource(key, map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().stopResource(key)
+    }
     promise.resolve(null)
   }
 
   @ReactMethod
-  fun addResource(key: String, resourceContext: ReadableMap, metricsContext: ReadableMap, promise: Promise) {
+  fun addResource(
+    key: String,
+    resourceContext: ReadableMap,
+    metricsContext: ReadableMap,
+    promise: Promise
+  ) {
     val resourceMap = resourceContext.toHashMap()
     val url = resourceMap["url"] as String?
     val responseHeader = resourceMap["responseHeader"] as HashMap<String, String>?
