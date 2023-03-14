@@ -49,8 +49,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
-   errorMonitorType?:number,
-   deviceMonitorType?:number,
+   errorMonitorType?:ErrorMonitorType,
+   deviceMonitorType?:DeviceMetricsMonitorType,
    detectFrequency?:DetectFrequency
    globalContext?:object,
  }
