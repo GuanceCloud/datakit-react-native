@@ -86,8 +86,8 @@ async function initSDK() {
     enableNativeUserAction: true,
     enableNativeUserView: false,
     enableNativeUserResource: true,
-    errorMonitorType:ErrorMonitorType.all,
-    deviceMonitorType:DeviceMetricsMonitorType.all,
+    errorMonitorType:ErrorMonitorType.all.valueOf(),
+    deviceMonitorType:DeviceMetricsMonitorType.all.valueOf(),
     detectFrequency:DetectFrequency.rare
   };
   // 静态设置 globalContext

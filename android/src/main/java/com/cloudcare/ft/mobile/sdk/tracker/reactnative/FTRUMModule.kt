@@ -5,6 +5,7 @@ import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.modules.network.ReactCookieJarContainer
+import com.ft.sdk.DetectFrequency
 import com.ft.sdk.FTRUMConfig
 import com.ft.sdk.FTRUMGlobalManager
 import com.ft.sdk.FTSdk
@@ -22,7 +23,6 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     OkHttpClientProvider.setOkHttpClientFactory {
       OkHttpClient.Builder()
         .addNetworkInterceptor(Interceptor { chain ->
-          Log.e("BrandonTest", "log here")
           chain.proceed(chain.request())
         })
         .cookieJar(ReactCookieJarContainer())
@@ -43,7 +43,9 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     val enableNativeUserAction = map["enableNativeUserAction"] as Boolean?
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
-    val monitorType = ReactNativeUtils.convertToNativeInt(map["extraMonitorTypeWithError"])
+    val monitorType = ReactNativeUtils.convertToNativeInt(map["errorMonitorType"])
+    val deviceMonitorType = ReactNativeUtils.convertToNativeInt(map["deviceMonitorType"])
+    val detectFrequency = ReactNativeUtils.convertToNativeInt(map["detectFrequency"])
     val globalContext = map["globalContext"] as HashMap<String, Any>?
 
     val rumConfig = FTRUMConfig().setRumAppId(rumAppId)
@@ -65,6 +67,21 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
     if (monitorType != null) {
       rumConfig.extraMonitorTypeWithError = monitorType
+    }
+    if (deviceMonitorType != null) {
+
+      if (detectFrequency != null) {
+        val deviceMetricsDetectFrequency: DetectFrequency = when (detectFrequency) {
+          0 -> DetectFrequency.DEFAULT
+          1 -> DetectFrequency.FREQUENT
+          2 -> DetectFrequency.RARE
+          else -> DetectFrequency.DEFAULT
+        }
+        rumConfig.setDeviceMetricsMonitorType(deviceMonitorType, deviceMetricsDetectFrequency)
+
+      } else {
+        rumConfig.deviceMetricsMonitorType = deviceMonitorType;
+      }
     }
 
     globalContext?.forEach {

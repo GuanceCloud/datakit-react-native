@@ -20,7 +20,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
     memory=1 << 2,
     cpu=1 << 3,
     fps=1 << 4
- } 
+ }
  /**
   * 设备信息监控周期。
   */
@@ -49,8 +49,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
-   errorMonitorType?:ErrorMonitorType,
-   deviceMonitorType?:DeviceMetricsMonitorType,
+   errorMonitorType?:number,
+   deviceMonitorType?:number,
    detectFrequency?:DetectFrequency
    globalContext?:object,
  }
@@ -74,8 +74,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
 /**
  * RUM Resource 性能指标。
  * @param duration 资源加载时间
- * @param resource_dns 资源加载DNS解析时间 
- * @param resource_tcp 资源加载TCP连接时间 
+ * @param resource_dns 资源加载DNS解析时间
+ * @param resource_tcp 资源加载TCP连接时间
  * @param resource_ssl 资源加载SSL连接时间
  * @param resource_ttfb 资源加载请求响应时间
  * @param resource_trans 资源加载内容传输时间
@@ -99,7 +99,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    setConfig(config:FTRUMConfig): Promise<void>;
   /**
    * 执行 action 。
-   * @param actionName action 名称 
+   * @param actionName action 名称
    * @param actionType action 类型
    * @param property 事件上下文(可选)
    * @returns a Promise.
@@ -107,7 +107,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    startAction(actionName:string,actionType:string,property?:object): Promise<void>;
   /**
    * view加载时长。
-   * @param viewName view 名称 
+   * @param viewName view 名称
    * @param loadTime view 加载时长
    * @returns a Promise.
    */
@@ -154,7 +154,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    * @param metrics  资源性能数据
    * @returns a Promise.
    */
-   addResource(key:string, resource:FTRUMResource,metrics?:FTRUMResourceMetrics):Promise<void>;   
+   addResource(key:string, resource:FTRUMResource,metrics?:FTRUMResourceMetrics):Promise<void>;
  }
 
  class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
@@ -162,10 +162,10 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    setConfig(config:FTRUMConfig): Promise<void>{
      console.log('FTRUMConfig');
      if(config.enableAutoTrackError){
-        FTRumErrorTracking.startTracking(); 
+        FTRumErrorTracking.startTracking();
      }
      if(config.enableAutoTrackUserAction){
-        FTRumActionTracking.startTracking(); 
+        FTRumActionTracking.startTracking();
      }
      return this.rum.setConfig(config);
    }
@@ -192,7 +192,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    }
    addResource(key:string, resource:FTRUMResource,metrics:FTRUMResourceMetrics={}):Promise<void>{
      return this.rum.addResource(key,resource,metrics);
-   }   
+   }
  }
 
  export const FTReactNativeRUM: FTReactNativeRUMType = new FTReactNativeRUMWrapper();
