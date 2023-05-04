@@ -44,7 +44,7 @@ class TraceScreen extends React.Component {
             console.log(JSON.stringify(json));
         }).catch((error:any)=>{
 
-            console.error(error.arrayBuffer());
+            console.error(error);
         });
 
     
