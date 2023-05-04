@@ -1,4 +1,4 @@
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry } from 'react-native';
 // import AsyncStorage from '@react-native-community/async-storage'
 import App from './src/App';
 import { startReactNativeNavigation } from './src/RNNApp';
@@ -86,7 +86,7 @@ async function initSDK() {
     enableNativeUserAction: true,
     enableNativeUserView: false,
     enableNativeUserResource: true,
-    errorMonitorType:ErrorMonitorType.all,
+    errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
     detectFrequency:DetectFrequency.rare
   };

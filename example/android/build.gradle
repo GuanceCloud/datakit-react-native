@@ -11,7 +11,10 @@ buildscript {
   }
   repositories {
     google()
-    jcenter()
+    mavenCentral()
+//    jcenter()
+    maven { url 'https://repo1.maven.org/maven2/' }
+
     maven {
       url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
     }
@@ -27,9 +30,13 @@ buildscript {
   }
 }
 
+def REACT_NATIVE_VERSION = new File(['node', '--print',"JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
+
 allprojects {
   repositories {
     mavenLocal()
+    maven { url 'https://repo1.maven.org/maven2/' }
+
     maven {
       // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
       url("$rootDir/../node_modules/react-native/android")
@@ -40,10 +47,18 @@ allprojects {
     }
 
     google()
-    jcenter()
+//    jcenter()
     maven { url 'https://www.jitpack.io' }
     maven {
       url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
     }
   }
+  configurations.all {
+    resolutionStrategy {
+      // Remove this override in 0.66, as a proper fix is included in react-native itself.
+      force "com.facebook.react:react-native:" + REACT_NATIVE_VERSION
+    }
+  }
+
 }
+

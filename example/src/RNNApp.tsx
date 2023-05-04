@@ -9,7 +9,10 @@ import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigation
 
 function startReactNativeNavigation() {
   console.log("startReactNativeNavigation");
-
+  // react-native-navigation 
+  // 开启 RUM View 采集
+  // 将 example 中 FTRumReactNavigationTracking.tsx 文件拖入您的工程；
+  // 调用 startTracking() 方法，开启采集，如下所示：
   FTRumReactNativeNavigationTracking.startTracking();
   registerScreens();
   Navigation.events().registerAppLaunchedListener( async () => {

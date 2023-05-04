@@ -91,9 +91,19 @@ const navigationRef: React.RefObject<NavigationContainerRef<ReactNavigation.Root
 
 function App() {
   return (
+    // react-navigation 
+    // 开启 RUM View 采集
+    // 将 example 中 FTRumReactNavigationTracking.tsx 文件拖入您的工程；
+
+    // 方法一：如果有使用 createNativeStackNavigator(); 创建原生导航堆栈，建议采用 <Stack.Navigator screenListeners={FTRumReactNavigationTracking.StackListener} nitialRouteName='Home'>开启采集，
+    //        这样可以统计到页面的加载时长
+    // 方法二：如果没有使用 createNativeStackNavigator(); 要在 NavigationContainer 组件中进行开启采集，如下
+  
     <NavigationContainer ref={navigationRef} onReady={() => {
+      // 方法二：
       // FTRumReactNavigationTracking.startTrackingViews(navigationRef.current);
     }}>
+    {/*方法一：*/}
       <Stack.Navigator   screenListeners={FTRumReactNavigationTracking.StackListener} initialRouteName='Home'>
         <Stack.Screen name='Home' component={Home}  options={{ headerShown: false }} />
         <Stack.Screen name='Trace' component={TraceScreen} options={{ title: '网络链路追踪' }} />

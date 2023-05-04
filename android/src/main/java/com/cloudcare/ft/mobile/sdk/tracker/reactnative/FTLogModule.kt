@@ -20,7 +20,6 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     val map = context.toHashMap();
     val discardStrategy = ReactNativeUtils.convertToNativeInt(map["discardStrategy"])
     val sampleRate = map["sampleRate"] as Float?
-    val serviceName = map["serviceName"] as String?
     val logTypeReadArr = map["logTypeArr"] as ReadableArray?
     val enableLinkRumData = map["enableLinkRumData"] as Boolean?
     val enableCustomLog = map["enableCustomLog"] as Boolean?
@@ -39,9 +38,6 @@ class FTLogModule(reactContext: ReactApplicationContext) :
 
     if (sampleRate != null) {
       logConfig.samplingRate = sampleRate
-    }
-    if (serviceName != null) {
-      logConfig.serviceName = serviceName
     }
 
     val logTypeArr = logTypeReadArr?.toArrayList()
@@ -74,7 +70,7 @@ class FTLogModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun logging(content: String, logStatus: Int, promise: Promise) {
+  fun logging(content: String, logStatus: Int, map: ReadableMap?, promise: Promise) {
 
     val status: Status = when (logStatus) {
       0 -> Status.INFO
@@ -84,7 +80,11 @@ class FTLogModule(reactContext: ReactApplicationContext) :
       4 -> Status.OK
       else -> Status.INFO
     }
-    FTLogger.getInstance().logBackground(content, status)
+    if (map == null) {
+      FTLogger.getInstance().logBackground(content, status)
+    } else {
+      FTLogger.getInstance().logBackground(content, status, map.toHashMap())
+    }
     promise.resolve(null)
 
   }
