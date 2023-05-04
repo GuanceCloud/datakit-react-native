@@ -24,8 +24,8 @@ RCT_REMAP_METHOD(sdkConfig,
         if ([context.allKeys containsObject:@"debug"]) {
             config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
         }
-        if ([context.allKeys containsObject:@"service"]) {
-            config.service = [RCTConvert NSString:context[@"service"]];
+        if ([context.allKeys containsObject:@"serviceName"]) {
+            config.service = [RCTConvert NSString:context[@"serviceName"]];
         }
         if ([context.allKeys containsObject:@"datakitUUID"]) {
             config.XDataKitUUID = [RCTConvert NSString:context[@"datakitUUID"]];
@@ -35,6 +35,9 @@ RCT_REMAP_METHOD(sdkConfig,
         }
         if ([context.allKeys containsObject:@"globalContext"]) {
             config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
+        }
+        if ([context.allKeys containsObject:@"groupIdentifiers"]){
+            config.groupIdentifiers = [RCTConvert NSArray:context[@"groupIdentifiers"]];
         }
         [FTMobileAgent startWithConfigOptions:config];
         resolve(nil);
@@ -55,6 +58,22 @@ RCT_REMAP_METHOD(unbindRUMUserData,
                  ){
     [[FTMobileAgent sharedInstance] logout];
     resolve(nil);
+}
+
+RCT_REMAP_METHOD(trackEventFromExtension,
+                 identifier:(NSString*)identifier
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTMobileAgent sharedInstance] trackEventFromExtensionWithGroupIdentifier:identifier completion:^(NSString * _Nonnull groupIdentifier, NSArray * _Nonnull events) {
+        if(events.count>0){
+            resolve(@{@"groupIdentifier":identifier,
+                      @"datas":events
+                    });
+        }else{
+            resolve(nil);
+        }
+        
+    }];
 }
 @end
 

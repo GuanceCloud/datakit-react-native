@@ -12,16 +12,18 @@ export enum EnvType {
  * @param debug 设置是否允许打印日志，默认false
  * @param datakitUUID 请求HTTP请求头X-Datakit-UUID 数据采集端  如果用户不设置会自动配置
  * @param envType 环境，默认prod
- * @param service 设置所属业务或服务的名称 默认：`df_rum_ios`、`df_rum_android`
+ * @param serviceName 设置所属业务或服务的名称 默认：`df_rum_ios`、`df_rum_android`
  * @param globalContext 自定义全局参数
+ * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
  */
  export interface FTMobileConfig {
    serverUrl: string,
    debug?:boolean,
    datakitUUID?:string,
    envType?:EnvType,
-   service?:string,
+   serviceName?:string,
    globalContext?:object,
+   groupIdentifiers?:Array<string>
  }
 
 
@@ -47,6 +49,12 @@ type FTMobileReactNativeType = {
    * @returns a Promise.
    */
    unbindRUMUserData(): Promise<void>;
+  /**
+   * 同步 ios Widget Extension 中的事件，仅支持 iOS
+   * @param groupIdentifier app groupId
+   * @returns {groupIdentifier:string,datas:Array<object>} 可以用于查看 Extension 中采集到的数据. 
+   */
+   trackEventFromExtension(identifier:string): Promise<object>
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
@@ -59,6 +67,9 @@ type FTMobileReactNativeType = {
    }
    unbindRUMUserData(): Promise<void> {
      return this.sdk.unbindRUMUserData();
+   }
+   trackEventFromExtension(identifier:string) :Promise<object>{
+     return this.sdk.trackEventFromExtension(identifier);
    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();
