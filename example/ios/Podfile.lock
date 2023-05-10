@@ -11,60 +11,60 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.67.4)
   - fmt (6.2.1)
   - FTMobileReactNativeSDK (0.2.4):
-    - FTMobileSDK (= 1.4.0-beta.2)
+    - FTMobileSDK (= 1.4.1-alpha.3)
     - React-Core
-  - FTMobileSDK (1.4.0-beta.2):
-    - FTMobileSDK/Core (= 1.4.0-beta.2)
-  - FTMobileSDK/Common (1.4.0-beta.2):
-    - FTMobileSDK/Common/Base (= 1.4.0-beta.2)
-    - FTMobileSDK/Common/FTDataBase (= 1.4.0-beta.2)
-    - FTMobileSDK/Common/Network (= 1.4.0-beta.2)
-    - FTMobileSDK/Common/Swizzle (= 1.4.0-beta.2)
-    - FTMobileSDK/Common/Thread (= 1.4.0-beta.2)
-  - FTMobileSDK/Common/Base (1.4.0-beta.2)
-  - FTMobileSDK/Common/FTDataBase (1.4.0-beta.2):
+  - FTMobileSDK (1.4.1-alpha.3):
+    - FTMobileSDK/Core (= 1.4.1-alpha.3)
+  - FTMobileSDK/Common (1.4.1-alpha.3):
+    - FTMobileSDK/Common/Base (= 1.4.1-alpha.3)
+    - FTMobileSDK/Common/FTDataBase (= 1.4.1-alpha.3)
+    - FTMobileSDK/Common/Network (= 1.4.1-alpha.3)
+    - FTMobileSDK/Common/Swizzle (= 1.4.1-alpha.3)
+    - FTMobileSDK/Common/Thread (= 1.4.1-alpha.3)
+  - FTMobileSDK/Common/Base (1.4.1-alpha.3)
+  - FTMobileSDK/Common/FTDataBase (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
-  - FTMobileSDK/Common/Network (1.4.0-beta.2):
+  - FTMobileSDK/Common/Network (1.4.1-alpha.3):
     - FTMobileSDK/Common/FTDataBase
     - FTMobileSDK/Common/Thread
-  - FTMobileSDK/Common/Swizzle (1.4.0-beta.2):
+  - FTMobileSDK/Common/Swizzle (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
-  - FTMobileSDK/Common/Thread (1.4.0-beta.2)
-  - FTMobileSDK/Core (1.4.0-beta.2):
+  - FTMobileSDK/Common/Thread (1.4.1-alpha.3)
+  - FTMobileSDK/Core (1.4.1-alpha.3):
     - FTMobileSDK/Common
     - FTMobileSDK/FTMobileAgent
-  - FTMobileSDK/FTMobileAgent (1.4.0-beta.2):
-    - FTMobileSDK/FTMobileAgent/AutoTrack (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/Exception (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/ExtensionDataManager (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/ExternalData (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/FTRUM (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/JSBridge (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/LongTask (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/Protocol (= 1.4.0-beta.2)
-    - FTMobileSDK/FTMobileAgent/URLSessionAutoInstrumentation (= 1.4.0-beta.2)
-  - FTMobileSDK/FTMobileAgent/AutoTrack (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent (1.4.1-alpha.3):
+    - FTMobileSDK/FTMobileAgent/AutoTrack (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/Exception (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/ExtensionDataManager (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/ExternalData (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/FTRUM (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/JSBridge (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/LongTask (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/Protocol (= 1.4.1-alpha.3)
+    - FTMobileSDK/FTMobileAgent/URLSessionAutoInstrumentation (= 1.4.1-alpha.3)
+  - FTMobileSDK/FTMobileAgent/AutoTrack (1.4.1-alpha.3):
     - FTMobileSDK/Common
     - FTMobileSDK/FTMobileAgent/JSBridge
     - FTMobileSDK/FTMobileAgent/Protocol
-  - FTMobileSDK/FTMobileAgent/Exception (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/Exception (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
     - FTMobileSDK/FTMobileAgent/Protocol
-  - FTMobileSDK/FTMobileAgent/ExtensionDataManager (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/ExtensionDataManager (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
-  - FTMobileSDK/FTMobileAgent/ExternalData (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/ExternalData (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
     - FTMobileSDK/FTMobileAgent/Protocol
-  - FTMobileSDK/FTMobileAgent/FTRUM (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/FTRUM (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
     - FTMobileSDK/Common/Thread
     - FTMobileSDK/FTMobileAgent/Protocol
-  - FTMobileSDK/FTMobileAgent/JSBridge (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/JSBridge (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
-  - FTMobileSDK/FTMobileAgent/LongTask (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/LongTask (1.4.1-alpha.3):
     - FTMobileSDK/Common
-  - FTMobileSDK/FTMobileAgent/Protocol (1.4.0-beta.2)
-  - FTMobileSDK/FTMobileAgent/URLSessionAutoInstrumentation (1.4.0-beta.2):
+  - FTMobileSDK/FTMobileAgent/Protocol (1.4.1-alpha.3)
+  - FTMobileSDK/FTMobileAgent/URLSessionAutoInstrumentation (1.4.1-alpha.3):
     - FTMobileSDK/Common/Base
     - FTMobileSDK/Common/Swizzle
     - FTMobileSDK/FTMobileAgent/Protocol
@@ -519,8 +519,8 @@ SPEC CHECKSUMS:
   FBLazyVector: f7b0632c6437e312acf6349288d9aa4cb6d59030
   FBReactNativeSpec: 0f4e1f4cfeace095694436e7c7fcc5bf4b03a0ff
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  FTMobileReactNativeSDK: f99caab46e27302e74e91de92dd6549d04302af9
-  FTMobileSDK: 81cf9f699468d173c8a2703997a20d8938aa5aa6
+  FTMobileReactNativeSDK: 38da18871a792fac33c8e9cb6b930a3e9f3e1485
+  FTMobileSDK: 93126317f26d77e978d0edec7b236861031f0408
   glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
