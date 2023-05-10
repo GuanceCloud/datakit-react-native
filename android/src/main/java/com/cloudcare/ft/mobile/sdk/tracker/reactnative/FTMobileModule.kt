@@ -20,7 +20,7 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val debug = map["debug"] as Boolean?
     val datakitUUID = map["datakitUUID"] as String?
     val env = ReactNativeUtils.convertToNativeInt(map["env"])
-    val serviceName = map["serviceName"] as String?
+    val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
 
 

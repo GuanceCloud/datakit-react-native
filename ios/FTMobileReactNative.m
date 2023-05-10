@@ -24,8 +24,8 @@ RCT_REMAP_METHOD(sdkConfig,
         if ([context.allKeys containsObject:@"debug"]) {
             config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
         }
-        if ([context.allKeys containsObject:@"serviceName"]) {
-            config.service = [RCTConvert NSString:context[@"serviceName"]];
+        if ([context.allKeys containsObject:@"service"]) {
+            config.service = [RCTConvert NSString:context[@"service"]];
         }
         if ([context.allKeys containsObject:@"datakitUUID"]) {
             config.XDataKitUUID = [RCTConvert NSString:context[@"datakitUUID"]];
