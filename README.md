@@ -30,7 +30,7 @@ import {
 
 ## More
 
-[View Doc Here](https://www.yuque.com/dataflux/doc/gza592)
+[View Doc Here](https://docs.guance.com/real-user-monitoring/third-party-framework/react-native/app-access/)
 
 ## License
 
