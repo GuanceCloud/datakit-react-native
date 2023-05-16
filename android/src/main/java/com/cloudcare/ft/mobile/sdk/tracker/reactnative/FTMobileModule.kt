@@ -18,7 +18,6 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val map = context.toHashMap()
     val serverUrl = map["serverUrl"] as String
     val debug = map["debug"] as Boolean?
-    val datakitUUID = map["datakitUUID"] as String?
     val env = ReactNativeUtils.convertToNativeInt(map["env"])
     val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
@@ -45,9 +44,6 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val sdkConfig = FTSDKConfig.builder(serverUrl).setEnv(envType)
     if (debug != null) {
       sdkConfig.isDebug = debug
-    }
-    if (datakitUUID != null) {
-      sdkConfig.setXDataKitUUID(datakitUUID)
     }
     if (serviceName != null) {
       sdkConfig.serviceName = serviceName;

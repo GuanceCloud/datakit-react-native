@@ -27,9 +27,6 @@ RCT_REMAP_METHOD(sdkConfig,
         if ([context.allKeys containsObject:@"service"]) {
             config.service = [RCTConvert NSString:context[@"service"]];
         }
-        if ([context.allKeys containsObject:@"datakitUUID"]) {
-            config.XDataKitUUID = [RCTConvert NSString:context[@"datakitUUID"]];
-        }
         if([context.allKeys containsObject:@"envType"]){
             config.env = [RCTConvert int:context[@"envType"]];
         }
