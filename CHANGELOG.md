@@ -1,3 +1,10 @@
+# 0.2.5
+* 适配 iOS SDK 1.4.1-alpha.3
+* 适配 android ft-plugin-legacy 1.1.4-beta02
+* 适配 android agent 1.3.11-beta02
+* 适配 android native 1.0.0-beta01
+
+-----
 # 0.2.4
 * 修正设备指标监控传参错误
 
