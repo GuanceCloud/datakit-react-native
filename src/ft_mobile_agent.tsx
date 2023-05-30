@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { version as sdkVersion } from './version'
 
 /**
  * 环境。
@@ -58,6 +59,9 @@ type FTMobileReactNativeType = {
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
    private sdk:FTMobileReactNativeType = NativeModules.FTMobileReactNative;
    sdkConfig(config:FTMobileConfig): Promise<void> {
+     config.globalContext = Object.assign({
+        'sdk_package_reactnative': sdkVersion,
+      },config.globalContext) 
      return this.sdk.sdkConfig(config);
    }
    bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {
