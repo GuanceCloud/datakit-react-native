@@ -3,7 +3,7 @@ require "json"
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 Pod::Spec.new do |s|
-  s.name         = "react-native-ft-mobile-agent"
+  s.name         = "FTMobileReactNativeSDK"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]
@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
   
 
   s.dependency "React-Core"
+  s.dependency 'FTMobileSDK', '1.4.1-alpha.3'
 end

@@ -1,25 +1,36 @@
-# react-native-ft-mobile-agent
+# react-native-mobile
 
 基于观测云 Android iOS React Native SDK
 
 ## Installation
 
 ```sh
-npm install react-native-ft-mobile-agent
+npm install @cloudcare/react-native-mobile
 ```
 
 ## Usage
 
 ```js
-import FtMobileAgent from "react-native-ft-mobile-agent";
+import {
+  FTMobileReactNative,
+  FTReactNativeLog,
+  FTReactNativeTrace,
+  FTReactNativeRUM,
+  FTMobileConfig,
+  FTLogConfig,
+  FTTraceConfig,
+  FTRUMConfig,
+  MonitorType,
+  TraceType
+} from '@cloudcare/react-native-mobile';
 
 // ...
 
 ```
 
-## Contributing
+## More
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+[View Doc Here](https://docs.guance.com/real-user-monitoring/third-party-framework/react-native/app-access/)
 
 ## License
 

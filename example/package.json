@@ -1,16 +1,28 @@
 {
-  "name": "react-native-ft-mobile-agent-example",
-  "description": "Example app for react-native-ft-mobile-agent",
-  "version": "0.0.1",
+  "name": "react-native-mobile-example",
+  "description": "Example app for react-native-mobile",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "build:ios": "react-native bundle --entry-file='index.tsx' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'"
   },
   "dependencies": {
-    "react": "16.13.1",
-    "react-native": "0.63.4"
+    "@react-native-community/async-storage": "^1.12.1",
+    "@react-navigation/bottom-tabs": "^6.2.0",
+    "@react-navigation/drawer": "^6.3.1",
+    "@react-navigation/native": "^6.0.6",
+    "@react-navigation/native-stack": "^6.2.5",
+    "react": "17.0.2",
+    "react-native": "0.67.4",
+    "react-native-config": "^1.4.5",
+    "react-native-gesture-handler": "^2.2.0",
+    "react-native-navigation": "^7.24.2",
+    "react-native-reanimated": "^2.4.1",
+    "react-native-safe-area-context": "^3.3.2",
+    "react-native-screens": "^3.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
