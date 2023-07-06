@@ -27,8 +27,8 @@ RCT_REMAP_METHOD(sdkConfig,
         if ([context.allKeys containsObject:@"service"]) {
             config.service = [RCTConvert NSString:context[@"service"]];
         }
-        if([context.allKeys containsObject:@"envType"]){
-            config.env = [RCTConvert int:context[@"envType"]];
+        if([context.allKeys containsObject:@"env"]){
+            config.env = [RCTConvert int:context[@"env"]];
         }
         if ([context.allKeys containsObject:@"globalContext"]) {
             config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];

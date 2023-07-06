@@ -18,6 +18,7 @@ import {
   DeviceMetricsMonitorType,
   DetectFrequency,
   TraceType,
+  EnvType,
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
@@ -57,6 +58,7 @@ async function initSDK() {
   let config: FTMobileConfig = {
     serverUrl: Config.SERVER_URL,
     debug: true,
+    env:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
   };
   await FTMobileReactNative.sdkConfig(config);
