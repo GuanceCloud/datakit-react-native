@@ -1,10 +1,15 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
 import com.ft.sdk.EnvType
 import com.ft.sdk.FTSDKConfig
 import com.ft.sdk.FTSdk
+import com.ft.sdk.garble.bean.UserData
 
 class FTMobileModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -59,8 +64,32 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun bindRUMUserData(userId: String, promise: Promise) {
-    FTSdk.bindRumUserData(userId)
+  fun bindRUMUserData(
+    userId: String,
+    userName: String?,
+    userEmail: String?,
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    val userData = UserData()
+    userData.id = userId
+    userData.email = userEmail
+    userData.name = userName
+
+    val convertedMap = HashMap<String, String>()
+
+    extra?.let {
+      for ((key, value) in extra.toHashMap()) {
+        if (value is String) {
+          convertedMap[key] = value
+        } else {
+          convertedMap[key] = value.toString()
+        }
+      }
+    }
+
+    userData.exts = convertedMap
+    FTSdk.bindRumUserData(userData)
     promise.resolve(null)
 
   }
