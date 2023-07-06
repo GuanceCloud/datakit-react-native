@@ -1,3 +1,9 @@
+# 0.2.6
+* 适配 iOS SDK 1.4.3-beta.1
+* 适配 android agent 1.3.12-beta01
+* 添加 SDK 版本字段 sdk_package_reactnative
+
+-----
 # 0.2.5
 * 适配 iOS SDK 1.4.1-alpha.3
 * 适配 android ft-plugin-legacy 1.1.4-beta02
