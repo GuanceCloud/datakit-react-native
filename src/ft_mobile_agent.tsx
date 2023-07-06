@@ -11,7 +11,7 @@ export enum EnvType {
  * 配置启动 SDK 参数。
  * @param serverUrl 数据上报地址
  * @param debug 设置是否允许打印日志，默认false
- * @param envType 环境，默认prod
+ * @param env 环境，默认prod
  * @param service 设置所属业务或服务的名称 默认：`df_rum_ios`、`df_rum_android`
  * @param globalContext 自定义全局参数
  * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
@@ -19,7 +19,7 @@ export enum EnvType {
  export interface FTMobileConfig {
    serverUrl: string,
    debug?:boolean,
-   envType?:EnvType,
+   env?:EnvType,
    service?:string,
    globalContext?:object,
    groupIdentifiers?:Array<string>
