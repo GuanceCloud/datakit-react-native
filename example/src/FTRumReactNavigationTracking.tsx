@@ -19,7 +19,7 @@ export class FTRumReactNavigationTracking {
     private static appStateListener: AppStateListener;
 
 
-    static  trackRout:Route<string, any | undefined> | undefined = undefined;
+    static  trackRouter:Route<string, any | undefined> | undefined = undefined;
     private static  currentTargetKey:string|  undefined = undefined; 
     private static  navigationInfoDict = new Map();
 
@@ -90,10 +90,12 @@ export class FTRumReactNavigationTracking {
             }else{
                 FTRumReactNavigationTracking.handleRouteNavigation(route);
             }
+            FTRumReactNavigationTracking.trackRouter = route;
             FTRumReactNavigationTracking.currentTargetKey = undefined;
         },
         focus:(e)=>{
             FTRumReactNavigationTracking.currentTargetKey = e.target;
+            FTRumReactNavigationTracking.registerAppStateListenerIfNeeded();
         }
     }
     private static handleRouteNavigation(
@@ -148,6 +150,9 @@ export class FTRumReactNavigationTracking {
 
                 const currentRoute = FTRumReactNavigationTracking.registeredContainer?.getCurrentRoute();
                 if (currentRoute == undefined) {
+                    if(FTRumReactNavigationTracking.trackRouter != undefined){
+                        FTRumReactNavigationTracking.handleRouteNavigation(FTRumReactNavigationTracking.trackRouter, appStateStatus); 
+                    }
                     return;
                 }
 
