@@ -23,30 +23,38 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val map = context.toHashMap()
     val serverUrl = map["serverUrl"] as String
     val debug = map["debug"] as Boolean?
-    val env = ReactNativeUtils.convertToNativeInt(map["env"])
+    val env = ReactNativeUtils.convertToNativeInt(map["envType"])
     val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
 
-
-    val envType: EnvType = when (env) {
-      EnvType.PROD.ordinal -> {
-        EnvType.PROD
+    val sdkConfig = FTSDKConfig.builder(serverUrl)
+    if (env != null) {
+      val envType: EnvType = when (env) {
+        EnvType.PROD.ordinal -> {
+          EnvType.PROD
+        }
+        EnvType.GRAY.ordinal -> {
+          EnvType.GRAY
+        }
+        EnvType.PRE.ordinal -> {
+          EnvType.PRE
+        }
+        EnvType.COMMON.ordinal -> {
+          EnvType.COMMON
+        }
+        EnvType.LOCAL.ordinal -> {
+          EnvType.LOCAL
+        }
+        else -> EnvType.PROD
       }
-      EnvType.GRAY.ordinal -> {
-        EnvType.GRAY
-      }
-      EnvType.PRE.ordinal -> {
-        EnvType.PRE
-      }
-      EnvType.COMMON.ordinal -> {
-        EnvType.COMMON
-      }
-      EnvType.LOCAL.ordinal -> {
-        EnvType.LOCAL
-      }
-      else -> EnvType.PROD
+      sdkConfig.setEnv(envType)
     }
-    val sdkConfig = FTSDKConfig.builder(serverUrl).setEnv(envType)
+
+    val envString = map["env"] as String?
+    if (env != null) {
+       sdkConfig.env = envString
+    }
+
     if (debug != null) {
       sdkConfig.isDebug = debug
     }

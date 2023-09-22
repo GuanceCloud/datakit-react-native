@@ -5,7 +5,7 @@ import { version as sdkVersion } from './version'
  * 环境。
  */
 export enum EnvType {
-  prod, gray, pre, common, local 
+  prod, gray, pre, common, local
 };
 /**
  * 配置启动 SDK 参数。
@@ -19,7 +19,8 @@ export enum EnvType {
  export interface FTMobileConfig {
    serverUrl: string,
    debug?:boolean,
-   env?:EnvType,
+   envType?:EnvType,
+   env?:string,
    service?:string,
    globalContext?:object,
    groupIdentifiers?:Array<string>
@@ -27,7 +28,7 @@ export enum EnvType {
 
 
 type FTMobileReactNativeType = {
-  
+
   /**
    * SDK 初始化方法。
    * @param config sdk初始化配置项。
@@ -42,7 +43,7 @@ type FTMobileReactNativeType = {
    * @param extra  用户的额外信息
    * @returns a Promise.
    */
-   bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void>; 
+   bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void>;
   /**
    * 解绑用户。
    * @returns a Promise.
@@ -51,7 +52,7 @@ type FTMobileReactNativeType = {
   /**
    * 同步 ios Widget Extension 中的事件，仅支持 iOS
    * @param groupIdentifier app groupId
-   * @returns {groupIdentifier:string,datas:Array<object>} 可以用于查看 Extension 中采集到的数据. 
+   * @returns {groupIdentifier:string,datas:Array<object>} 可以用于查看 Extension 中采集到的数据.
    */
    trackEventFromExtension(identifier:string): Promise<object>
  };
@@ -61,7 +62,7 @@ type FTMobileReactNativeType = {
    sdkConfig(config:FTMobileConfig): Promise<void> {
      config.globalContext = Object.assign({
         'sdk_package_reactnative': sdkVersion,
-      },config.globalContext) 
+      },config.globalContext)
      return this.sdk.sdkConfig(config);
    }
    bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {

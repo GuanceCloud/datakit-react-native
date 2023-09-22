@@ -5,6 +5,10 @@ import { startReactNativeNavigation } from './src/RNNApp';
 import { name as appName, navigation as navigationLib } from './app.json';
 import { Navigation } from 'react-native-navigation';
 import {
+  DetectFrequency,
+  DeviceMetricsMonitorType,
+  EnvType,
+  ErrorMonitorType,
   FTLogConfig,
   FTLogStatus,
   FTMobileConfig,
@@ -14,11 +18,7 @@ import {
   FTReactNativeTrace,
   FTRUMConfig,
   FTTraceConfig,
-  ErrorMonitorType,
-  DeviceMetricsMonitorType,
-  DetectFrequency,
   TraceType,
-  EnvType,
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
@@ -58,7 +58,8 @@ async function initSDK() {
   let config: FTMobileConfig = {
     serverUrl: Config.SERVER_URL,
     debug: true,
-    env:EnvType.prod,
+    env:"prod",
+    // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
   };
   await FTMobileReactNative.sdkConfig(config);
