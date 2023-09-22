@@ -28,7 +28,15 @@ RCT_REMAP_METHOD(sdkConfig,
             config.service = [RCTConvert NSString:context[@"service"]];
         }
         if([context.allKeys containsObject:@"env"]){
-            config.env = [RCTConvert int:context[@"env"]];
+            id env = context[@"env"];
+            if([env isKindOfClass:NSString.class]){
+                config.env = env;
+            }else if ([env isKindOfClass:NSNumber.class]){
+                int envType = [env intValue];
+                if(envType>=0 && envType<5){
+                    [config setEnvWithType:envType];
+                }
+            }
         }
         if ([context.allKeys containsObject:@"globalContext"]) {
             config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
@@ -53,7 +61,7 @@ RCT_REMAP_METHOD(unbindRUMUserData,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject
                  ){
-    [[FTMobileAgent sharedInstance] logout];
+    [[FTMobileAgent sharedInstance] unbindUser];
     resolve(nil);
 }
 
