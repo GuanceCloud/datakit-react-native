@@ -31,7 +31,11 @@ RCT_REMAP_METHOD(sdkConfig,
             id env = context[@"env"];
             if([env isKindOfClass:NSString.class]){
                 config.env = env;
-            }else if ([env isKindOfClass:NSNumber.class]){
+            }
+        }
+         if([context.allKeys containsObject:@"envType"]){
+            id env = context[@"envType"];
+            if([env isKindOfClass:NSNumber.class]){
                 int envType = [env intValue];
                 if(envType>=0 && envType<5){
                     [config setEnvWithType:envType];
