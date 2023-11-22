@@ -1,3 +1,8 @@
+# 0.2.7
+* 适配 iOS SDK 1.4.7-beta.1
+* 适配 Android 1.3.16-beta02
+* 新增 env 字符自定义模式
+-----
 # 0.2.6
 * 适配 iOS SDK 1.4.3-beta.1
 * 适配 android agent 1.3.12-beta01
