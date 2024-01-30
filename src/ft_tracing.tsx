@@ -25,21 +25,7 @@ import { NativeModules } from 'react-native';
    enableLinkRUMData?:boolean,
    enableNativeAutoTrace?:boolean,
  };
-/**
- * trace 采集数据
- * @param httpMethod 请求方法
- * @param requestHeader 请求头参数
- * @param statusCode 返回状态码
- * @param responseHeader 返回头参数
- * @param errorMessage 错误消息
- */
- export interface FTTraceResource{
-   httpMethod:string,
-   requestHeader:object,
-   statusCode?:number,
-   responseHeader?:object,
-   errorMessage?:string
- };
+
  type FTReactNativeTraceType = {
   /**
    * 配置 trace 开启链路追踪。

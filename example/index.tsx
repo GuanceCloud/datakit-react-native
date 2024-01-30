@@ -56,7 +56,7 @@ if (navigationLib == 'react-navigation') {
 async function initSDK() {
   //基础配置
   let config: FTMobileConfig = {
-    serverUrl: Config.SERVER_URL,
+    datakitUrl:Config.SERVER_URL,
     debug: true,
     env:"prod",
     // envType:EnvType.prod,

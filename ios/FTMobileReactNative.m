@@ -19,8 +19,18 @@ RCT_REMAP_METHOD(sdkConfig,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
     [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
-        NSString *serverUrl = [RCTConvert NSString:context[@"serverUrl"]];
-        FTMobileConfig *config = [[FTMobileConfig alloc]initWithMetricsUrl:serverUrl];
+        FTMobileConfig *config;
+        NSString *datakitUrl = [RCTConvert NSString:context[@"datakitUrl"]];
+        NSString *dataWayUrl = [RCTConvert NSString:context[@"datawayUrl"]];
+        NSString *clientToken = [RCTConvert NSString:context[@"clientToken"]];
+        if(dataWayUrl && dataWayUrl.length>0 && clientToken && clientToken.length>0){
+            config = [[FTMobileConfig alloc]initWithDatawayUrl:dataWayUrl clientToken:clientToken];
+        }else if(datakitUrl && datakitUrl.length>0){
+            config = [[FTMobileConfig alloc]initWithDatakitUrl:datakitUrl];
+        }else{
+            resolve(nil);
+            return;
+        }
         if ([context.allKeys containsObject:@"debug"]) {
             config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
         }
