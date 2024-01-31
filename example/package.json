@@ -22,7 +22,8 @@
     "react-native-navigation": "^7.24.2",
     "react-native-reanimated": "^2.4.1",
     "react-native-safe-area-context": "^3.3.2",
-    "react-native-screens": "^3.10.1"
+    "react-native-screens": "^3.10.1",
+    "react-native-webview": "^13.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

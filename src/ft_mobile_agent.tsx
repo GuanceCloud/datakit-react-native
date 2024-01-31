@@ -9,7 +9,10 @@ export enum EnvType {
 };
 /**
  * 配置启动 SDK 参数。
- * @param serverUrl 数据上报地址
+ * @param serverUrl 数据上报地址，已废弃，使用 [datakitUrl] 替换
+ * @param datakitUrl datakit 访问 URL 地址，例子：http://10.0.0.1:9529，端口默认 9529。 datakit 与 dataway 配置二选一
+ * @param datawayUrl dataway 访问 URL 地址，例子：http://10.0.0.1:9528，端口默认 9528，注意：安装 SDK 设备需能访问这地址.注意：datakit 和 dataway 配置两者二选一
+ * @param clientToken dataway 认证 token，需要与 [datawayUrl] 同时配置
  * @param debug 设置是否允许打印日志，默认false
  * @param env 环境，默认prod
  * @param service 设置所属业务或服务的名称 默认：`df_rum_ios`、`df_rum_android`
@@ -17,7 +20,13 @@ export enum EnvType {
  * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
  */
  export interface FTMobileConfig {
-   serverUrl: string,
+   /**
+    * @deprecated "serverUrl" parameter renamed to "datakitUrl"
+    */
+   serverUrl?: string,
+   datakitUrl?: string,
+   datawayUrl?: string,
+   clientToken?: string,
    debug?:boolean,
    envType?:EnvType,
    env?:string,
@@ -60,6 +69,9 @@ type FTMobileReactNativeType = {
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
    private sdk:FTMobileReactNativeType = NativeModules.FTMobileReactNative;
    sdkConfig(config:FTMobileConfig): Promise<void> {
+     if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
+       config.datakitUrl = config.serverUrl;
+     }
      config.globalContext = Object.assign({
         'sdk_package_reactnative': sdkVersion,
       },config.globalContext)
