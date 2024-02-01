@@ -21,13 +21,18 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun sdkConfig(context: ReadableMap, promise: Promise) {
     val map = context.toHashMap()
-    val serverUrl = map["serverUrl"] as String
+    val datakitUrl = map["datakitUrl"] as String?
+    val datawayUrl = map["datawayUrl"] as String?
+    val cliToken = map["cliToken"] as String?
     val debug = map["debug"] as Boolean?
     val env = ReactNativeUtils.convertToNativeInt(map["envType"])
     val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
 
-    val sdkConfig = FTSDKConfig.builder(serverUrl)
+    val sdkConfig = if (datakitUrl != null) FTSDKConfig.builder(datakitUrl) else FTSDKConfig.builder(
+                                            datawayUrl,
+                                            cliToken
+                                        )
     if (env != null) {
       val envType: EnvType = when (env) {
         EnvType.PROD.ordinal -> {
