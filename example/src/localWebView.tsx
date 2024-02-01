@@ -18,6 +18,10 @@ class LocalWebViewScreen extends React.Component {
             return (
                   <View style = {{ flex: 1 }}>
                    <WebView
+                   originWhitelist={['*']}
+                   scalesPageToFit={false}
+                   useWebKit={true}
+                   javaScriptEnabled
                    source={html}
                    onMessage={this.onWebViewMessage}/>
                   </View>
