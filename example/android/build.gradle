@@ -36,6 +36,8 @@ allprojects {
   repositories {
     mavenLocal()
     maven { url 'https://repo1.maven.org/maven2/' }
+    mavenCentral()
+
 
     maven {
       // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
