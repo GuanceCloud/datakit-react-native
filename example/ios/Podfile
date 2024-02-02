@@ -18,6 +18,9 @@ target 'FtMobileAgentExample' do
 #  pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   post_install do |installer|
+    # react-native版本小于0.69.9时使用，修复xcode14.3出现的问题
+    find_and_replace("../node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp",
+      "node->getLayout().hadOverflow() |\n","node->getLayout().hadOverflow() ||\n")
     flipper_post_install(installer)
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
@@ -25,4 +28,17 @@ target 'FtMobileAgentExample' do
       end
     end
   end
+end
+
+def find_and_replace(dir, findstr, replacestr)
+  Dir[dir].each do |name|
+      text = File.read(name)
+      replace = text.gsub(findstr,replacestr)
+      if text != replace
+          puts "Fix: " + name
+          File.open(name, "w") { |file| file.puts replace }
+          STDOUT.flush
+      end
+  end
+  Dir[dir + '*/'].each(&method(:find_and_replace))
 end
