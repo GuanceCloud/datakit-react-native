@@ -23,7 +23,7 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val map = context.toHashMap()
     val datakitUrl = map["datakitUrl"] as String?
     val datawayUrl = map["datawayUrl"] as String?
-    val cliToken = map["cliToken"] as String?
+    val cliToken = map["clientToken"] as String?
     val debug = map["debug"] as Boolean?
     val env = ReactNativeUtils.convertToNativeInt(map["envType"])
     val serviceName = map["service"] as String?
