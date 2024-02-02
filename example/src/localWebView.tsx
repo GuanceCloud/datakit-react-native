@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { View ,Alert} from 'react-native';
+import { View, Alert, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
-const html = require('./test_webview.html');
 
 
 class LocalWebViewScreen extends React.Component {
@@ -12,8 +11,8 @@ class LocalWebViewScreen extends React.Component {
                               text: "WebView"
                         }
                   }
-            };         
-      }      
+            };
+      }
       render() {
             return (
                   <View style = {{ flex: 1 }}>
@@ -22,10 +21,10 @@ class LocalWebViewScreen extends React.Component {
                    scalesPageToFit={false}
                    useWebKit={true}
                    javaScriptEnabled
-                   source={html}
+                   source={Platform.OS === 'android' ? { uri: 'file:///android_asset/test_webview.html' }:require('./test_webview.html')}
                    onMessage={this.onWebViewMessage}/>
                   </View>
-                );          
+                );
       }
       onWebViewMessage = (event:any) => {
          let message = event.nativeEvent.data
