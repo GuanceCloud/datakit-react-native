@@ -1,3 +1,8 @@
+# 0.2.8
+* 适配 iOS SDK 1.4.9-beta.4
+* 适配 Android 1.4.1-beta01
+* 新增 dataway 上传方式
+-----
 # 0.2.7
 * 适配 iOS SDK 1.4.7-beta.1
 * 适配 Android 1.3.16-beta02
