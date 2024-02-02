@@ -10,7 +10,7 @@ import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
 import LocalWebViewScreen from './localWebView';
-import WebViewScreen from './webView';
+//import WebViewScreen from './webView';
 import { styles } from './utils';
 import {FTRumReactNavigationTracking} from './FTRumReactNavigationTracking';
 
@@ -47,9 +47,6 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <Button title='网络链路追踪' onPress={() => navigation.navigate('Trace')} />
         <View  style={styles.space}/>
         <Button title='RUM数据采集' onPress={() => navigation.navigate('RUM')} />
-        <Button title='LocalWebView' onPress={() => navigation.navigate('LocalWebView')} />
-        <Button title='WebView' onPress={() => navigation.navigate('WebView')} />
-
       </View>
     );
   }
@@ -115,7 +112,6 @@ function App() {
         <Stack.Screen name='Log' component={LogScreen} options={{ title: '日志输出' }} />
         <Stack.Screen name='RUM' component={RUMScreen} options={({ title: 'RUM 数据采集' })} />
         <Stack.Screen name="LocalWebView" component={LocalWebViewScreen} />
-        <Stack.Screen name="WebView" component={WebViewScreen} />
         <Stack.Screen name='Deatil' component={MessagesDetail}/>
         <Stack.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>

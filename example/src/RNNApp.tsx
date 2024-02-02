@@ -6,7 +6,7 @@ import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
 import LocalWebViewScreen from './localWebView';
-import WebViewScreen from './webView';
+//import WebViewScreen from './webView';
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
 
 function startReactNativeNavigation() {
@@ -60,8 +60,6 @@ const HomeScreen = (props) => {
       <Button title='日志输出' onPress={() => Navigation.push(props.componentId, { component: { name: 'Logger' } })} />
       <Button title='网络链路追踪' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
       <Button title='RUM数据采集' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
-      <Button title='LocalWebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
-      <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
     </View>
   );
 };
