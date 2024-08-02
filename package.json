@@ -1,6 +1,6 @@
 {
   "name": "@cloudcare/react-native-mobile",
-  "version": "0.2.8",
+  "version": "0.2.9-beta.1",
   "description": "基于观测云 Android iOS React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -76,7 +76,7 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "< 0.70.0"
   },
   "jest": {
     "preset": "react-native",

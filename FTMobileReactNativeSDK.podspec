@@ -13,10 +13,10 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "10.0" }
   s.source       = { :git => "https://github.com/DataFlux-cn/datakit-react-native.git", :tag => "#{s.version}" }
 
-  
+
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  
+
 
   s.dependency "React-Core"
-  s.dependency 'FTMobileSDK', '1.4.9-beta.4'
+  s.dependency 'FTMobileSDK', '1.5.1'
 end

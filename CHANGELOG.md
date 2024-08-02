@@ -1,3 +1,8 @@
+# 0.2.9-beta.1
+* 适配 iOS SDK 1.5.1
+* 适配 Android ft-sdk 1.5.2, ft-native 1.1.1, ft-plugin-legacy 1.1.7
+
+-----
 # 0.2.8
 * 适配 iOS SDK 1.4.9-beta.4
 * 适配 Android 1.4.1-beta01
