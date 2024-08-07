@@ -50,11 +50,17 @@
       }}/>
 
       </View>
+      <View  style={styles.list}>
+      <Button title="Log Status: custom (string status)" onPress={()=>{
+        this.logging("custom log content","custom");
+      }}/>
+
+      </View>
       </ScrollView>
       )
     }
 
-    logging(message:string,status:FTLogStatus){
+    logging(message:string,status:FTLogStatus|string){
       FTReactNativeLog.logging(message,status,{"logging_property":"rn_demo"});
     }
   }
