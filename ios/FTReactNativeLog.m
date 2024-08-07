@@ -37,11 +37,15 @@ RCT_REMAP_METHOD(logConfig,
 }
 
 RCT_REMAP_METHOD(logging,
-                  content:(NSString *)content status:(int)status property:(NSDictionary *)property
+                  content:(NSString *)content status:(id)status property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    FTLogStatus logStatus =(FTLogStatus)status;
-    [[FTMobileAgent sharedInstance] logging:content status:logStatus property:property];
+    if([status isKindOfClass:NSString.class]){
+        [[FTLogger sharedInstance] log:content status:status property:property];
+    }else if([status isKindOfClass:NSNumber.class]){
+        FTLogStatus logStatus =(FTLogStatus)[status integerValue];
+        [[FTMobileAgent sharedInstance] logging:content status:logStatus property:property];
+    }
     resolve(nil);
 }
 @end

@@ -41,6 +41,9 @@ RCT_REMAP_METHOD(setConfig,
     if ([context.allKeys containsObject:@"detectFrequency"]) {
         rumConfig.monitorFrequency =(FTMonitorFrequency)[RCTConvert int:context[@"detectFrequency"]];
     }
+    if ([context.allKeys containsObject:@"enableResourceHostIP"]) {
+        rumConfig.enableResourceHostIP = [RCTConvert BOOL:context[@"enableResourceHostIP"]];
+    }
     if ([context.allKeys containsObject:@"globalContext"]) {
         rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
     }
