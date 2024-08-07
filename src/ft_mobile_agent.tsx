@@ -16,7 +16,11 @@ export enum EnvType {
  * @param debug 设置是否允许打印日志，默认false
  * @param env 环境，默认prod
  * @param service 设置所属业务或服务的名称 默认：`df_rum_ios`、`df_rum_android`
- * @param globalContext 自定义全局参数
+ * @param autoSync 数据是否进行自动同步上传 默认：true
+ * @param syncPageSize 数据同步时每条请求同步条数,最小值 5 默认：10
+ * @param syncSleepTime 数据同步时每条请求间隔时间 单位毫秒 0< syncSleepTime <100
+ * @param enableDataIntegerCompatible 数据同步时是否开启数据整数兼容
+ * @param globalContext 自定义全局参数 
  * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
  */
  export interface FTMobileConfig {
@@ -31,6 +35,10 @@ export enum EnvType {
    envType?:EnvType,
    env?:string,
    service?:string,
+   autoSync?:boolean,
+   syncPageSize?:number,
+   syncSleepTime?:number,
+   enableDataIntegerCompatible?:boolean,
    globalContext?:object,
    groupIdentifiers?:Array<string>
  }

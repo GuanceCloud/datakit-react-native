@@ -38,7 +38,7 @@ import { NativeModules } from 'react-native';
    * @param status  日志状态
    * @param property 日志上下文(可选)
    */
-   logging(content:String,logStatus:FTLogStatus,property?:object): Promise<void>;
+   logging(content:String,logStatus:FTLogStatus|string,property?:object): Promise<void>;
  };
 
  class FTReactNativeLogWrapper implements FTReactNativeLogType {

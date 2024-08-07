@@ -35,6 +35,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
  * @param enableNativeUserResource 是否自动采集 react-native Resource
+ * @param enableResourceHostIP 是否采集网络请求 Host IP (仅作用于native http，iOS 13及以上)
  * @param errorMonitorType 错误监控补充类型
  * @param deviceMonitorType 页面监控补充类型
  * @param detectFrequency 监控频率
@@ -49,6 +50,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
+   enableResourceHostIP?:boolean,
    errorMonitorType?:ErrorMonitorType,
    deviceMonitorType?:DeviceMetricsMonitorType,
    detectFrequency?:DetectFrequency
