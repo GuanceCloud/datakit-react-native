@@ -4,7 +4,7 @@
   import { styles} from './utils';
 
   class LogScreen extends React.Component{
-    static options(props) {
+    static options() {
       return {
         topBar: {
           title: {
