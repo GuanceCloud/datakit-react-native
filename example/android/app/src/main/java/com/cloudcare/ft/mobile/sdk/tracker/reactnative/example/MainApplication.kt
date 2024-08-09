@@ -1,5 +1,6 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example
 
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.FTMobilePackage
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -17,7 +18,7 @@ class MainApplication : NavigationApplication(), ReactApplication {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
               // Packages that cannot be autolinked yet can be added manually here, for example:
-              // add(MyReactNativePackage())
+               add(FTMobilePackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
