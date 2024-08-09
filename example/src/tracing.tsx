@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ScrollView,View, Button } from 'react-native';
 import { FTReactNativeTrace} from '@cloudcare/react-native-mobile';
-import { Utils,styles} from './utils';
+import { styles} from './utils';
 class TraceScreen extends React.Component {
   static options(props) {
     return {
@@ -24,7 +24,7 @@ class TraceScreen extends React.Component {
       );
   }
 
-  
+
   async getHttp(url:string){
     // 未开启自动采集时，可以手动获取 trace 功能所需的请求头
     var traceHeader = await FTReactNativeTrace.getTraceHeaderFields(url);
@@ -46,7 +46,7 @@ class TraceScreen extends React.Component {
             console.error(error);
         });
 
-    
+
   }
 
 

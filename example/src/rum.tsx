@@ -4,15 +4,15 @@ import AsyncStorage from '@react-native-community/async-storage'
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class RUMScreen extends React.Component {
-      static options(props) {
+      static options() {
             return {
                   topBar: {
                         title: {
                               text: "RUM 数据采集"
                         }
                   }
-            };         
-      }      
+            };
+      }
       render() {
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
@@ -69,11 +69,11 @@ class RUMScreen extends React.Component {
                   }}/>
                   </View>
                   </ScrollView>
-                  );          
+                  );
       }
 
 
-      
+
       async getHttp(url:string){
             const key = Utils.getUUID();
             FTReactNativeRUM.startResource(key,{"startResource_property_demo":"rn_demo"});
