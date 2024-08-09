@@ -24,7 +24,7 @@ class TraceScreen extends React.Component {
       );
   }
 
-  
+
   async getHttp(url:string){
     // 未开启自动采集时，可以手动获取 trace 功能所需的请求头
     var traceHeader = await FTReactNativeTrace.getTraceHeaderFields(url);
@@ -46,7 +46,7 @@ class TraceScreen extends React.Component {
             console.error(error);
         });
 
-    
+
   }
 
 

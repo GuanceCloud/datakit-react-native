@@ -11,8 +11,8 @@ class RUMScreen extends React.Component {
                               text: "RUM 数据采集"
                         }
                   }
-            };         
-      }      
+            };
+      }
       render() {
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
@@ -69,11 +69,11 @@ class RUMScreen extends React.Component {
                   }}/>
                   </View>
                   </ScrollView>
-                  );          
+                  );
       }
 
 
-      
+
       async getHttp(url:string){
             const key = Utils.getUUID();
             FTReactNativeRUM.startResource(key,{"startResource_property_demo":"rn_demo"});

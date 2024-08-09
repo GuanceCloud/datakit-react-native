@@ -3121,36 +3121,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"FtMobileAgentExample@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "FtMobileAgentExample@workspace:."
-  dependencies:
-    "@babel/core": ^7.20.0
-    "@babel/preset-env": ^7.1.6
-    "@babel/runtime": ^7.20.0
-    "@react-native-community/async-storage-backend-legacy": 2.0.0-rc.0
-    "@react-native/metro-config": 0.74.85
-    "@react-native/typescript-config": 0.74.85
-    "@react-navigation/bottom-tabs": ^6.6.1
-    "@react-navigation/drawer": ^6.3.1
-    "@react-navigation/native": ^6.1.18
-    "@react-navigation/native-stack": ^6.11.0
-    "@types/react": ^18.2.6
-    babel-plugin-module-resolver: ^4.0.0
-    metro-react-native-babel-preset: ^0.72.1
-    react: 18.2.0
-    react-native: 0.74.5
-    react-native-config: ^1.4.5
-    react-native-gesture-handler: 2.18.1
-    react-native-gradle-plugin: 0.71.19
-    react-native-navigation: 7.40.1
-    react-native-reanimated: 3.15.0
-    react-native-safe-area-context: ^3.3.2
-    react-native-screens: ^3.0.0
-    react-native-webview: ^13.6.4
-  languageName: unknown
-  linkType: soft
-
 "abbrev@npm:^2.0.0":
   version: 2.0.0
   resolution: "abbrev@npm:2.0.0"
@@ -6563,6 +6533,36 @@ __metadata:
   checksum: 2e3ab679f0b81edd81b9fb88a73a16c8b9b6dbef4e7158fd894c42e6dff04ba8d11f1b9663ffa2c30d0d9deee3cd44b033cd280322c010be3c290e4422088a7a
   languageName: node
   linkType: hard
+
+"react-native-mobile-example@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "react-native-mobile-example@workspace:."
+  dependencies:
+    "@babel/core": ^7.20.0
+    "@babel/preset-env": ^7.1.6
+    "@babel/runtime": ^7.20.0
+    "@react-native-community/async-storage-backend-legacy": 2.0.0-rc.0
+    "@react-native/metro-config": 0.74.85
+    "@react-native/typescript-config": 0.74.85
+    "@react-navigation/bottom-tabs": ^6.6.1
+    "@react-navigation/drawer": ^6.3.1
+    "@react-navigation/native": ^6.1.18
+    "@react-navigation/native-stack": ^6.11.0
+    "@types/react": ^18.2.6
+    babel-plugin-module-resolver: ^4.0.0
+    metro-react-native-babel-preset: ^0.72.1
+    react: 18.2.0
+    react-native: 0.74.5
+    react-native-config: ^1.4.5
+    react-native-gesture-handler: 2.18.1
+    react-native-gradle-plugin: 0.71.19
+    react-native-navigation: 7.40.1
+    react-native-reanimated: 3.15.0
+    react-native-safe-area-context: ^3.3.2
+    react-native-screens: ^3.0.0
+    react-native-webview: ^13.6.4
+  languageName: unknown
+  linkType: soft
 
 "react-native-navigation@npm:7.40.1":
   version: 7.40.1
