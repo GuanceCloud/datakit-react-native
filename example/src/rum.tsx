@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Button,ScrollView} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-community/async-storage'
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class RUMScreen extends React.Component {
