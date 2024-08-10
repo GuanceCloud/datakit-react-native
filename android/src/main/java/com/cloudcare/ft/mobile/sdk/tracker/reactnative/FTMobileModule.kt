@@ -25,6 +25,10 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val datawayUrl = map["datawayUrl"] as String?
     val cliToken = map["clientToken"] as String?
     val debug = map["debug"] as Boolean?
+    val autoSync = map["autoSync"] as Boolean?
+    val syncPageSize = ReactNativeUtils.convertToNativeInt(map["syncPageSize"])
+    val syncSleepTime =ReactNativeUtils.convertToNativeInt( map["syncSleepTime"])
+    val enableDataIntegerCompatible = map["enableDataIntegerCompatible"] as Boolean?
     val env = ReactNativeUtils.convertToNativeInt(map["envType"])
     val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
@@ -65,6 +69,18 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     }
     if (serviceName != null) {
       sdkConfig.serviceName = serviceName;
+    }
+    if (autoSync != null) {
+      sdkConfig.isAutoSync = autoSync
+    }
+    if (syncPageSize != null) {
+      sdkConfig.setCustomSyncPageSize(syncPageSize)
+    }
+    if (syncSleepTime != null) {
+      sdkConfig.setSyncSleepTime(syncSleepTime)
+    }
+    if (enableDataIntegerCompatible != null && enableDataIntegerCompatible) {
+      sdkConfig.enableDataIntegerCompatible()
     }
 
     globalContext?.forEach {
@@ -112,6 +128,12 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     FTSdk.unbindRumUserData()
     promise.resolve(null)
 
+  }
+
+  @ReactMethod
+  fun flushSyncData(promise: Promise){
+    FTSdk.flushSyncData()
+    promise.resolve(null)
   }
 
 

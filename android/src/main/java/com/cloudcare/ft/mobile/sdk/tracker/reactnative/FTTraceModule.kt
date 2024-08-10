@@ -80,8 +80,12 @@ class FTTraceModule(reactContext: ReactApplicationContext) :
 //  }
 
   @ReactMethod
-  fun getTraceHeader(key: String, url: String, promise: Promise) {
-    val hashMap = FTTraceManager.get().getTraceHeader(key, url)
+  fun getTraceHeaderFields( url: String,key: String?, promise: Promise) {
+    val hashMap = if (key == null) {
+      FTTraceManager.get().getTraceHeader(url)
+    } else {
+      FTTraceManager.get().getTraceHeader(key, url)
+    }
     val map = WritableNativeMap()
     hashMap.forEach {
       map.putString(it.key, it.value)

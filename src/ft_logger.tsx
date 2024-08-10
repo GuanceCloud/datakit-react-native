@@ -21,7 +21,7 @@ import { NativeModules } from 'react-native';
  export interface FTLogConfig{
    sampleRate?: number,
    enableLinkRumData?: boolean,
-   enableCustomLog?: boolean, 
+   enableCustomLog?: boolean,
    discardStrategy?: FTLogCacheDiscard,
    logLevelFilters?: Array<FTLogStatus>,
    globalContext?:object,
@@ -38,19 +38,28 @@ import { NativeModules } from 'react-native';
    * @param status  日志状态
    * @param property 日志上下文(可选)
    */
-   logging(content:String,logStatus:FTLogStatus|string,property?:object): Promise<void>;
+   logging(content:String,logStatus:FTLogStatus,property?:object): Promise<void>;
+   /**
+    * 输出日志。
+    * @param content 日志内容
+    * @param status  日志状态
+    * @param property 日志上下文(可选)
+    */
+   logWithStatusString(content:String,logStatus:String,property?:object): Promise<void>;
  };
 
- class FTReactNativeLogWrapper implements FTReactNativeLogType {
+ class FTReactNativeLogWrapper  {
    private logger: FTReactNativeLogType = NativeModules.FTReactNativeLog;
 
    logConfig(config:FTLogConfig): Promise<void>{
      return this.logger.logConfig(config);
    }
 
-   logging(content:String,logStatus:FTLogStatus,property?:object): Promise<void>{
+   logging(content:String,logStatus:FTLogStatus|String,property?:object): Promise<void>{
+     if((typeof logStatus)==='string'){
+       return this.logger.logWithStatusString(content,logStatus,property)
+     }
      return this.logger.logging(content,logStatus,property);
    }
  }
- export const FTReactNativeLog: FTReactNativeLogType = new FTReactNativeLogWrapper();
- 
+ export const FTReactNativeLog: FTReactNativeLogWrapper = new FTReactNativeLogWrapper();
