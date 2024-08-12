@@ -1,7 +1,12 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.ft.sdk.FTLogger
 import com.ft.sdk.FTLoggerConfig
 import com.ft.sdk.FTSdk
@@ -24,6 +29,7 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     val enableLinkRumData = map["enableLinkRumData"] as Boolean?
     val enableCustomLog = map["enableCustomLog"] as Boolean?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
+    val logCacheLimitCount = ReactNativeUtils.convertToNativeInt(map["logCacheLimitCount"])
 
     val logCacheDiscard: LogCacheDiscard =
       when (discardStrategy) {
@@ -61,7 +67,9 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     globalContext?.forEach {
       logConfig.addGlobalContext(it.key, it.value.toString())
     }
-
+    if (logCacheLimitCount != null) {
+      logConfig.setLogCacheLimitCount(logCacheLimitCount)
+    }
 
     FTSdk.initLogWithConfig(logConfig)
 
@@ -71,7 +79,6 @@ class FTLogModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun logging(content: String, logStatus: Int, map: ReadableMap?, promise: Promise) {
-
     val status: Status = when (logStatus) {
       0 -> Status.INFO
       1 -> Status.WARNING
@@ -87,6 +94,16 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     }
     promise.resolve(null)
 
+  }
+
+  @ReactMethod
+  fun logWithStatusString(content: String, logStatus: String, map: ReadableMap?, promise: Promise) {
+    if (map == null) {
+      FTLogger.getInstance().logBackground(content, logStatus)
+    } else {
+      FTLogger.getInstance().logBackground(content, logStatus, map.toHashMap())
+    }
+    promise.resolve(null)
   }
 
 

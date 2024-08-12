@@ -60,6 +60,7 @@ const HomeScreen = (props) => {
       <Button title='日志输出' onPress={() => Navigation.push(props.componentId, { component: { name: 'Logger' } })} />
       <Button title='网络链路追踪' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
       <Button title='RUM数据采集' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
+      <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
     </View>
   );
 };

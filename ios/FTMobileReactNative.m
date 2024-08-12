@@ -52,6 +52,18 @@ RCT_REMAP_METHOD(sdkConfig,
                 }
             }
         }
+        if ([context.allKeys containsObject:@"autoSync"]) {
+            config.autoSync = [RCTConvert BOOL:context[@"autoSync"]];
+        }
+        if ([context.allKeys containsObject:@"syncPageSize"]) {
+            config.syncPageSize = [RCTConvert int:context[@"syncPageSize"]];
+        }
+        if ([context.allKeys containsObject:@"syncSleepTime"]) {
+            config.syncSleepTime = [RCTConvert int:context[@"syncSleepTime"]];
+        }
+        if ([context.allKeys containsObject:@"enableDataIntegerCompatible"]) {
+            config.enableDataIntegerCompatible = [RCTConvert BOOL:context[@"enableDataIntegerCompatible"]];
+        }
         if ([context.allKeys containsObject:@"globalContext"]) {
             config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
         }
@@ -72,13 +84,20 @@ RCT_REMAP_METHOD(bindRUMUserData,
 }
 
 RCT_REMAP_METHOD(unbindRUMUserData,
-                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 unbindRUMUserData_Resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject
                  ){
     [[FTMobileAgent sharedInstance] unbindUser];
     resolve(nil);
 }
 
+RCT_REMAP_METHOD(flushSyncData,
+                 flushSyncData_Resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject
+                 ){
+    [[FTMobileAgent sharedInstance] flushSyncData];
+    resolve(nil);
+}
 RCT_REMAP_METHOD(trackEventFromExtension,
                  identifier:(NSString*)identifier
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve

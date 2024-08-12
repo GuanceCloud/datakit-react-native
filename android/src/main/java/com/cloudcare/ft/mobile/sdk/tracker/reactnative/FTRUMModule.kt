@@ -1,8 +1,11 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
-import android.util.Log
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.ft.sdk.DetectFrequency
@@ -43,6 +46,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     val enableNativeUserAction = map["enableNativeUserAction"] as Boolean?
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
+    val enableResourceHostIP = map["enableResourceHostIP"] as Boolean?
     val monitorType = ReactNativeUtils.convertToNativeInt(map["errorMonitorType"])
     val deviceMonitorType = ReactNativeUtils.convertToNativeInt(map["deviceMonitorType"])
     val detectFrequency = ReactNativeUtils.convertToNativeInt(map["detectFrequency"])
@@ -63,6 +67,9 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
     if (enableNativeUserResource != null) {
       rumConfig.isEnableTraceUserResource = enableNativeUserResource
+    }
+    if (enableResourceHostIP != null) {
+      rumConfig.isEnableResourceHostIP = enableResourceHostIP
     }
 
     if (monitorType != null) {

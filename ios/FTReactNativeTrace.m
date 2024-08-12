@@ -35,12 +35,17 @@ RCT_REMAP_METHOD(setConfig,
     resolve(nil);
 }
 
-RCT_REMAP_METHOD(getTraceHeader,
-                 key:(NSString *)key
+RCT_REMAP_METHOD(getTraceHeaderFields,
                  url:(NSString *)url
+                 key:(NSString *)key
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    NSDictionary *traceHeader = [[FTTraceManager sharedInstance] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
+    NSDictionary *traceHeader = nil;
+    if(key&&key.length>0){
+        traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
+    }else{
+        traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithUrl:[NSURL URLWithString:url]];
+    }
     if (traceHeader) {
         resolve(traceHeader);
     }else{

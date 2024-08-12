@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { View, Button,ScrollView} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
 import { Utils,styles} from './utils';
 class RUMScreen extends React.Component {
-      static options(props) {
+      static options() {
             return {
                   topBar: {
                         title: {
                               text: "RUM 数据采集"
                         }
                   }
-            };         
-      }      
+            };
+      }
       render() {
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
@@ -59,7 +59,7 @@ class RUMScreen extends React.Component {
                   </View>
                   <View  style={styles.list}>
                   <Button title="动态设置 globalContext " onPress={()=>{
-                        AsyncStorage.setItem("track_id","dynamic_id",(error)=>{
+                        AsyncStorage.setItem("track_id","dynamic_id",(error:any)=>{
                               if (error){
                                     console.log('存储失败' + error);
                               }else {
@@ -69,11 +69,11 @@ class RUMScreen extends React.Component {
                   }}/>
                   </View>
                   </ScrollView>
-                  );          
+                  );
       }
 
 
-      
+
       async getHttp(url:string){
             const key = Utils.getUUID();
             FTReactNativeRUM.startResource(key,{"startResource_property_demo":"rn_demo"});
@@ -84,7 +84,7 @@ class RUMScreen extends React.Component {
                         'Content-Type': 'application/json'
                   } ,
             };
-            var res : Response;
+            var res : Response|undefined ;
             try{
                   res = await fetch(url, fetchOptions);
             }finally{

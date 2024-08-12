@@ -6,29 +6,35 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "lint": "eslint .",
     "start": "react-native start",
     "build:ios": "react-native bundle --entry-file='index.tsx' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'"
   },
   "dependencies": {
-    "@react-native-community/async-storage": "^1.12.1",
-    "@react-navigation/bottom-tabs": "^6.2.0",
+    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.3.1",
-    "@react-navigation/native": "^6.0.6",
-    "@react-navigation/native-stack": "^6.2.5",
-    "react": "17.0.2",
-    "react-native": "0.67.4",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
     "react-native-config": "^1.4.5",
-    "react-native-gesture-handler": "^2.2.0",
-    "react-native-navigation": "^7.24.2",
-    "react-native-reanimated": "^2.4.1",
+    "react-native-gesture-handler": "2.18.1",
+    "react-native-gradle-plugin": "0.71.19",
+    "react-native-navigation": "7.40.1",
+    "react-native-reanimated": "3.15.0",
     "react-native-safe-area-context": "^3.3.2",
-    "react-native-screens": "^3.10.1",
+    "react-native-screens": "^3.0.0",
     "react-native-webview": "^13.6.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/runtime": "^7.12.5",
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/metro-config": "0.74.85",
+    "@react-native/typescript-config": "0.74.85",
+    "@types/react": "^18.2.6",
     "babel-plugin-module-resolver": "^4.0.0",
-    "metro-react-native-babel-preset": "^0.64.0"
+    "metro-react-native-babel-preset": "^0.72.1"
   }
 }
