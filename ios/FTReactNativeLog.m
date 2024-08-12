@@ -32,6 +32,9 @@ RCT_REMAP_METHOD(logConfig,
     }
     logger.enableCustomLog = [RCTConvert BOOL:context[@"enableCustomLog"]];
     logger.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
+    if ([context.allKeys containsObject:@"logCacheLimitCount"]) {
+            logger.logCacheLimitCount = [RCTConvert int:context[@"logCacheLimitCount"]];
+    }
     [[FTMobileAgent sharedInstance] startLoggerWithConfigOptions:logger];
     resolve(nil);
 }
