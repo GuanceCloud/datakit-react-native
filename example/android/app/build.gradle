@@ -4,7 +4,7 @@ apply plugin: "com.facebook.react"
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
-// apply plugin: 'ft-plugin'
+apply plugin: 'ft-plugin'
 
 // FTExt {
 //   showLog = true

@@ -13,6 +13,7 @@ buildscript {
     google()
     mavenCentral()
     maven {
+      // Plugin 添加观测云 Maven 仓库
       url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
     }
   }
@@ -20,6 +21,7 @@ buildscript {
     classpath("com.android.tools.build:gradle")
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    //添加 ft-plugin
     classpath 'com.cloudcare.ft.mobile.sdk.tracker.plugin:ft-plugin:1.3.1'
   }
 }
@@ -28,6 +30,7 @@ allprojects {
   repositories {
   google()
   mavenCentral()
+   // Agent 添加观测云 Maven 仓库
     maven {
       url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
    }
