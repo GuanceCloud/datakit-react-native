@@ -29,6 +29,7 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     val enableLinkRumData = map["enableLinkRumData"] as Boolean?
     val enableCustomLog = map["enableCustomLog"] as Boolean?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
+    val logCacheLimitCount = ReactNativeUtils.convertToNativeInt(map["logCacheLimitCount"])
 
     val logCacheDiscard: LogCacheDiscard =
       when (discardStrategy) {
@@ -66,7 +67,9 @@ class FTLogModule(reactContext: ReactApplicationContext) :
     globalContext?.forEach {
       logConfig.addGlobalContext(it.key, it.value.toString())
     }
-
+    if (logCacheLimitCount != null) {
+      logConfig.setLogCacheLimitCount(logCacheLimitCount)
+    }
 
     FTSdk.initLogWithConfig(logConfig)
 

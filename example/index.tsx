@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-// import AsyncStorage from '@react-native-community/async-storage'
+//import AsyncStorage from '@react-native-async-storage/async-storage'
 import App from './src/App';
 import { startReactNativeNavigation } from './src/RNNApp';
 import { name as appName, navigation as navigationLib } from './app.json';
@@ -68,6 +68,7 @@ async function initSDK() {
   let logConfig: FTLogConfig = {
     enableCustomLog: true,
     enableLinkRumData: true,
+    logCacheLimitCount: 2000,
     globalContext: { 'log_example': 'example2' },
   };
   await FTReactNativeLog.logConfig(logConfig);
@@ -89,6 +90,7 @@ async function initSDK() {
     enableNativeUserAction: true,
     enableNativeUserView: false,
     enableNativeUserResource: true,
+    enableResourceHostIP:true,
     errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
     detectFrequency:DetectFrequency.rare
