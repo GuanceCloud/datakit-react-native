@@ -1,3 +1,11 @@
+# 0.3.0-alpha.1
+* 新增支持数据同步参数配置，请求条目数据，同步间歇时间，以及日志缓存条目数
+* RUM resource 网络请求添加 remote ip 地址解析功能
+* 添加行协议 Integer 数据兼容模式，处理 web 数据类型冲突问题
+* 日志添加自定义 status 方法
+* react-native 采集 action 方法修改，适配 React 17 无法从 React.createElement 拦截点击事件问题
+
+-----
 # 0.2.9-beta.2
 * 调整 调整 peerDependencies 限制
 
