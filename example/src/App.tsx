@@ -47,6 +47,8 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <Button title='网络链路追踪' onPress={() => navigation.navigate('Trace')} />
         <View  style={styles.space}/>
         <Button title='RUM数据采集' onPress={() => navigation.navigate('RUM')} />
+        <View  style={styles.space}/>
+        <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
       </View>
     );
   }

@@ -66,7 +66,14 @@ type FTMobileReactNativeType = {
    * @returns a Promise.
    */
    unbindRUMUserData(): Promise<void>;
-  /**
+
+   /**
+    * 主动同步数据，当配置 `FTMobileConfig.autoSync=false` 时,需要主动触发本方法，进行数据同步。
+    * @returns a Promise.
+   */
+   flushSyncData():Promise<void>;
+  
+   /**
    * 同步 ios Widget Extension 中的事件，仅支持 iOS
    * @param groupIdentifier app groupId
    * @returns {groupIdentifier:string,datas:Array<object>} 可以用于查看 Extension 中采集到的数据.
@@ -93,6 +100,9 @@ type FTMobileReactNativeType = {
    }
    trackEventFromExtension(identifier:string) :Promise<object>{
      return this.sdk.trackEventFromExtension(identifier);
+   }
+   flushSyncData():Promise<void>{
+    return this.sdk.flushSyncData();
    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();

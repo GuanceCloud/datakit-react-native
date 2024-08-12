@@ -84,13 +84,20 @@ RCT_REMAP_METHOD(bindRUMUserData,
 }
 
 RCT_REMAP_METHOD(unbindRUMUserData,
-                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 unbindRUMUserData_Resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject
                  ){
     [[FTMobileAgent sharedInstance] unbindUser];
     resolve(nil);
 }
 
+RCT_REMAP_METHOD(flushSyncData,
+                 flushSyncData_Resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject
+                 ){
+    [[FTMobileAgent sharedInstance] flushSyncData];
+    resolve(nil);
+}
 RCT_REMAP_METHOD(trackEventFromExtension,
                  identifier:(NSString*)identifier
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
