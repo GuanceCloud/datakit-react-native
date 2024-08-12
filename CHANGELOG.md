@@ -1,3 +1,7 @@
+# 0.2.9-beta.2
+* 调整 调整 peerDependencies 限制
+
+-----
 # 0.2.9-beta.1
 * 适配 iOS SDK 1.5.1
 * 适配 Android ft-sdk 1.5.2, ft-native 1.1.1, ft-plugin-legacy 1.1.7
