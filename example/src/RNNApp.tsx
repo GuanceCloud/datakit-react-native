@@ -5,7 +5,8 @@ import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/r
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
-// import WebViewScreen from './webView';
+import WebViewScreen from './webView';
+import LocalWebViewScreen from './localWebView';
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
 
 function startReactNativeNavigation() {
@@ -36,6 +37,8 @@ function registerScreens() {
   Navigation.registerComponent('RUM', () => RUMScreen);
   Navigation.registerComponent('Logger', () => LogScreen);
   Navigation.registerComponent('Trace', () => TraceScreen);
+  Navigation.registerComponent('WebView', () => WebViewScreen);
+  Navigation.registerComponent('LocalWebView', () => LocalWebViewScreen);
   console.log("registerScreens end");
 
 }
@@ -58,6 +61,9 @@ const HomeScreen = (props) => {
       <Button title='网络链路追踪' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
       <Button title='RUM数据采集' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
       <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
+      <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
+      <Button title='LocalWebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
+
     </View>
   );
 };

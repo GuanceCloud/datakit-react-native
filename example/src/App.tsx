@@ -9,7 +9,8 @@ import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
-// import WebViewScreen from './webView';
+import WebViewScreen from './webView';
+import LocalWebViewScreen from './localWebView';
 import { styles } from './utils';
 import {FTRumReactNavigationTracking} from './FTRumReactNavigationTracking';
 
@@ -48,6 +49,10 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <Button title='RUM数据采集' onPress={() => navigation.navigate('RUM')} />
         <View  style={styles.space}/>
         <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
+        <View  style={styles.space}/>
+        <Button title='WebView' onPress={() => navigation.navigate('WebView')} /> 
+        <View  style={styles.space}/>
+        <Button title='LocalWebView' onPress={() => navigation.navigate('LocalWebView')} />
       </View>
     );
   }
@@ -115,6 +120,8 @@ function App() {
         <Stack.Screen name='Deatil' component={MessagesDetail}/>
         <Stack.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>
+        <Stack.Screen name="WebView" component={WebViewScreen} options={{ title: 'WebView' }}/>
+        <Stack.Screen name="LocalWebView" component={LocalWebViewScreen} options={{ title: 'LocalWebView' }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
