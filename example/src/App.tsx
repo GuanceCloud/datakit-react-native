@@ -9,15 +9,14 @@ import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
-import LocalWebViewScreen from './localWebView';
-//import WebViewScreen from './webView';
+// import WebViewScreen from './webView';
 import { styles } from './utils';
 import {FTRumReactNavigationTracking} from './FTRumReactNavigationTracking';
 
 function Home() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Home' }}/>
+      <Tab.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'react-navigation' }}/>
       <Tab.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
       <Tab.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>
 
@@ -113,7 +112,6 @@ function App() {
         <Stack.Screen name='Trace' component={TraceScreen} options={{ title: '网络链路追踪' }} />
         <Stack.Screen name='Log' component={LogScreen} options={{ title: '日志输出' }} />
         <Stack.Screen name='RUM' component={RUMScreen} options={({ title: 'RUM 数据采集' })} />
-        <Stack.Screen name="LocalWebView" component={LocalWebViewScreen} />
         <Stack.Screen name='Deatil' component={MessagesDetail}/>
         <Stack.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>

@@ -5,8 +5,7 @@ import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/r
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
-import LocalWebViewScreen from './localWebView';
-//import WebViewScreen from './webView';
+// import WebViewScreen from './webView';
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
 
 function startReactNativeNavigation() {
@@ -14,7 +13,7 @@ function startReactNativeNavigation() {
   // react-native-navigation 
   // 开启 RUM View 采集
   // 将 example 中 FTRumReactNavigationTracking.tsx 文件拖入您的工程；
-  // 调用 startTracking() 方法，开启采集，如下所示：
+  // 调用 FTRumReactNativeNavigationTracking.startTracking() 方法，开启采集，如下所示：
   FTRumReactNativeNavigationTracking.startTracking();
   registerScreens();
   Navigation.events().registerAppLaunchedListener( async () => {
@@ -37,8 +36,6 @@ function registerScreens() {
   Navigation.registerComponent('RUM', () => RUMScreen);
   Navigation.registerComponent('Logger', () => LogScreen);
   Navigation.registerComponent('Trace', () => TraceScreen);
-  Navigation.registerComponent('LocalWebView', () => LocalWebViewScreen);
-  Navigation.registerComponent('WebView', () => WebViewScreen);
   console.log("registerScreens end");
 
 }
@@ -67,7 +64,7 @@ const HomeScreen = (props) => {
 HomeScreen.options = {
   topBar: {
     title: {
-      text: 'Home',
+      text: 'react-native-navigation',
       color: 'white',
     },
     background: {

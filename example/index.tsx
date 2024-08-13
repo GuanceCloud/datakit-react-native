@@ -23,7 +23,8 @@ import {
 import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
-
+// 根据 app.json 中设置的 navigationLib 初始化对应导航组件，启动 APP
+// 导航组件使用 react-navigation
 if (navigationLib == 'react-navigation') {
   initSDK();
   AppRegistry.registerComponent(appName, () => App);
@@ -48,6 +49,7 @@ if (navigationLib == 'react-navigation') {
     });
   });
 } else if (navigationLib == 'react-native-navigation') {
+  // 导航组件使用 react-native-navigation
   initSDK();
   startReactNativeNavigation();
 }
