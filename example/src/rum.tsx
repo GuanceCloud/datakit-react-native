@@ -14,6 +14,7 @@ class RUMScreen extends React.Component {
             };
       }
       render() {
+            // 未开启自动采集时，可以通过 api 手动采集
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
                   <View  style={styles.list}>
