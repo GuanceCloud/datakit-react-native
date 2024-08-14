@@ -1,3 +1,7 @@
+# 0.3.0-beta.2
+* 在 Debug 场景下，RUM Resource 采集过滤掉指向本地主机（localhost）的热更新连接
+* 修正 Android 底层 Double 适配问题
+-----
 # 0.3.0-beta.1
 * 同 0.3.0-alpha.1
 -----
