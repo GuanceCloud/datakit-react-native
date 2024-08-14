@@ -71,6 +71,7 @@ async function initSDK() {
     enableCustomLog: true,
     enableLinkRumData: true,
     logCacheLimitCount: 2000,
+    sampleRate:1,
     globalContext: { 'log_example': 'example2' },
   };
   await FTReactNativeLog.logConfig(logConfig);
@@ -79,6 +80,7 @@ async function initSDK() {
   let traceConfig: FTTraceConfig = {
     enableLinkRUMData: true,
     enableNativeAutoTrace: true,
+    sampleRate:1.0,
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
@@ -91,8 +93,10 @@ async function initSDK() {
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
+    sampleRate:1.0,
     enableNativeUserResource: true,
     enableResourceHostIP:true,
+
     errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
     detectFrequency:DetectFrequency.rare

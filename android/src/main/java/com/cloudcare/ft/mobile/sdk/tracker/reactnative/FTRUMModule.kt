@@ -21,6 +21,12 @@ import okhttp3.OkHttpClient
 
 class FTRUMModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
+  companion object {
+    val RN_DEV_INNER_URL_REGEX = arrayOf(
+      Regex("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"),//expo
+      Regex("^http://localhost:808[0-9]/symbolicate$")//rn
+    )
+  }
 
   init {
     OkHttpClientProvider.setOkHttpClientFactory {
@@ -38,11 +44,16 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     return "FTReactNativeRUM"
   }
 
+  //是否是 debug 发送网络请求
+  private fun isDevUrl(text: String, regexArray: Array<Regex>): Boolean {
+    return regexArray.all { !it.matches(text) }
+  }
+
   @ReactMethod
   fun setConfig(context: ReadableMap, promise: Promise) {
     val map = context.toHashMap()
     val rumAppId = map["androidAppId"] as String
-    val sampleRate = map["sampleRate"] as Float?
+    val sampleRate = map["sampleRate"] as Double?
     val enableNativeUserAction = map["enableNativeUserAction"] as Boolean?
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
@@ -54,7 +65,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
     val rumConfig = FTRUMConfig().setRumAppId(rumAppId)
     if (sampleRate != null) {
-      rumConfig.samplingRate = sampleRate
+      rumConfig.samplingRate = sampleRate.toFloat()
     }
 
     if (enableNativeUserAction != null) {
@@ -93,6 +104,12 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
     globalContext?.forEach {
       rumConfig.addGlobalContext(it.key, it.value.toString())
+    }
+
+    if (BuildConfig.DEBUG) {
+      rumConfig.setResourceUrlHandler { url ->
+        return@setResourceUrlHandler isDevUrl(url, RN_DEV_INNER_URL_REGEX)
+      }
     }
 
     FTSdk.initRUMWithConfig(rumConfig)

@@ -1,18 +1,11 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative
 
-import android.util.Log
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
 import com.facebook.react.bridge.*
-import com.facebook.react.modules.network.OkHttpClientFactory
-import com.facebook.react.modules.network.OkHttpClientProvider
-import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.ft.sdk.FTSdk
 import com.ft.sdk.FTTraceConfig
 import com.ft.sdk.FTTraceManager
 import com.ft.sdk.TraceType
-import okhttp3.Call
-import okhttp3.EventListener
-import okhttp3.OkHttpClient
 
 
 class FTTraceModule(reactContext: ReactApplicationContext) :
@@ -24,14 +17,14 @@ class FTTraceModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun setConfig(context: ReadableMap, promise: Promise) {
     val map = context.toHashMap()
-    val sampleRate = map["sampleRate"] as Float?
+    val sampleRate = map["sampleRate"] as Double?
     val traceType = ReactNativeUtils.convertToNativeInt(map["traceType"])
     val enableLinkRUMData = map["enableLinkRUMData"] as Boolean?
     val enableNativeAutoTrace = map["enableNativeAutoTrace"] as Boolean?
 //    val serviceName = map["serviceName"] as String?
     val traceConfig = FTTraceConfig()
     if (sampleRate != null) {
-      traceConfig.samplingRate = sampleRate
+      traceConfig.samplingRate = sampleRate.toFloat()
     }
 
     if (traceType != null) {
