@@ -24,7 +24,7 @@ class FTLogModule(reactContext: ReactApplicationContext) :
 
     val map = context.toHashMap();
     val discardStrategy = ReactNativeUtils.convertToNativeInt(map["discardStrategy"])
-    val sampleRate = map["sampleRate"] as Float?
+    val sampleRate = map["sampleRate"] as Double?
     val logTypeReadArr = map["logTypeArr"] as ReadableArray?
     val enableLinkRumData = map["enableLinkRumData"] as Boolean?
     val enableCustomLog = map["enableCustomLog"] as Boolean?
@@ -43,7 +43,7 @@ class FTLogModule(reactContext: ReactApplicationContext) :
       .setLogCacheDiscardStrategy(logCacheDiscard)
 
     if (sampleRate != null) {
-      logConfig.samplingRate = sampleRate
+      logConfig.samplingRate = sampleRate.toFloat()
     }
 
     val logTypeArr = logTypeReadArr?.toArrayList()
