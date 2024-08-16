@@ -1,3 +1,12 @@
+# 0.3.0
+* 新增支持数据同步参数配置，请求条目数据，同步间歇时间，以及日志缓存条目数
+* RUM resource 网络请求添加 remote ip 地址解析功能
+* 添加行协议 Integer 数据兼容模式，处理 web 数据类型冲突问题
+* 日志添加自定义 status 方法
+* react-native 采集 action 方法修改，适配 React 17 无法从 React.createElement 拦截点击事件问题
+* 在 Debug 场景下，RUM Resource 采集过滤掉指向本地主机（localhost）的热更新连接
+* 修正 Android 底层 Double 适配问题
+-----
 # 0.3.0-alpha.2
 * Android 兼容 react native 0.63 低版本
 
