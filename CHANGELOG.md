@@ -1,4 +1,4 @@
-# 0.3.1-alpha.1
+# 0.3.1-alpha.2
 * Android 兼容 react native 0.63 低版本
 
 -----
