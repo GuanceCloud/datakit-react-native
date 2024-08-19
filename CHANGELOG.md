@@ -1,3 +1,7 @@
+# 0.3.1-alpha.1
+* Android 兼容 react native 0.63 低版本
+
+-----
 # 0.3.0
 * 新增支持数据同步参数配置，请求条目数据，同步间歇时间，以及日志缓存条目数
 * RUM resource 网络请求添加 remote ip 地址解析功能
