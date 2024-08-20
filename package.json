@@ -10,7 +10,7 @@
   "files": [
     "src",
     "lib",
-    "scripts",
+    "scripts/replace-react-require.js",
     "android",
     "ios",
     "cpp",
