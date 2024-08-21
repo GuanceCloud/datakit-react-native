@@ -21,7 +21,7 @@ BOOL filterBlackResource(NSURL *url){
         NSString *pattern = @"^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$";
         NSRegularExpression * regularExpress = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
         [internalDevResourceBlacklist addObject:regularExpress];
-        NSString *rn = @"^http://localhost:808[0-9]/(symbolicate$|status$|assets)";
+        NSString *rn = @"^http://localhost:808[0-9]/(hot|symbolicate|message|inspector|status|assets)(/|\\?).*$";
         NSRegularExpression * rnRegularExpress = [NSRegularExpression regularExpressionWithPattern:rn options:NSRegularExpressionCaseInsensitive error:&error];
         [internalDevResourceBlacklist addObject:rnRegularExpress];
     });
@@ -151,7 +151,7 @@ RCT_REMAP_METHOD(addResource,
     contentModel.responseHeader = [RCTConvert NSDictionary:content[@"responseHeader"]];
     contentModel.responseBody = [RCTConvert NSString:content[@"responseBody"]];
     contentModel.httpStatusCode = [RCTConvert int:content[@"resourceStatus"]];
-    
+
     [[FTExternalDataManager sharedManager] addResourceWithKey:key metrics:metricsModel content:contentModel];
     resolve(nil);
 }
