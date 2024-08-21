@@ -46,7 +46,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
   //是否是 debug 发送网络请求
   private fun isDevUrl(text: String, regexArray: Array<Regex>): Boolean {
-    return regexArray.all { !it.matches(text) }
+    return regexArray.any {it.matches(text) }
   }
 
   @ReactMethod
