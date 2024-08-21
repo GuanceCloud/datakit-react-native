@@ -24,7 +24,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   companion object {
     val RN_DEV_INNER_URL_REGEX = arrayOf(
       Regex("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"),//expo
-      Regex("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector)(/|\\?).*$")//rn
+      Regex("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector).*$")//rn
     )
   }
 
