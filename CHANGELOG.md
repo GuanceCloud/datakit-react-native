@@ -1,3 +1,9 @@
+# 0.3.1
+* 适配 iOS SDK 1.5.2
+* 兼容修复 React 版本低于 16.14.0 时使用 `react/jsx-runtime` 报错
+* Android 兼容 react native 0.63 低版本
+* 修改过滤指向本地主机（localhost）URL 的正则表达式，增加匹配范围
+----
 # 0.3.1-alpha.4
 * 修复 `replace-react-require.js` 文件未找到问题
 -----
