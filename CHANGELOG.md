@@ -1,3 +1,6 @@
+# 0.3.1-alpha.4
+* 修复 `replace-react-require.js` 文件未找到问题
+-----
 # 0.3.1-alpha.3
 * 兼容修复 React 版本低于 16.14.0 时使用 `react/jsx-runtime` 报错
 -----
