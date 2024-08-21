@@ -117,7 +117,7 @@ function App() {
         <Stack.Screen name='Trace' component={TraceScreen} options={{ title: '网络链路追踪' }} />
         <Stack.Screen name='Log' component={LogScreen} options={{ title: '日志输出' }} />
         <Stack.Screen name='RUM' component={RUMScreen} options={({ title: 'RUM 数据采集' })} />
-        <Stack.Screen name='Deatil' component={MessagesDetail}/>
+        <Stack.Screen name='Detail' component={MessagesDetail} options={{ title: 'Detail' }}/>
         <Stack.Screen name="Messages" component={Messages} options={{ title: 'Message' }}/>
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>
         <Stack.Screen name="WebView" component={WebViewScreen} options={{ title: 'WebView' }}/>
