@@ -1,5 +1,5 @@
 import React from 'react'
-import { FTReactNativeRUM } from '../index';
+import { FTReactNativeRUM } from '../ft_rum';
 
 export class FTRumActionTracking {
 	private static isTracking = false
