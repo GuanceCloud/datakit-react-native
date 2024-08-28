@@ -1,3 +1,6 @@
+# 0.3.2
+* 修复 Android 配置 `FTMobileConfig.env` 无效问题
+----
 # 0.3.1
 * 适配 iOS SDK 1.5.2
 * 兼容修复 React 版本低于 16.14.0 时使用 `react/jsx-runtime` 报错
