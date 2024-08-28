@@ -60,7 +60,7 @@ async function initSDK() {
   let config: FTMobileConfig = {
     datakitUrl:Config.SERVER_URL,
     debug: true,
-    env:"prod",
+    env:'test',
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
   };

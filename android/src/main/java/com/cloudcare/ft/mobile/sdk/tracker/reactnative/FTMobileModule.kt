@@ -60,7 +60,7 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     }
 
     val envString = map["env"] as String?
-    if (env != null) {
+    if (envString != null) {
        sdkConfig.env = envString
     }
 
