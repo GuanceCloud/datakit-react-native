@@ -19,16 +19,50 @@ RCT_REMAP_METHOD(sdkConfig,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
     [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
-        NSString *serverUrl = [RCTConvert NSString:context[@"serverUrl"]];
-        FTMobileConfig *config = [[FTMobileConfig alloc]initWithMetricsUrl:serverUrl];
+        FTMobileConfig *config;
+        NSString *datakitUrl = [RCTConvert NSString:context[@"datakitUrl"]];
+        NSString *dataWayUrl = [RCTConvert NSString:context[@"datawayUrl"]];
+        NSString *clientToken = [RCTConvert NSString:context[@"clientToken"]];
+        if(dataWayUrl && dataWayUrl.length>0 && clientToken && clientToken.length>0){
+            config = [[FTMobileConfig alloc]initWithDatawayUrl:dataWayUrl clientToken:clientToken];
+        }else if(datakitUrl && datakitUrl.length>0){
+            config = [[FTMobileConfig alloc]initWithDatakitUrl:datakitUrl];
+        }else{
+            resolve(nil);
+            return;
+        }
         if ([context.allKeys containsObject:@"debug"]) {
             config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
         }
         if ([context.allKeys containsObject:@"service"]) {
             config.service = [RCTConvert NSString:context[@"service"]];
         }
-        if([context.allKeys containsObject:@"envType"]){
-            config.env = [RCTConvert int:context[@"envType"]];
+        if([context.allKeys containsObject:@"env"]){
+            id env = context[@"env"];
+            if([env isKindOfClass:NSString.class]){
+                config.env = env;
+            }
+        }
+         if([context.allKeys containsObject:@"envType"]){
+            id env = context[@"envType"];
+            if([env isKindOfClass:NSNumber.class]){
+                int envType = [env intValue];
+                if(envType>=0 && envType<5){
+                    [config setEnvWithType:envType];
+                }
+            }
+        }
+        if ([context.allKeys containsObject:@"autoSync"]) {
+            config.autoSync = [RCTConvert BOOL:context[@"autoSync"]];
+        }
+        if ([context.allKeys containsObject:@"syncPageSize"]) {
+            config.syncPageSize = [RCTConvert int:context[@"syncPageSize"]];
+        }
+        if ([context.allKeys containsObject:@"syncSleepTime"]) {
+            config.syncSleepTime = [RCTConvert int:context[@"syncSleepTime"]];
+        }
+        if ([context.allKeys containsObject:@"enableDataIntegerCompatible"]) {
+            config.enableDataIntegerCompatible = [RCTConvert BOOL:context[@"enableDataIntegerCompatible"]];
         }
         if ([context.allKeys containsObject:@"globalContext"]) {
             config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
@@ -50,13 +84,20 @@ RCT_REMAP_METHOD(bindRUMUserData,
 }
 
 RCT_REMAP_METHOD(unbindRUMUserData,
-                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 unbindRUMUserData_Resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject
                  ){
-    [[FTMobileAgent sharedInstance] logout];
+    [[FTMobileAgent sharedInstance] unbindUser];
     resolve(nil);
 }
 
+RCT_REMAP_METHOD(flushSyncData,
+                 flushSyncData_Resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject
+                 ){
+    [[FTMobileAgent sharedInstance] flushSyncData];
+    resolve(nil);
+}
 RCT_REMAP_METHOD(trackEventFromExtension,
                  identifier:(NSString*)identifier
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve

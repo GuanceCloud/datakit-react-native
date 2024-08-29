@@ -32,16 +32,27 @@ RCT_REMAP_METHOD(logConfig,
     }
     logger.enableCustomLog = [RCTConvert BOOL:context[@"enableCustomLog"]];
     logger.enableLinkRumData = [RCTConvert BOOL:context[@"enableLinkRumData"]];
+    if ([context.allKeys containsObject:@"logCacheLimitCount"]) {
+            logger.logCacheLimitCount = [RCTConvert int:context[@"logCacheLimitCount"]];
+    }
     [[FTMobileAgent sharedInstance] startLoggerWithConfigOptions:logger];
     resolve(nil);
 }
 
 RCT_REMAP_METHOD(logging,
-                  content:(NSString *)content status:(int)status property:(NSDictionary *)property
+                 logging:(NSString *)content status:(nonnull NSNumber *)status property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    FTLogStatus logStatus =(FTLogStatus)status;
+   
+    FTLogStatus logStatus =(FTLogStatus)[status integerValue];
     [[FTMobileAgent sharedInstance] logging:content status:logStatus property:property];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(logWithStatusString,
+                 logWithStatusString:(NSString *)content status:(NSString *)status property:(NSDictionary *)property
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTLogger sharedInstance] log:content status:status property:property];
     resolve(nil);
 }
 @end

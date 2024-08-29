@@ -1,15 +1,16 @@
 {
   "name": "@cloudcare/react-native-mobile",
-  "version": "0.2.5",
+  "version": "0.3.2",
   "description": "基于观测云 Android iOS React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
+  "types": "lib/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
     "src",
     "lib",
+    "scripts/replace-react-require.js",
     "android",
     "ios",
     "cpp",
@@ -27,11 +28,12 @@
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepare": "bob build",
+    "prepare": "genversion --es6 --semi src/version.ts && bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods"
+    "bootstrap": "yarn example && yarn && yarn pods",
+    "postinstall": "node scripts/replace-react-require.js"
   },
   "keywords": [
     "cloudcare",
@@ -63,19 +65,20 @@
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.1.3",
+    "genversion": "3.0.2",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
-    "react": "17.0.1",
-    "react-native": "^0.67.4",
+    "react": "18.1.0",
+    "react-native": "0.70.0",
     "react-native-builder-bob": "^0.17.1",
     "release-it": "^14.2.2",
     "typescript": "^4.1.3"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": ">=16.13.1",
+    "react-native": ">=0.63.4 <1.0"
   },
   "jest": {
     "preset": "react-native",
@@ -120,8 +123,7 @@
     ],
     "rules": {
       "prettier/prettier": [
-        "error",
-        {
+        "error", {
           "quoteProps": "consistent",
           "singleQuote": true,
           "tabWidth": 2,
@@ -149,8 +151,7 @@
       "commonjs",
       "module",
       [
-        "typescript",
-        {
+        "typescript", {
           "project": "tsconfig.build.json"
         }
       ]

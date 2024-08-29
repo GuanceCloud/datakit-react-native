@@ -1,10 +1,14 @@
 import { AppRegistry } from 'react-native';
-// import AsyncStorage from '@react-native-community/async-storage'
+//import AsyncStorage from '@react-native-async-storage/async-storage'
 import App from './src/App';
 import { startReactNativeNavigation } from './src/RNNApp';
 import { name as appName, navigation as navigationLib } from './app.json';
 import { Navigation } from 'react-native-navigation';
 import {
+  DetectFrequency,
+  DeviceMetricsMonitorType,
+  EnvType,
+  ErrorMonitorType,
   FTLogConfig,
   FTLogStatus,
   FTMobileConfig,
@@ -14,15 +18,13 @@ import {
   FTReactNativeTrace,
   FTRUMConfig,
   FTTraceConfig,
-  ErrorMonitorType,
-  DeviceMetricsMonitorType,
-  DetectFrequency,
   TraceType,
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
-
+// 根据 app.json 中设置的 navigationLib 初始化对应导航组件，启动 APP
+// 导航组件使用 react-navigation
 if (navigationLib == 'react-navigation') {
   initSDK();
   AppRegistry.registerComponent(appName, () => App);
@@ -47,6 +49,7 @@ if (navigationLib == 'react-navigation') {
     });
   });
 } else if (navigationLib == 'react-native-navigation') {
+  // 导航组件使用 react-native-navigation
   initSDK();
   startReactNativeNavigation();
 }
@@ -55,8 +58,10 @@ if (navigationLib == 'react-navigation') {
 async function initSDK() {
   //基础配置
   let config: FTMobileConfig = {
-    serverUrl: Config.SERVER_URL,
+    datakitUrl:Config.SERVER_URL,
     debug: true,
+    env:'test',
+    // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
   };
   await FTMobileReactNative.sdkConfig(config);
@@ -65,6 +70,8 @@ async function initSDK() {
   let logConfig: FTLogConfig = {
     enableCustomLog: true,
     enableLinkRumData: true,
+    logCacheLimitCount: 2000,
+    sampleRate:1,
     globalContext: { 'log_example': 'example2' },
   };
   await FTReactNativeLog.logConfig(logConfig);
@@ -73,6 +80,7 @@ async function initSDK() {
   let traceConfig: FTTraceConfig = {
     enableLinkRUMData: true,
     enableNativeAutoTrace: true,
+    sampleRate:1.0,
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
@@ -85,7 +93,10 @@ async function initSDK() {
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
+    sampleRate:1.0,
     enableNativeUserResource: true,
+    enableResourceHostIP:true,
+
     errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
     detectFrequency:DetectFrequency.rare

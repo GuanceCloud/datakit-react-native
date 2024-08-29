@@ -1,0 +1,224 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guance Webview Demo</title>
+  <!--local script-->
+  <!-- <script src="/static/dataflux-rum.js"></script> -->
+  <!-- <script src="https://zhuyun-static-files-production.oss-cn-hangzhou.aliyuncs.com/browser-sdk/v3/dataflux-rum-test.js" type="text/javascript"></script> -->
+  <!--remote script-->
+  <script src="https://static.guance.com/browser-sdk/v3/dataflux-rum.js" ></script>
+
+  <style type="text/css">
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+
+
+    header {
+      height: 100px; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+
+    .logo {
+
+      background-size: contain; 
+      background-repeat: no-repeat;
+      width: 130px; 
+      height: auto;
+    }
+
+    label {
+      display: block; 
+      margin-top: 12px; 
+      font-weight: bold;
+    }
+
+
+
+    #color-cube {
+      width: 80px;
+      height: 60px;
+      margin-left: 10px;
+      background-color: red;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+      text-align: center;
+      display: flex;
+    }
+
+    #color-cube:hover {
+      background-color: #ff5733;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+  </style>
+
+</style>
+
+<script>
+  DATAFLUX_RUM.init({
+    applicationId: 'app_webview_demo',
+    datakitOrigin: 'http://127.0.0.1:9529',
+    allowedDDTracingOrigins: [window.location.origin],
+    trackInteractions:true,
+        //  env: 'production',
+        //  version: '1.0.0',
+  })
+</script> 
+
+  <!-- <script>
+    window.onerror = function() {
+      console.log(arguments, 'web console log')
+    }
+  </script> -->
+  
+</head>
+<body>
+  <header>
+    <img class="logo" src="/static/images/logo.png" alt="Logo">
+  </header>
+ <Label>Action:</Label></br>
+  <div id="color-cube" >Click to Change</div></br>
+
+  <label>Resource:</label></br>
+  <img src="missing.jpg" alt="Missing Image"></br>
+  <script src="http://localhost/missing.js"></script>
+
+  <button id="http-request-btn" >Http XHR Request</button></br>
+
+    <label id="long-task-result">Longtask:</label></br>
+
+    <div id="operation">
+      <button delay="10">10ms</button>
+      <button delay="500">500ms</button>
+      <button delay="1000">1s</button>
+    </div>
+    
+
+    <label id="error-result">Error:</label></br>
+    <button id="error-btn">Throw Exception</button></br>
+
+    <script>
+      var xx = notDefineVariable
+    </script>
+
+    <script>
+
+    // long task
+  function random(n, m) {
+    const len = m - n;
+    return Math.floor(n + Math.random() * len);
+  }
+
+  function getRandomColor() {
+    const rowColors = '0123456789abcdef';
+    let colors = '#';
+    let i = 6;
+    let len = rowColors.length;
+    while (i--) {
+      const n = random(0, len);
+      colors += rowColors.charAt(n);
+    }
+    return colors;
+  }
+
+  function switchColor() {
+    var  test = document.getElementById('color-cube')
+    test.style.backgroundColor = getRandomColor()
+  }
+
+  function sleep(delay) {
+    var end = performance.now() + delay
+    while(performance.now() < end) {
+
+    }
+  }
+
+  function buttonsClickHandle(event) {
+    const target = event.target;
+    const tagName = target.tagName.toLowerCase();
+    if (tagName !== 'button') return;
+    const delay = target.getAttribute('delay');
+    document.getElementById('long-task-result').textContent = 'Longtask: '+target.textContent+' (TS:'+new Date().getTime()+')'
+
+    sleep(Number(delay) - 5);
+
+
+  }
+
+
+  function errorFunction(event){
+    document.getElementById('error-result').textContent = 'Error: (TS:'+new Date().getTime()+')'
+    throw Error("custom error")
+  }
+
+
+  function httpRequest(event){
+    const queryString = window.location.search;
+    const params = new URLSearchParams(queryString);
+    const requestUrl = params.get('requestUrl')
+    if (requestUrl) {
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('GET', requestUrl);
+
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          alert("Http Request Send");
+        } else {
+          alert("HTTP request failed with status: " + xhr.status);
+        }
+      };
+
+      xhr.onerror = function () {
+        alert("An error occurred during the HTTP request.");
+      };
+
+      xhr.send();
+    } else {
+      alert("Missing requestUrl parameter.");
+    }
+  } 
+
+  function init() {
+    const operationDiv = document.getElementById('operation');
+    const buttons = operationDiv.getElementsByTagName('button');
+    for (let i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click',buttonsClickHandle,false);
+    }
+    document.getElementById('http-request-btn').addEventListener('click',httpRequest,false)
+    document.getElementById('error-btn').addEventListener('click',errorFunction,false)
+    document.getElementById('color-cube').addEventListener('click', switchColor, false)
+  }
+
+  init()
+</script>
+  </body>
+  </html>

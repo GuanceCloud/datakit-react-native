@@ -1,27 +1,101 @@
 import React from 'react'
-import { FTReactNativeRUM } from '../index';
+import { FTReactNativeRUM } from '../ft_rum';
 
 export class FTRumActionTracking {
 	private static isTracking = false
 	private static preActionTimestamp = Number.MIN_VALUE;
+	private static originalMemo = React.memo;
+    private static originalJsx = null;
+    private static originalCreateElement = React.createElement;
 
+	private static patchCreateElementFunction = (
+        originalFunction: typeof React.createElement,
+        [element, props, ...rest]: Parameters<typeof React.createElement>
+    ): ReturnType<typeof React.createElement> => {
+        if (
+            props &&
+            typeof (props as Record<string, unknown>).onPress === 'function'
+        ) {
+            const originalOnPress = (props as Record<string, unknown>) // eslint-disable-next-line @typescript-eslint/ban-types
+                .onPress as Function;
+            (props as Record<string, unknown>).onPress = (...args: any[]) => {
+                FTRumActionTracking.interceptOnPress(
+                    ...args
+                );
+                return originalOnPress(...args);
+            };
+            
+            (props as Record<
+                string,
+                unknown
+            >).__FT_INTERNAL_ORIGINAL_ON_PRESS__ = originalOnPress;
+        }
+        return originalFunction(element, props, ...rest);
+    };
 	static startTracking(): void {
 		if (FTRumActionTracking.isTracking) {
 			return
 		}
 		const original = React.createElement
-		React.createElement = (element: any, props: any, ...children: any): any => {
-			if (props && typeof props.onPress === "function") {
-				const originalOnPress = props.onPress
-				props.onPress = (...args: any[]) => {
-					FTRumActionTracking.interceptOnPress(...args)
-					return originalOnPress(...args)
-				}
-			}
-			return original(element, props, ...children)
-		}
+		React.createElement = (
+            ...args: Parameters<typeof React.createElement>
+        ): any => {
+            return this.patchCreateElementFunction(original, args);
+        };
+        try {
+            const jsxRuntime = getJsxRuntime();
+            const originaljsx = jsxRuntime.jsx;
+            this.originalJsx = originaljsx;
+            jsxRuntime.jsx = (
+                ...args: Parameters<typeof React.createElement>
+            ): ReturnType<typeof React.createElement> => {
+                return this.patchCreateElementFunction(originaljsx, args);
+            };
+        } catch (e) {
+           
+        }
+
+        const originalMemo = React.memo;
+        React.memo = (
+            component: any,
+            propsAreEqual?: (prevProps: any, newProps: any) => boolean
+        ) => {
+            return originalMemo(component, (prev, next) => {
+                if (!next.onPress || !prev.onPress) {
+                    return propsAreEqual
+                        ? propsAreEqual(prev, next)
+                        : areObjectShallowEqual(prev, next);
+                }
+
+				const { onPress: _prevOnPress, ...partialPrevProps } = prev;
+                const prevProps = {
+                    ...partialPrevProps,
+                    onPress: prev.__FT_INTERNAL_ORIGINAL_ON_PRESS__
+                };
+
+                const { onPress: _nextOnPress, ...partialNextProps } = next;
+                const nextProps = {
+                    ...partialNextProps,
+                    onPress: next.__FT_INTERNAL_ORIGINAL_ON_PRESS__
+                };
+
+                return propsAreEqual
+                    ? propsAreEqual(prevProps, nextProps)
+                    : areObjectShallowEqual(nextProps, prevProps);
+            });
+        };
 		FTRumActionTracking.isTracking = true
 	}
+	static stopTracking() {
+        React.createElement = this.originalCreateElement;
+        React.memo = this.originalMemo;
+        FTRumActionTracking.isTracking = false;
+        if (this.originalJsx) {
+            const jsxRuntime = getJsxRuntime();
+            jsxRuntime.jsx = this.originalJsx;
+            this.originalJsx = null;
+        }
+    }
 
 	private static interceptOnPress(...args: any[]): void {
 		if (args.length > 0 && args[0] && args[0]._targetInst) {
@@ -80,3 +154,37 @@ export class FTRumActionTracking {
    
 	}
 }
+const areObjectShallowEqual = (
+	objectA: Record<string, unknown> | undefined | null,
+	objectB: Record<string, unknown> | undefined | null
+): boolean => {
+	if (!objectA || !objectB) {
+		return objectA === objectB;
+	}
+
+	const keys = Object.keys(objectA);
+	if (keys.length !== Object.keys(objectB).length) {
+		return false;
+	}
+	for (const key of keys) {
+		if (objectA[key] !== objectB[key]) {
+			return false;
+		}
+	}
+	return true;
+};
+const getJsxRuntime = () => {
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    const [major, minor] = require('react/package.json').version.split('.');
+	// JSX Transform 适用于 > 16.14.0
+    if (Number(major)<=16&&Number(minor)<14) {
+         throw new Error('React version does not support new jsx transform');
+    }
+
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    const jsxRuntime = require('react/jsx-runtime');
+    if (!jsxRuntime.jsx) {
+        throw new Error('React jsx runtime does not export new jsx transform');
+    }
+    return jsxRuntime;
+};

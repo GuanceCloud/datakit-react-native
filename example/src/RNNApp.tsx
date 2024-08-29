@@ -5,6 +5,8 @@ import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/r
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
+import WebViewScreen from './webView';
+import LocalWebViewScreen from './localWebView';
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
 
 function startReactNativeNavigation() {
@@ -12,7 +14,7 @@ function startReactNativeNavigation() {
   // react-native-navigation 
   // 开启 RUM View 采集
   // 将 example 中 FTRumReactNavigationTracking.tsx 文件拖入您的工程；
-  // 调用 startTracking() 方法，开启采集，如下所示：
+  // 调用 FTRumReactNativeNavigationTracking.startTracking() 方法，开启采集，如下所示：
   FTRumReactNativeNavigationTracking.startTracking();
   registerScreens();
   Navigation.events().registerAppLaunchedListener( async () => {
@@ -35,7 +37,8 @@ function registerScreens() {
   Navigation.registerComponent('RUM', () => RUMScreen);
   Navigation.registerComponent('Logger', () => LogScreen);
   Navigation.registerComponent('Trace', () => TraceScreen);
-
+  Navigation.registerComponent('WebView', () => WebViewScreen);
+  Navigation.registerComponent('LocalWebView', () => LocalWebViewScreen);
   console.log("registerScreens end");
 
 }
@@ -57,13 +60,17 @@ const HomeScreen = (props) => {
       <Button title='日志输出' onPress={() => Navigation.push(props.componentId, { component: { name: 'Logger' } })} />
       <Button title='网络链路追踪' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
       <Button title='RUM数据采集' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
+      <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
+      <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
+      <Button title='LocalWebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
+
     </View>
   );
 };
 HomeScreen.options = {
   topBar: {
     title: {
-      text: 'Home',
+      text: 'react-native-navigation',
       color: 'white',
     },
     background: {
