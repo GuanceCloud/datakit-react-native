@@ -10,7 +10,7 @@
 #import "FtMobileAgent.h"
 #import <FTMobileSDK/FTMobileAgent.h>
 #import <React/RCTConvert.h>
-#import <FTThreadDispatchManager.h>
+#import "FTThreadDispatchManager.h"
 @implementation FTMobileReactNative
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(sdkConfig,

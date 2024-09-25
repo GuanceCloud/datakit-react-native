@@ -19,6 +19,9 @@ import {
   FTRUMConfig,
   FTTraceConfig,
   TraceType,
+  SessionReplayPrivacy,
+  FTReactNativeSessionReplay,
+  FTSessionReplayConfig
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
@@ -58,7 +61,8 @@ if (navigationLib == 'react-navigation') {
 async function initSDK() {
   //基础配置
   let config: FTMobileConfig = {
-    datakitUrl:Config.SERVER_URL,
+    datawayUrl:Config.DATAWAY_URL,
+    clientToken:Config.CLIENT_TOKEN,
     debug: true,
     env:'test',
     // envType:EnvType.prod,
@@ -120,6 +124,10 @@ async function initSDK() {
       })
      })
    */
-
+  let sessionReplayConfig:FTSessionReplayConfig = {
+    sampleRate:100,
+    privacy:SessionReplayPrivacy.ALLOW
+  }
+  await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);
   FTReactNativeLog.logging('config complete', FTLogStatus.info);
 }
