@@ -6,6 +6,10 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		17E2407F2CA93E2600E8014B /* FTReactNativeSessionReplay.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +24,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFtMobileAgent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFtMobileAgent.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17E2407D2CA93E2600E8014B /* FTReactNativeSessionReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeSessionReplay.h; sourceTree = "<group>"; };
+		17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FTReactNativeSessionReplay.mm; sourceTree = "<group>"; };
 		7C3C28A527684CDF009DB8E2 /* FTMobileReactNative.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTMobileReactNative.h; sourceTree = "<group>"; };
 		7C3C28A627684CDF009DB8E2 /* FTMobileReactNative.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTMobileReactNative.m; sourceTree = "<group>"; };
 		7C3C28A727684D03009DB8E2 /* FTReactNativeRUM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeRUM.h; sourceTree = "<group>"; };
@@ -52,6 +58,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				17E2407D2CA93E2600E8014B /* FTReactNativeSessionReplay.h */,
+				17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */,
 				7C3C28AB27684D36009DB8E2 /* FTReactNativeLog.h */,
 				7C3C28AC27684D36009DB8E2 /* FTReactNativeLog.m */,
 				7C3C28A927684D21009DB8E2 /* FTReactNativeTrace.h */,
@@ -121,6 +129,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17E2407F2CA93E2600E8014B /* FTReactNativeSessionReplay.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
