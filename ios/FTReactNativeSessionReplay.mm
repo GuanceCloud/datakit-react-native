@@ -1,9 +1,9 @@
-#import "FTSessionReplay.h"
+#import "FTReactNativeSessionReplay.h"
 #import "FTRumSessionReplay.h"
 #import "FTSessionReplayConfig+Private.h"
 #import <React/RCTConvert.h>
 #import "FTRCTTextViewRecorder.h"
-@implementation FTSessionReplay
+@implementation FTReactNativeSessionReplay
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
@@ -16,9 +16,9 @@ RCT_REMAP_METHOD(sessionReplayConfig,
                   reject:(RCTPromiseRejectBlock)reject)
 {
   FTSessionReplayConfig *config = [[FTSessionReplayConfig alloc]init];
-  if ([context.allKeys containsObject:@"sampleRate"]) {
-        logger.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
-    }
+  if([context.allKeys containsObject:@"sampleRate"]){
+    config.sampleRate = [RCTConvert double:context[@"sampleRate"]]*100;
+  }
   if([context.allKeys containsObject:@"privacy"]){
     int privacy = [context[@"privacy"] intValue];
     switch (privacy){

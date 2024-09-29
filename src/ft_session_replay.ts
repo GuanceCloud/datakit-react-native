@@ -26,7 +26,7 @@ type FTReactNativeSessionReplayType = {
 }
 
 class FTReactNativeSessionReplayWrapper implements FTReactNativeSessionReplayType {
-    private sessionReplay: FTReactNativeSessionReplayType = NativeModules.FTSessionReplay;
+    private sessionReplay: FTReactNativeSessionReplayType = NativeModules.FTReactNativeSessionReplay;
     sessionReplayConfig(config:FTSessionReplayConfig): Promise<void>{
         return this.sessionReplay.sessionReplayConfig(config);
     }
