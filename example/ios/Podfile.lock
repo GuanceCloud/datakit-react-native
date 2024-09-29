@@ -4,6 +4,8 @@ PODS:
   - FBLazyVector (0.74.5)
   - fmt (9.1.0)
   - FTMobileReactNativeSDK (0.3.2):
+    - FTMobileSDK (= 1.6.0-alpha.3)
+    - FTMobileSDK/FTSessionReplay (= 1.6.0-alpha.3)
     - React-Core
   - FTMobileSDK (1.6.0-alpha.3):
     - FTMobileSDK/FTMobileAgent (= 1.6.0-alpha.3)
@@ -1364,8 +1366,6 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - FTMobileReactNativeSDK (from `../..`)
-  - FTMobileSDK (from `/Users/hulilei/Desktop/work/ft-sdk-ios`)
-  - FTMobileSDK/FTSessionReplay (from `/Users/hulilei/Desktop/work/ft-sdk-ios`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1429,6 +1429,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - FTMobileSDK
     - HMSegmentedControl
     - SocketRocket
 
@@ -1443,8 +1444,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/fmt.podspec"
   FTMobileReactNativeSDK:
     :path: "../.."
-  FTMobileSDK:
-    :path: "/Users/hulilei/Desktop/work/ft-sdk-ios"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
@@ -1568,7 +1567,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  FTMobileReactNativeSDK: 7cc486f87cb2312b5376775938ea7b6ead676e7a
+  FTMobileReactNativeSDK: fc9b3a6400024a7b9d4f4ab8f708c8a18400c964
   FTMobileSDK: 47d76ff2afbf6f7da57ab96f638a9ba1e0ff7243
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
@@ -1631,6 +1630,6 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
-PODFILE CHECKSUM: 1bf2f70989f01f60e192461515c8d537eac1ec9f
+PODFILE CHECKSUM: 922eaf5d6292639f4e5e3ea60da0201c705ec767
 
 COCOAPODS: 1.15.2
