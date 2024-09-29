@@ -22,6 +22,7 @@ import com.ft.sdk.sessionreplay.utils.DefaultColorStringFormatter
 import com.ft.sdk.sessionreplay.utils.DefaultViewBoundsResolver
 import com.ft.sdk.sessionreplay.utils.DefaultViewIdentifierResolver
 import com.ft.sdk.sessionreplay.utils.DrawableToColorMapper
+import com.ft.sdk.sessionreplay.utils.DrawableToColorMapperFactory
 import com.ft.sdk.sessionreplay.utils.InternalLogger
 
 internal class ReactEditTextMapper(
@@ -34,7 +35,7 @@ internal class ReactEditTextMapper(
     DefaultViewIdentifierResolver.get(),
     DefaultColorStringFormatter.get(),
     DefaultViewBoundsResolver.get(),
-    DrawableToColorMapper.getDefault(),
+    DrawableToColorMapperFactory.getDefault(),
   )
 
   internal constructor(

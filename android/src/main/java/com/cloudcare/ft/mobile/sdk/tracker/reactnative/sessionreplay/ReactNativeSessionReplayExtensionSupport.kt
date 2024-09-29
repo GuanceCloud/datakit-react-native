@@ -10,8 +10,6 @@ import androidx.annotation.VisibleForTesting
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.ReactEditTextMapper
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.ReactTextMapper
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.ReactViewGroupMapper
-//import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.ReactTextMapper
-//import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.ReactViewGroupMapper
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.views.text.ReactTextView
@@ -30,10 +28,10 @@ internal class ReactNativeSessionReplayExtensionSupport(
 
   override fun getCustomViewMappers(): List<MapperTypeWrapper<*>> {
     val uiManagerModule = getUiManagerModule()
-//    val reactTextMapper = ReactTextMapper(reactContext, uiManagerModule)
+    val reactTextMapper = ReactTextMapper(reactContext, uiManagerModule)
     return listOf(
       MapperTypeWrapper(ReactViewGroup::class.java, ReactViewGroupMapper()),
-//      MapperTypeWrapper(ReactTextView::class.java, reactTextMapper),
+      MapperTypeWrapper(ReactTextView::class.java, reactTextMapper),
       MapperTypeWrapper(
         ReactEditText::class.java,
         ReactEditTextMapper(reactContext, uiManagerModule)

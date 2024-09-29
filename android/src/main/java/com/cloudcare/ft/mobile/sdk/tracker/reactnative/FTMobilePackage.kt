@@ -12,7 +12,8 @@ class FTMobilePackage : ReactPackage {
       FTMobileModule(reactContext),
       FTLogModule(reactContext),
       FTTraceModule(reactContext),
-      FTRUMModule(reactContext)
+      FTRUMModule(reactContext),
+      FTSessionReplayModule(reactContext)
     )
   }
 
