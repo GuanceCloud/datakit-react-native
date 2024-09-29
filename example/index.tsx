@@ -125,7 +125,7 @@ async function initSDK() {
      })
    */
   let sessionReplayConfig:FTSessionReplayConfig = {
-    sampleRate:100,
+    sampleRate:1,
     privacy:SessionReplayPrivacy.ALLOW
   }
   await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);

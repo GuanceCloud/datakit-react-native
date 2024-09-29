@@ -16,10 +16,9 @@ RCT_REMAP_METHOD(sessionReplayConfig,
                   reject:(RCTPromiseRejectBlock)reject)
 {
   FTSessionReplayConfig *config = [[FTSessionReplayConfig alloc]init];
-  if([context.allKeys containsObject:@"sampleRate"]){
-    NSNumber *sampleRate = context[@"sampleRate"];
-    config.sampleRate = [sampleRate intValue];
-  }
+  if ([context.allKeys containsObject:@"sampleRate"]) {
+        logger.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
+    }
   if([context.allKeys containsObject:@"privacy"]){
     int privacy = [context[@"privacy"] intValue];
     switch (privacy){
