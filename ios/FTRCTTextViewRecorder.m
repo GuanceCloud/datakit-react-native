@@ -68,8 +68,7 @@
   return [FTInvisibleElement constant];
 }
 - (NSString *)extractTextFromSubViews:(NSArray<RCTShadowView *>*)subViews{
-  
-  if(subViews.count>0){
+  if(subViews && subViews.count>0){
     NSString *result = @"";
     for (id view in subViews) {
       if ([view isKindOfClass:[RCTRawTextShadowView class]]){
@@ -77,7 +76,7 @@
         result = [result stringByAppendingString:textView.text];
       }
       if ([view isKindOfClass:[RCTVirtualTextShadowView class]]){
-        NSString *str = [self extractTextFromSubViews:view];
+        NSString *str = [self extractTextFromSubViews:[view reactSubviews]];
         result = [result stringByAppendingString:str];
       }
     }
