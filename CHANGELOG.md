@@ -1,3 +1,6 @@
+# 0.3.3
+* 适配 iOS SDK 1.5.3
+----
 # 0.3.2
 * 修复 Android 配置 `FTMobileConfig.env` 无效问题
 ----
