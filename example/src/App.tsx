@@ -11,6 +11,8 @@ import LogScreen from './logging';
 import TraceScreen from './tracing';
 import WebViewScreen from './webView';
 import LocalWebViewScreen from './localWebView';
+import SessionReplayScreen from './sessionReplay';
+
 import { styles } from './utils';
 import {FTRumReactNavigationTracking} from './FTRumReactNavigationTracking';
 
@@ -53,6 +55,8 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <Button title='WebView' onPress={() => navigation.navigate('WebView')} /> 
         <View  style={styles.space}/>
         <Button title='LocalWebView' onPress={() => navigation.navigate('LocalWebView')} />
+        <View  style={styles.space}/>
+        <Button title='SessionReplay' onPress={() => navigation.navigate('SessionReplay')} />
       </View>
     );
   }
@@ -122,6 +126,7 @@ function App() {
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }}/>
         <Stack.Screen name="WebView" component={WebViewScreen} options={{ title: 'WebView' }}/>
         <Stack.Screen name="LocalWebView" component={LocalWebViewScreen} options={{ title: 'LocalWebView' }}/>
+        <Stack.Screen name="SessionReplay" component={SessionReplayScreen} options={{ title: 'SessionReplay' }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

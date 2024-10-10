@@ -7,6 +7,7 @@ import LogScreen from './logging';
 import TraceScreen from './tracing';
 import WebViewScreen from './webView';
 import LocalWebViewScreen from './localWebView';
+import SessionReplayScreen from './sessionReplay'; 
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
 
 function startReactNativeNavigation() {
@@ -39,6 +40,7 @@ function registerScreens() {
   Navigation.registerComponent('Trace', () => TraceScreen);
   Navigation.registerComponent('WebView', () => WebViewScreen);
   Navigation.registerComponent('LocalWebView', () => LocalWebViewScreen);
+  Navigation.registerComponent('SessionReplay', () => SessionReplayScreen);
   console.log("registerScreens end");
 
 }
@@ -63,6 +65,7 @@ const HomeScreen = (props) => {
       <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
       <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
       <Button title='LocalWebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
+      <Button title='SessionReplay' onPress={() => Navigation.push(props.componentId, { component: { name: 'SessionReplay' } })} />
 
     </View>
   );

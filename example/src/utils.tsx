@@ -25,8 +25,39 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     alignItems: 'baseline',
   },
+  srSwitchContainter:{
+    height: 50,
+    paddingLeft: 10,
+    paddingTop:12,
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
+    flexDirection: "row",
+  },
+  srButtonContainter:{
+    height: 50,
+    paddingLeft: 10,
+    paddingTop:12,
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
+    marginTop:12,
+  },
   space: {
     marginTop: 8,
+  },
+  input: {
+      height: 40,
+      margin: 12,
+      borderWidth: 1,
+      padding: 10,
+  },
+  redText: {
+      marginLeft:12,
+      color: 'red',
+      fontSize: 20,
+      fontWeight: 'bold',
+  },
+  leftMargin:{
+      marginLeft:12
   },
 });
 
