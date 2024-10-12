@@ -18,6 +18,6 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React-Core"
-  s.dependency 'FTMobileSDK', '1.6.0-alpha.4'
-  s.dependency 'FTMobileSDK/FTSessionReplay', '1.6.0-alpha.4'
+  s.dependency 'FTMobileSDK', '1.6.0-alpha.5'
+  s.dependency 'FTMobileSDK/FTSessionReplay', '1.6.0-alpha.5'
 end
