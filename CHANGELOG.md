@@ -1,3 +1,6 @@
+# 0.4.1-alpha.1
+* 新增 Session Replay 功能
+----
 # 0.3.3
 * 适配 iOS SDK 1.5.3
 ----
