@@ -65,6 +65,15 @@ RCT_REMAP_METHOD(setConfig,
     if ([context.allKeys containsObject:@"enableResourceHostIP"]) {
         rumConfig.enableResourceHostIP = [RCTConvert BOOL:context[@"enableResourceHostIP"]];
     }
+    if ([context.allKeys containsObject:@"enableTrackNativeCrash"]){
+        rumConfig.enableTrackAppCrash = [RCTConvert BOOL:context[@"enableTrackNativeCrash"]];
+    }
+    if ([context.allKeys containsObject:@"enableTrackNativeAppANR"]){
+        rumConfig.enableTrackAppANR = [RCTConvert BOOL:context[@"enableTrackNativeAppANR"]];
+    }
+    if ([context.allKeys containsObject:@"enableTrackNativeFreeze"]){
+        rumConfig.enableTrackAppFreeze = [RCTConvert BOOL:context[@"enableTrackNativeFreeze"]];
+    }
     if ([context.allKeys containsObject:@"globalContext"]) {
         rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
     }
@@ -111,7 +120,13 @@ RCT_REMAP_METHOD(addError,
     [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative" message:message stack:stack property:property];
     resolve(nil);
 }
-
+RCT_REMAP_METHOD(addErrorWithType,
+                 type:(NSString *)type stack:(NSString *)stack message:(NSString *)message property:(NSDictionary *)property
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTExternalDataManager sharedManager] addErrorWithType:type message:message stack:stack property:property];
+    resolve(nil);
+}
 RCT_REMAP_METHOD(startResource,
                  startResource:(NSString *)key property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve

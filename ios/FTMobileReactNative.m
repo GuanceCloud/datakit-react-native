@@ -90,6 +90,27 @@ RCT_REMAP_METHOD(unbindRUMUserData,
     [[FTMobileAgent sharedInstance] unbindUser];
     resolve(nil);
 }
+RCT_REMAP_METHOD(appendGlobalContext,
+                 appendGlobalContext:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTMobileAgent sharedInstance] appendGlobalContext:context];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(appendRUMGlobalContext,
+                 appendRUMGlobalContext:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTMobileAgent sharedInstance] appendRUMGlobalContext:context];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(appendLogGlobalContext,
+                 appendLogGlobalContext:(NSDictionary *)context
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTMobileAgent sharedInstance] appendLogGlobalContext:context];
+    resolve(nil);
+}
 
 RCT_REMAP_METHOD(flushSyncData,
                  flushSyncData_Resolver:(RCTPromiseResolveBlock)resolve

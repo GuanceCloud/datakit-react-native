@@ -53,6 +53,13 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <Button title='WebView' onPress={() => navigation.navigate('WebView')} /> 
         <View  style={styles.space}/>
         <Button title='LocalWebView' onPress={() => navigation.navigate('LocalWebView')} />
+        <View  style={styles.space}/>
+        <Button title='GlobalContext 属性动态设置' onPress={() => {
+           FTMobileReactNative.appendGlobalContext({'global_key':'global_value'});
+           FTMobileReactNative.appendLogGlobalContext({'log_key':'log_value'});
+           FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
+        }} />
+        <View  style={styles.space}/>
       </View>
     );
   }

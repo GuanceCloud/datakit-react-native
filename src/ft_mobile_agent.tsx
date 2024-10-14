@@ -66,7 +66,24 @@ type FTMobileReactNativeType = {
    * @returns a Promise.
    */
    unbindRUMUserData(): Promise<void>;
-
+   /**
+   * 添加自定义全局参数。作用于 RUM、Log 数据
+   * @param context 自定义全局参数。
+   * @returns a Promise.
+   */
+   appendGlobalContext(context:object):Promise<void>;
+   /**
+   * 添加自定义 RUM 全局参数。作用于 RUM 数据
+   * @param context 自定义 RUM 全局参数。
+   * @returns a Promise.
+   */
+   appendRUMGlobalContext(context:object):Promise<void>;
+  /**
+   * 添加自定义 RUM、Log 全局参数。作用于 Log 数据
+   * @param context 自定义 Log 全局参数。
+   * @returns a Promise.
+   */
+   appendLogGlobalContext(context:object):Promise<void>;
    /**
     * 主动同步数据，当配置 `FTMobileConfig.autoSync=false` 时,需要主动触发本方法，进行数据同步。
     * @returns a Promise.
@@ -97,6 +114,15 @@ type FTMobileReactNativeType = {
    }
    unbindRUMUserData(): Promise<void> {
      return this.sdk.unbindRUMUserData();
+   }
+   appendGlobalContext(context: object): Promise<void> {
+    return this.sdk.appendGlobalContext(context);
+   }
+   appendLogGlobalContext(context: object): Promise<void> {
+       return this.sdk.appendLogGlobalContext(context);
+   }
+   appendRUMGlobalContext(context: object): Promise<void> {
+       return this.sdk.appendRUMGlobalContext(context);
    }
    trackEventFromExtension(identifier:string) :Promise<object>{
      return this.sdk.trackEventFromExtension(identifier);
