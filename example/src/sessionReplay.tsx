@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SafeAreaView,TextInput,View,Text,Switch,Button} from 'react-native';
+import { SafeAreaView,TextInput,View,Text,Switch,Button,Alert} from 'react-native';
 import { styles} from './utils';
 
 class SessionReplayScreen extends React.Component {
@@ -40,6 +40,7 @@ static options() {
           <View  style={styles.srButtonContainter}>
           <Button title="This is a Button"
            onPress={()=>{
+            Alert.alert('Button pressed')
             console.log("Button pressed")
                  }}/>
           </View>
