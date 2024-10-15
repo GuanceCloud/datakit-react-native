@@ -1,4 +1,4 @@
-# 0.4.1-alpha.1
+# 0.4.0-alpha.1
 * 新增 Session Replay 功能
 ----
 # 0.3.3
