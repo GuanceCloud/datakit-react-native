@@ -136,5 +136,35 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     promise.resolve(null)
   }
 
+  @ReactMethod
+  fun appendGlobalContext(
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    extra?.let {
+      FTSdk.appendGlobalContext(extra.toHashMap())
+    }
+  }
+
+  @ReactMethod
+  fun appendLogGlobalContext(
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    extra?.let {
+      FTSdk.appendLogGlobalContext(extra.toHashMap())
+    }
+  }
+
+  @ReactMethod
+  fun appendRUMGlobalContext(
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    extra?.let {
+      FTSdk.appendRUMGlobalContext(extra.toHashMap())
+    }
+  }
+
 
 }

@@ -165,6 +165,17 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+    fun addErrorWithType(errorType:String,stack: String, message: String, map: ReadableMap?, promise: Promise) {
+      if (map != null) {
+        FTRUMGlobalManager.get()
+          .addError(stack, message,errorType, AppState.RUN, map.toHashMap())
+      } else {
+        FTRUMGlobalManager.get().addError(stack, message, errorType, AppState.RUN)
+      }
+      promise.resolve(null)
+    }
+
+  @ReactMethod
   fun startResource(key: String, map: ReadableMap?, promise: Promise) {
     if (map != null) {
       FTRUMGlobalManager.get().startResource(key, map.toHashMap())
