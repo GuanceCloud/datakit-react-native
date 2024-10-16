@@ -1,3 +1,10 @@
+# 0.3.4-alpha.1
+* addError 添加自定错误类型
+* 支持全局动态添加 globalContext 属性
+* 适配 Android SDK 1.6.1-alpha04
+* 适配 iOS SDK 1.5.4.alpha.2
+
+----
 # 0.3.3
 * 适配 iOS SDK 1.5.3
 ----
