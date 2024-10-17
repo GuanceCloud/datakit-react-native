@@ -96,6 +96,14 @@ type FTMobileReactNativeType = {
    * @returns {groupIdentifier:string,datas:Array<object>} 可以用于查看 Extension 中采集到的数据.
    */
    trackEventFromExtension(identifier:string): Promise<object>
+   /**
+    * 关闭 SDK 内正在运行对象
+   */
+   shutDown():Promise<void>
+   /**
+    * 清除所有尚未上传至服务器的数据。
+   */
+   clearAllData():Promise<void>
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
@@ -129,6 +137,12 @@ type FTMobileReactNativeType = {
    }
    flushSyncData():Promise<void>{
     return this.sdk.flushSyncData();
+   }
+   shutDown():Promise<void>{
+    return this.sdk.shutDown();
+   }
+   clearAllData():Promise<void>{
+    return this.sdk.clearAllData();
    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();

@@ -68,6 +68,12 @@ const HomeScreen = (props) => {
          FTMobileReactNative.appendLogGlobalContext({'log_key':'log_value'});
          FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
       }} />
+      <Button title='关闭 SDK' onPress={() => {
+         FTMobileReactNative.shutDown();
+      }} />
+      <Button title='删除所有尚未上传至服务器的数据' onPress={() => {
+         FTMobileReactNative.clearAllData();
+      }} />
     </View>
   );
 };
