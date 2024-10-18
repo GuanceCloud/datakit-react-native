@@ -1,5 +1,6 @@
 import type { ErrorHandlerCallback } from 'react-native';
 import { FTReactNativeRUM } from '../ft_rum';
+const EMPTY_MESSAGE = 'Unknown Error';
 
 export class FTRumErrorTracking {
   private static isTracking = false;
@@ -62,7 +63,8 @@ export class FTRumErrorTracking {
       }).join(' ');
 
 
-      FTReactNativeRUM.addError(
+      FTReactNativeRUM.addErrorWithType(
+        "console.error",
         stack,
         message,
         ).then(() => {
@@ -71,10 +73,10 @@ export class FTRumErrorTracking {
 
       }
       private static getErrorMessage(error: any | undefined): string {
-        let message = '';
-        if (error == undefined) {
-          message = '';
-        } else if ("message" in error){
+        let message = EMPTY_MESSAGE;
+        if (error == undefined || error === null) {
+          message = EMPTY_MESSAGE;
+        } else if (typeof error === 'object' && 'message' in error){
           message = String(error.message);
         } else {
           message = String(error);
