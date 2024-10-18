@@ -3,43 +3,44 @@ PODS:
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.5)
   - fmt (9.1.0)
-  - FTMobileReactNativeSDK (0.3.3):
-    - FTMobileSDK (= 1.5.4.alpha.1)
+  - FTMobileReactNativeSDK (0.3.4-alpha.2):
+    - FTMobileSDK (= 1.5.4.alpha.4)
     - React-Core
-  - FTMobileSDK (1.5.4-alpha.1):
-    - FTMobileSDK/FTMobileAgent (= 1.5.4-alpha.1)
-  - FTMobileSDK/FTMobileAgent (1.5.4-alpha.1):
+  - FTMobileSDK (1.5.4-alpha.4):
+    - FTMobileSDK/FTMobileAgent (= 1.5.4-alpha.4)
+  - FTMobileSDK/FTMobileAgent (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore
-  - FTMobileSDK/FTSDKCore (1.5.4-alpha.1):
-    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/DataManager (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/FTRUM (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/Logger (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/Protocol (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.5.4-alpha.1)
-  - FTMobileSDK/FTSDKCore/BaseUtils (1.5.4-alpha.1):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.5.4-alpha.1)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.5.4-alpha.1)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.5.4-alpha.1)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.5.4-alpha.1):
+  - FTMobileSDK/FTSDKCore (1.5.4-alpha.4):
+    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/DataManager (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/FTRUM (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/Logger (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/Protocol (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.5.4-alpha.4)
+  - FTMobileSDK/FTSDKCore/BaseUtils (1.5.4-alpha.4):
+    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.5.4-alpha.4)
+    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.5.4-alpha.4)
+  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.5.4-alpha.4)
+  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
-  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.5.4-alpha.1)
-  - FTMobileSDK/FTSDKCore/DataManager (1.5.4-alpha.1):
+  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.5.4-alpha.4)
+  - FTMobileSDK/FTSDKCore/DataManager (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/BaseUtils/Thread
-  - FTMobileSDK/FTSDKCore/FTRUM (1.5.4-alpha.1):
+  - FTMobileSDK/FTSDKCore/FTRUM (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/BaseUtils/Thread
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/FTWKWebView (1.5.4-alpha.1):
+  - FTMobileSDK/FTSDKCore/FTWKWebView (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Logger (1.5.4-alpha.1):
+  - FTMobileSDK/FTSDKCore/Logger (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
-  - FTMobileSDK/FTSDKCore/Protocol (1.5.4-alpha.1)
-  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.5.4-alpha.1):
+    - FTMobileSDK/FTSDKCore/Protocol
+  - FTMobileSDK/FTSDKCore/Protocol (1.5.4-alpha.4)
+  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.5.4-alpha.4):
     - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
     - FTMobileSDK/FTSDKCore/Protocol
   - glog (0.3.5)
@@ -1564,8 +1565,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  FTMobileReactNativeSDK: f74162e762422c16de3b8afb2db6ac56cec94777
-  FTMobileSDK: 47687d7d22c702e05feb26bd0e9e2236ee9f05ed
+  FTMobileReactNativeSDK: ae562d8f56e848273793de63447c85d8a028d12c
+  FTMobileSDK: a9d43dba126c5a09d8e151c768512f9472dcecd3
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
