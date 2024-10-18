@@ -147,6 +147,8 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     extra?.let {
       FTSdk.appendGlobalContext(extra.toHashMap())
     }
+    promise.resolve(null)
+
   }
 
   @ReactMethod
@@ -157,6 +159,8 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     extra?.let {
       FTSdk.appendLogGlobalContext(extra.toHashMap())
     }
+    promise.resolve(null)
+
   }
 
   @ReactMethod
@@ -167,7 +171,24 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     extra?.let {
       FTSdk.appendRUMGlobalContext(extra.toHashMap())
     }
+    promise.resolve(null)
+
   }
 
+  @ReactMethod
+  fun shutDown(
+    promise: Promise
+  ) {
+    FTSdk.shutDown()
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun clearAllData(
+    promise: Promise
+  ) {
+    FTSdk.clearAllData()
+    promise.resolve(null)
+  }
 
 }
