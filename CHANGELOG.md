@@ -1,3 +1,8 @@
+# 0.3.4-alpha.3
+* 支持通过 FTMobileReactNative.shutDown() 关闭 SDK
+* 支持通过 FTMobileReactNative.clearAllData() 清理 SDK 数据
+
+----
 # 0.3.4-alpha.2
 * addError 添加自定错误类型
 * 支持全局动态添加 globalContext 属性
