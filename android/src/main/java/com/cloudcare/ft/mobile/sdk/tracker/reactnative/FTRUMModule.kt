@@ -102,10 +102,11 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
       }
     }
 
-    globalContext?.forEach {
-      rumConfig.addGlobalContext(it.key, it.value.toString())
+    globalContext?.let {
+      for ((key, value) in it) {
+        rumConfig.addGlobalContext(key, value.toString())
+      }
     }
-
     if (BuildConfig.DEBUG) {
       rumConfig.setResourceUrlHandler { url ->
         return@setResourceUrlHandler isDevUrl(url, RN_DEV_INNER_URL_REGEX)
