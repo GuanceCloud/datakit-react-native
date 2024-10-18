@@ -28,8 +28,8 @@ export class FTRumErrorTracking {
     const message = FTRumErrorTracking.getErrorMessage(error);
     const stacktrace = FTRumErrorTracking.getErrorStackTrace(error);
     FTReactNativeRUM.addError(
-      message,
       stacktrace,
+      message
       ).then(() => {
         try {
           FTRumErrorTracking.isInDefaultErrorHandler = true;
@@ -63,8 +63,8 @@ export class FTRumErrorTracking {
 
 
       FTReactNativeRUM.addError(
+        stack,
         message,
-        stack
         ).then(() => {
           FTRumErrorTracking.defaultConsoleError.apply(console, params);
         });
