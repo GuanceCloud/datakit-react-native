@@ -1,3 +1,19 @@
+# 0.3.4
+* addError 添加自定错误类型
+* 支持全局动态添加 globalContext 属性
+* 支持通过 FTMobileReactNative.shutDown() 关闭 SDK
+* 支持通过 FTMobileReactNative.clearAllData() 清理 SDK 数据
+* 修复自动采集 react-native Error 时，参数 `stack` 与 `message` 赋值相反问题
+* 适配 Android SDK ft-sdk 1.6.1
+  * 修复 RUM 单独调用自定义 startView，导致监控指标 FTMetricsMTR 线程未被回收的问题
+	* 支持通过 FTSdk.appendGlobalContext(globalContext)、FTSdk.appendRUMGlobalContext(globalContext)、
+   		 FTSdk.appendLogGlobalContext(globalContext)添加动态属性
+	*	支持通过 FTSdk.clearAllData() 清理未上报缓存数据
+* 适配 iOS SDK 1.5.4
+  * 添加全局、log、RUM globalContext 属性动态设置方式
+  * 添加清除数据方法，支持删除所有尚未上传至服务器的数据
+  * 调整同步间歇支持的最大时间间隔至 5000 毫秒
+----
 # 0.3.4-alpha.3
 * 支持通过 FTMobileReactNative.shutDown() 关闭 SDK
 * 支持通过 FTMobileReactNative.clearAllData() 清理 SDK 数据
