@@ -71,7 +71,7 @@ const HomeScreen = (props) => {
       <Button title='关闭 SDK' onPress={() => {
          FTMobileReactNative.shutDown();
       }} />
-      <Button title='删除所有尚未上传至服务器的数据' onPress={() => {
+      <Button title='清理 SDK 缓存数据' onPress={() => {
          FTMobileReactNative.clearAllData();
       }} />
     </View>

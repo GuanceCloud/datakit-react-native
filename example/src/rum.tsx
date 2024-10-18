@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Button,ScrollView} from 'react-native';
 import { FTReactNativeRUM,FTRUMResource} from '@cloudcare/react-native-mobile';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Utils,styles} from './utils';
 class RUMScreen extends React.Component {
       static options() {
@@ -12,6 +13,11 @@ class RUMScreen extends React.Component {
                   }
             };
       }
+      generateError = () => {
+            var test;
+            test.color; //This will generate a TypeError: undefined
+          }
+        
       render() {
             // 未开启自动采集时，可以通过 api 手动采集
             return (
@@ -61,6 +67,22 @@ class RUMScreen extends React.Component {
                   <Button title="Add Console Error" onPress={()=>{
                         console.error("Add Console Error");
                   }}/>
+                  </View>
+                  <View  style={styles.list}>
+                  <Button title="Generate an Error" onPress={()=>{
+                        this.generateError()
+                  }}/>
+                  </View>
+                  <View  style={styles.list}>
+                  <Button title="运行时读写文件方式设置 globalContext " onPress={()=>{
+                        AsyncStorage.setItem("track_id","dynamic_id",(error:any)=>{
+                              if (error){
+                                    console.log('存储失败' + error);
+                              }else {
+                                    console.log('存储成功');
+                              }
+                        })
+                  }}></Button>
                   </View>
                   </ScrollView>
                   );
