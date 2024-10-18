@@ -9,6 +9,7 @@
 #import "FTReactNativeLog.h"
 #import <FTMobileSDK/FTMobileAgent.h>
 #import <React/RCTConvert.h>
+#import "FTLogger+Private.h"
 @implementation FTReactNativeLog
 RCT_EXPORT_MODULE()
 
@@ -43,10 +44,10 @@ RCT_REMAP_METHOD(logging,
                  logging:(NSString *)content status:(nonnull NSNumber *)status property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-   
-    FTLogStatus logStatus =(FTLogStatus)[status integerValue];
-    [[FTMobileAgent sharedInstance] logging:content status:logStatus property:property];
-    resolve(nil);
+  
+  LogStatus logStatus =(LogStatus)[status integerValue];
+  [[FTLogger sharedInstance] log:content statusType:logStatus property:property];
+  resolve(nil);
 }
 RCT_REMAP_METHOD(logWithStatusString,
                  logWithStatusString:(NSString *)content status:(NSString *)status property:(NSDictionary *)property

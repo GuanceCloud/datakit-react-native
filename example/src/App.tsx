@@ -60,6 +60,14 @@ class HomeScreen extends React.Component<{ navigation: any }> {
            FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
         }} />
         <View  style={styles.space}/>
+        <Button title='关闭 SDK' onPress={() => {
+           FTMobileReactNative.shutDown();
+        }} />
+        <View  style={styles.space}/>
+        <Button title='删除所有尚未上传至服务器的数据' onPress={() => {
+           FTMobileReactNative.clearAllData();
+        }} />
+        <View  style={styles.space}/>
       </View>
     );
   }
