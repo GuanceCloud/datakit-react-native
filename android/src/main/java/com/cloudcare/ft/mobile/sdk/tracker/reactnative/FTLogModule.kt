@@ -64,8 +64,10 @@ class FTLogModule(reactContext: ReactApplicationContext) :
       logConfig.isEnableCustomLog = enableCustomLog
     }
 
-    globalContext?.forEach {
-      logConfig.addGlobalContext(it.key, it.value.toString())
+    globalContext?.let {
+      for ((key, value) in it) {
+        logConfig.addGlobalContext(key, value.toString())
+      }
     }
     if (logCacheLimitCount != null) {
       logConfig.setLogCacheLimitCount(logCacheLimitCount)
