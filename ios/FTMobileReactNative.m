@@ -94,21 +94,21 @@ RCT_REMAP_METHOD(appendGlobalContext,
                  appendGlobalContext:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTMobileAgent sharedInstance] appendGlobalContext:context];
+    [FTMobileAgent appendGlobalContext:context];
     resolve(nil);
 }
 RCT_REMAP_METHOD(appendRUMGlobalContext,
                  appendRUMGlobalContext:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTMobileAgent sharedInstance] appendRUMGlobalContext:context];
+    [FTMobileAgent appendRUMGlobalContext:context];
     resolve(nil);
 }
 RCT_REMAP_METHOD(appendLogGlobalContext,
                  appendLogGlobalContext:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTMobileAgent sharedInstance] appendLogGlobalContext:context];
+    [FTMobileAgent appendLogGlobalContext:context];
     resolve(nil);
 }
 
@@ -133,6 +133,18 @@ RCT_REMAP_METHOD(trackEventFromExtension,
         }
         
     }];
+}
+RCT_REMAP_METHOD(shutDown,
+                 shutDown_findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [FTMobileAgent shutDown];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(clearAllData,
+                 clearAllData_findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [FTMobileAgent clearAllData];
+    resolve(nil);
 }
 @end
 
