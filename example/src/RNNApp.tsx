@@ -63,7 +63,17 @@ const HomeScreen = (props) => {
       <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
       <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
       <Button title='LocalWebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
-
+      <Button title='GlobalContext 属性动态设置' onPress={() => {
+         FTMobileReactNative.appendGlobalContext({'global_key':'global_value'});
+         FTMobileReactNative.appendLogGlobalContext({'log_key':'log_value'});
+         FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
+      }} />
+      <Button title='关闭 SDK' onPress={() => {
+         FTMobileReactNative.shutDown();
+      }} />
+      <Button title='清理 SDK 缓存数据' onPress={() => {
+         FTMobileReactNative.clearAllData();
+      }} />
     </View>
   );
 };

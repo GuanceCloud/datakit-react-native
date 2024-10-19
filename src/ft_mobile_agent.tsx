@@ -66,7 +66,24 @@ type FTMobileReactNativeType = {
    * @returns a Promise.
    */
    unbindRUMUserData(): Promise<void>;
-
+   /**
+   * 添加自定义全局参数。作用于 RUM、Log 数据
+   * @param context 自定义全局参数。
+   * @returns a Promise.
+   */
+   appendGlobalContext(context:object):Promise<void>;
+   /**
+   * 添加自定义 RUM 全局参数。作用于 RUM 数据
+   * @param context 自定义 RUM 全局参数。
+   * @returns a Promise.
+   */
+   appendRUMGlobalContext(context:object):Promise<void>;
+  /**
+   * 添加自定义 RUM、Log 全局参数。作用于 Log 数据
+   * @param context 自定义 Log 全局参数。
+   * @returns a Promise.
+   */
+   appendLogGlobalContext(context:object):Promise<void>;
    /**
     * 主动同步数据，当配置 `FTMobileConfig.autoSync=false` 时,需要主动触发本方法，进行数据同步。
     * @returns a Promise.
@@ -79,6 +96,14 @@ type FTMobileReactNativeType = {
    * @returns {groupIdentifier:string,datas:Array<object>} 可以用于查看 Extension 中采集到的数据.
    */
    trackEventFromExtension(identifier:string): Promise<object>
+   /**
+    * 关闭 SDK 内正在运行对象
+   */
+   shutDown():Promise<void>
+   /**
+    * 清除所有尚未上传至服务器的数据。
+   */
+   clearAllData():Promise<void>
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
@@ -98,11 +123,26 @@ type FTMobileReactNativeType = {
    unbindRUMUserData(): Promise<void> {
      return this.sdk.unbindRUMUserData();
    }
+   appendGlobalContext(context: object): Promise<void> {
+    return this.sdk.appendGlobalContext(context);
+   }
+   appendLogGlobalContext(context: object): Promise<void> {
+       return this.sdk.appendLogGlobalContext(context);
+   }
+   appendRUMGlobalContext(context: object): Promise<void> {
+       return this.sdk.appendRUMGlobalContext(context);
+   }
    trackEventFromExtension(identifier:string) :Promise<object>{
      return this.sdk.trackEventFromExtension(identifier);
    }
    flushSyncData():Promise<void>{
     return this.sdk.flushSyncData();
+   }
+   shutDown():Promise<void>{
+    return this.sdk.shutDown();
+   }
+   clearAllData():Promise<void>{
+    return this.sdk.clearAllData();
    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();

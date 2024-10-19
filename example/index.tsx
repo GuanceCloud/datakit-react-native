@@ -96,7 +96,9 @@ async function initSDK() {
     sampleRate:1.0,
     enableNativeUserResource: true,
     enableResourceHostIP:true,
-
+    enableTrackNativeAppANR:true,
+    enableTrackNativeCrash:true,
+    enableTrackNativeFreeze:true,
     errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
     detectFrequency:DetectFrequency.rare

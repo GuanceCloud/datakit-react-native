@@ -32,6 +32,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param sampleRate 采样率
  * @param enableAutoTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
  * @param enableTrackError  是否自动采集 react-native Error
+ * @param enableTrackNativeCrash 是否采集 Native Error
+ * @param enableTrackNativeAppANR 是否采集 Native ANR
+ * @param enableTrackNativeFreeze 是否采集 Native Freeze
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
  * @param enableNativeUserResource 是否自动采集 react-native Resource
@@ -47,6 +50,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    sampleRate?:number,
    enableAutoTrackUserAction?:boolean,
    enableAutoTrackError?:boolean,
+   enableTrackNativeCrash?:boolean,
+   enableTrackNativeAppANR?:boolean,
+   enableTrackNativeFreeze?:boolean,
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
@@ -136,6 +142,15 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    */
    addError(stack: string, message: string,property?:object): Promise<void>;
   /**
+   * 异常捕获与日志收集。
+   * @param type 错误类型
+   * @param stack 堆栈日志
+   * @param message 错误信息
+   * @param property 事件上下文(可选)
+   * @returns a Promise.
+   */
+   addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>;
+  /**
    * 开始资源请求。
    * @param key 唯一 id
    * @param property 事件上下文(可选)
@@ -186,6 +201,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    addError(stack: string, message: string,property?:object): Promise<void>{
      return this.rum.addError(stack,message,property);
    }
+   addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>{
+    return this.rum.addErrorWithType(type,stack,message,property);
+  }
    startResource(key: string,property?:object): Promise<void>{
      return this.rum.startResource(key,property);
    }

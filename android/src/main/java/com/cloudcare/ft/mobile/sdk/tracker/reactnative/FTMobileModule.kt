@@ -27,16 +27,17 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val debug = map["debug"] as Boolean?
     val autoSync = map["autoSync"] as Boolean?
     val syncPageSize = ReactNativeUtils.convertToNativeInt(map["syncPageSize"])
-    val syncSleepTime =ReactNativeUtils.convertToNativeInt( map["syncSleepTime"])
+    val syncSleepTime = ReactNativeUtils.convertToNativeInt(map["syncSleepTime"])
     val enableDataIntegerCompatible = map["enableDataIntegerCompatible"] as Boolean?
     val env = ReactNativeUtils.convertToNativeInt(map["envType"])
     val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
 
-    val sdkConfig = if (datakitUrl != null) FTSDKConfig.builder(datakitUrl) else FTSDKConfig.builder(
-                                            datawayUrl,
-                                            cliToken
-                                        )
+    val sdkConfig =
+      if (datakitUrl != null) FTSDKConfig.builder(datakitUrl) else FTSDKConfig.builder(
+        datawayUrl,
+        cliToken
+      )
     if (env != null) {
       val envType: EnvType = when (env) {
         EnvType.PROD.ordinal -> {
@@ -83,8 +84,10 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
       sdkConfig.enableDataIntegerCompatible()
     }
 
-    globalContext?.forEach {
-      sdkConfig.addGlobalContext(it.key, it.value.toString())
+    globalContext?.let {
+      for ((key, value) in it) {
+        sdkConfig.addGlobalContext(key, value.toString())
+      }
     }
 
     FTSdk.install(sdkConfig)
@@ -136,5 +139,56 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     promise.resolve(null)
   }
 
+  @ReactMethod
+  fun appendGlobalContext(
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    extra?.let {
+      FTSdk.appendGlobalContext(extra.toHashMap())
+    }
+    promise.resolve(null)
+
+  }
+
+  @ReactMethod
+  fun appendLogGlobalContext(
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    extra?.let {
+      FTSdk.appendLogGlobalContext(extra.toHashMap())
+    }
+    promise.resolve(null)
+
+  }
+
+  @ReactMethod
+  fun appendRUMGlobalContext(
+    extra: ReadableMap?,
+    promise: Promise
+  ) {
+    extra?.let {
+      FTSdk.appendRUMGlobalContext(extra.toHashMap())
+    }
+    promise.resolve(null)
+
+  }
+
+  @ReactMethod
+  fun shutDown(
+    promise: Promise
+  ) {
+    FTSdk.shutDown()
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun clearAllData(
+    promise: Promise
+  ) {
+    FTSdk.clearAllData()
+    promise.resolve(null)
+  }
 
 }

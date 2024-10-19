@@ -102,10 +102,11 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
       }
     }
 
-    globalContext?.forEach {
-      rumConfig.addGlobalContext(it.key, it.value.toString())
+    globalContext?.let {
+      for ((key, value) in it) {
+        rumConfig.addGlobalContext(key, value.toString())
+      }
     }
-
     if (BuildConfig.DEBUG) {
       rumConfig.setResourceUrlHandler { url ->
         return@setResourceUrlHandler isDevUrl(url, RN_DEV_INNER_URL_REGEX)
@@ -163,6 +164,17 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     }
     promise.resolve(null)
   }
+
+  @ReactMethod
+    fun addErrorWithType(errorType:String,stack: String, message: String, map: ReadableMap?, promise: Promise) {
+      if (map != null) {
+        FTRUMGlobalManager.get()
+          .addError(stack, message,errorType, AppState.RUN, map.toHashMap())
+      } else {
+        FTRUMGlobalManager.get().addError(stack, message, errorType, AppState.RUN)
+      }
+      promise.resolve(null)
+    }
 
   @ReactMethod
   fun startResource(key: String, map: ReadableMap?, promise: Promise) {
