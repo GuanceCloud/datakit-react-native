@@ -23,7 +23,9 @@ class RUMScreen extends React.Component {
             return (
                   <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
                   <View  style={styles.list}>
-                  <Button title="Action 点击" accessibilityLabel = "RUM Click" onPress={()=>{
+                  <Button title="Action 点击" 
+                  ft-enable-track="false"
+                  onPress={()=>{
                         console.log('Action 点击');
                         FTReactNativeRUM.startAction('actionName','actionType');
                   }}
@@ -84,6 +86,15 @@ class RUMScreen extends React.Component {
                         })
                   }}></Button>
                   </View>
+                  <View  style={styles.list}>
+                  <Button 
+                   title="TEST EXTRA PROPERTY"
+                   accessibilityLabel = "test extra property"
+                   ft-extra-property='{"e_name": "John Doe", "e_age": 30, "e_city": "New York"}'
+                   onPress={()=>{
+                       console.log("btn click")
+                  }}/>
+                   </View>
                   </ScrollView>
                   );
       }
