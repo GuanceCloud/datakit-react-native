@@ -58,6 +58,9 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     val enableNativeUserView = map["enableNativeUserView"] as Boolean?
     val enableNativeUserResource = map["enableNativeUserResource"] as Boolean?
     val enableResourceHostIP = map["enableResourceHostIP"] as Boolean?
+    val enableTrackNativeCrash = map["enableTrackNativeCrash"] as Boolean?
+    val enableTrackNativeAppANR = map["enableTrackNativeAppANR"] as Boolean?
+    val enableTrackNativeFreeze = map["enableTrackNativeFreeze"] as Boolean?
     val monitorType = ReactNativeUtils.convertToNativeInt(map["errorMonitorType"])
     val deviceMonitorType = ReactNativeUtils.convertToNativeInt(map["deviceMonitorType"])
     val detectFrequency = ReactNativeUtils.convertToNativeInt(map["detectFrequency"])
@@ -81,6 +84,18 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     }
     if (enableResourceHostIP != null) {
       rumConfig.isEnableResourceHostIP = enableResourceHostIP
+    }
+
+    if (enableTrackNativeCrash != null) {
+      rumConfig.isEnableTrackAppCrash = enableTrackNativeCrash
+    }
+
+    if (enableTrackNativeFreeze != null) {
+      rumConfig.isEnableTrackAppUIBlock = enableTrackNativeFreeze
+    }
+
+    if (enableTrackNativeAppANR != null) {
+      rumConfig.isEnableTrackAppANR = enableTrackNativeAppANR
     }
 
     if (monitorType != null) {
@@ -158,7 +173,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   fun addError(stack: String, message: String, map: ReadableMap?, promise: Promise) {
     if (map != null) {
       FTRUMGlobalManager.get()
-        .addError(stack, message, ErrorType.JAVA, AppState.RUN, map.toHashMap())
+        .addError(stack, message,"reactnative_crash", AppState.RUN, map.toHashMap())
     } else {
       FTRUMGlobalManager.get().addError(stack, message, ErrorType.JAVA, AppState.RUN)
     }
