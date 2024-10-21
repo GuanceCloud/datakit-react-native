@@ -1,6 +1,8 @@
 import type { ErrorHandlerCallback } from 'react-native';
 import { FTReactNativeRUM } from '../ft_rum';
 const EMPTY_MESSAGE = 'Unknown Error';
+const REACT_NATIVE_CRASH = "reactnative_crash";
+const CONSOLE_ERROR = "console_error";
 
 export class FTRumErrorTracking {
   private static isTracking = false;
@@ -29,7 +31,7 @@ export class FTRumErrorTracking {
     const message = FTRumErrorTracking.getErrorMessage(error);
     const stacktrace = FTRumErrorTracking.getErrorStackTrace(error);
     FTReactNativeRUM.addErrorWithType(
-      'reactnative_crash',
+      REACT_NATIVE_CRASH,
       stacktrace,
       message
       ).then(() => {
@@ -65,7 +67,7 @@ export class FTRumErrorTracking {
 
 
       FTReactNativeRUM.addErrorWithType(
-        "console_error",
+        CONSOLE_ERROR,
         stack,
         message,
         ).then(() => {
