@@ -28,7 +28,8 @@ export class FTRumErrorTracking {
   static onGlobalError(error: any, isFatal?: boolean): void {
     const message = FTRumErrorTracking.getErrorMessage(error);
     const stacktrace = FTRumErrorTracking.getErrorStackTrace(error);
-    FTReactNativeRUM.addError(
+    FTReactNativeRUM.addErrorWithType(
+      'reactnative_crash',
       stacktrace,
       message
       ).then(() => {
@@ -64,7 +65,7 @@ export class FTRumErrorTracking {
 
 
       FTReactNativeRUM.addErrorWithType(
-        "console.error",
+        "console_error",
         stack,
         message,
         ).then(() => {
