@@ -117,7 +117,7 @@ RCT_REMAP_METHOD(addError,
                  stack:(NSString *)stack message:(NSString *)message property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative" message:message stack:stack property:property];
+    [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative_crash" message:message stack:stack property:property];
     resolve(nil);
 }
 RCT_REMAP_METHOD(addErrorWithType,
