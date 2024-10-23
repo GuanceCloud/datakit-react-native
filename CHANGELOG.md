@@ -1,3 +1,9 @@
+# 0.3.5
+* 支持采集 Native Error、ANR、Freeze
+* 修改 react-native 自动采集 error 的默认错误类型
+* 对拥有 `onPress` 属性的组件，新增支持在开启 `enableAutoTrackUserAction` 后通过添加自定义属性 
+  `ft-enable-track` 定义是否采集该组件的点击事件、通过 `ft-extra-property` 添加 Action 额外属性
+----
 # 0.3.4
 * addError 添加自定错误类型
 * 支持全局动态添加 globalContext 属性
