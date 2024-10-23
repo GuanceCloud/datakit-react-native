@@ -38,7 +38,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
     FTReactNativeLog.logging("react-navigation HomeScreen render", FTLogStatus.info);
 
     return (
-      <View style={{ flex: 1, alignItems: 'flex-start', padding: 20 }}>
+      <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
         <Button title='绑定用户' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
         <View style={styles.space} />
         <Button title='解绑用户' onPress={() => FTMobileReactNative.unbindRUMUserData()} />

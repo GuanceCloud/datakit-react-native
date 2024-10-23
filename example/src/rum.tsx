@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Text, View, Button, ScrollView, SectionList } from 'react-native';
+import { Text, View, SectionList, Pressable } from 'react-native';
 import { FTReactNativeRUM, FTRUMResource } from '@cloudcare/react-native-mobile';
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Utils, styles } from './utils';
 enum ActionCustomType {
       actionName,
       enableTrack,
       extraProperty,
-    }
+}
 
 class RUMScreen extends React.Component {
       static options() {
@@ -23,54 +22,64 @@ class RUMScreen extends React.Component {
             var test;
             test.color; //This will generate a TypeError: undefined
       }
-      _sectionComp = (info) => {
+      _sectionComp = (info: any) => {
             var txt = " " + info.section.title;
             return <Text
                   style={{ height: 20, textAlign: 'left', backgroundColor: '#6f7178', color: 'white', fontSize: 15 }}>{txt}</Text>
       }
 
-      _renderItem = (info) => {
+      _renderItem = (info: any) => {
             var key = info.section.key
             if (key === "C") {
                   var type = info.item.custom
                   switch (type) {
                         case ActionCustomType.actionName:
+                              // 自定义某一控件点击事件的 `actionName`
                               return <View style={styles.list}>
-                                    <Button
-                                          title={info.item.title}
+                                    <Pressable
                                           accessibilityLabel='custom_action_name'
-                                          onPress={() => {
-                                                info.item.onPress
-                                          }}
-                                    /></View>
+                                          onPress={info.item.onPress}
+                                    >
+                                          {({ pressed }) => (
+                                                <Text
+                                                      style={{ fontSize: 18, color: pressed ? 'gray' : '#007AFFFF' }}>{info.item.title}</Text>
+                                          )}
+                                    </Pressable></View>
                         case ActionCustomType.enableTrack:
+                              // 设置不采集某一控件的点击事件
                               return <View style={styles.list}>
-                                    <Button
-                                          title={info.item.title}
+                                    <Pressable
                                           ft-enable-track="false"
-                                          onPress={() => {
-                                                info.item.onPress
-                                          }}
-                                    /></View>
+                                          onPress={info.item.onPress}
+                                    >
+                                          {({ pressed }) => (
+                                                <Text
+                                                      style={{ fontSize: 18, color: pressed ? 'gray' : '#007AFFFF' }}>{info.item.title}</Text>
+                                          )}
+                                    </Pressable></View>
                         case ActionCustomType.extraProperty:
+                              // 对某一控件的点击事件添加额外属性
                               return <View style={styles.list}>
-                                    <Button
-                                          title={info.item.title}
+                                    <Pressable
                                           ft-extra-property='{"e_name": "John Doe", "e_age": 30, "e_city": "New York"}'
-                                          onPress={() => {
-                                                info.item.onPress
-                                          }}
-                                    /></View>
+                                          onPress={
+                                                info.item.onPress}>
+                                          {({ pressed }) => (
+                                                <Text
+                                                      style={{ fontSize: 18, color: pressed ? 'gray' : '#007AFFFF' }}>{info.item.title}</Text>
+                                          )}
+                                    </Pressable></View>
                         default:
                               return <View></View>
                   }
             } else {
                   return <View style={styles.list}>
-                        <Button title={info.item.title}
-                              onPress={() => {
-                                    info.item.onPress
-                              }}
-                        /></View>
+                        <Pressable onPress={info.item.onPress}>
+                              {({ pressed }) => (
+                                    <Text
+                                          style={{ fontSize: 18, color: pressed ? 'gray' : '#007AFFFF' }}>{info.item.title}</Text>
+                              )}
+                        </Pressable></View>
             }
       }
 
@@ -104,12 +113,12 @@ class RUMScreen extends React.Component {
                               }, {
                                     title: "Resource Normal",
                                     onPress: () => {
-                                          FTReactNativeRUM.stopView({ "stopView_property": "rn_demo" });
+                                          this.getHttp("https://www.baidu.com");
                                     }
                               }, {
                                     title: "Resource Error",
                                     onPress: () => {
-                                          this.getHttp("https://www.baidu.com");
+                                          this.getHttp("https://console-api.guance.com/not/found/");
                                     }
                               }, {
                                     title: "Add Error",
@@ -152,7 +161,7 @@ class RUMScreen extends React.Component {
                                     console.log('Action 点击');
                               }
                         }, {
-                              title: "某一控件的点击事件不采集",
+                              title: "不采集某一控件的点击事件",
                               custom: ActionCustomType.enableTrack,
                               onPress: () => {
                                     console.log('Action 点击');
