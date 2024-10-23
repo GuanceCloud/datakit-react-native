@@ -59,6 +59,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         <Button title='关闭 SDK' onPress={() => FTMobileReactNative.shutDown()} />
         <View style={styles.space} />
         <Button title='清理 SDK 缓存数据' onPress={() => FTMobileReactNative.clearAllData()} />
+        <View style={styles.space} />
         <Button title='GlobalContext 属性动态设置' onPress={() => {
           FTMobileReactNative.appendGlobalContext({ 'global_key': 'global_value' });
           FTMobileReactNative.appendLogGlobalContext({ 'log_key': 'log_value' });
