@@ -1,3 +1,7 @@
+# 0.3.6
+* 适配 iOS SDK 1.5.5
+  * 修复 `FTResourceMetricsModel` 中数组越界导致的崩溃问题
+----
 # 0.3.5
 * 支持采集 Native Error、ANR、Freeze
 * 修改 react-native 自动采集 error 的默认错误类型
@@ -40,7 +44,7 @@
 ----
 # 0.3.2-hotfix.1 
 * 适配 iOS SDK 1.5.2-hotfix.1 
-    修复 `FTResourceMetricsModel` 中数组越界崩溃的问题
+  * 修复 `FTResourceMetricsModel` 中数组越界崩溃的问题
 ----
 # 0.3.2
 * 修复 Android 配置 `FTMobileConfig.env` 无效问题
