@@ -38,6 +38,10 @@
 # 0.3.3
 * 适配 iOS SDK 1.5.3
 ----
+# 0.3.2-hotfix.1 
+* 适配 iOS SDK 1.5.2-hotfix.1 
+    修复 `FTResourceMetricsModel` 中数组越界崩溃的问题
+----
 # 0.3.2
 * 修复 Android 配置 `FTMobileConfig.env` 无效问题
 ----
