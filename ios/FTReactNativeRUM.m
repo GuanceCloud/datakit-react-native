@@ -74,6 +74,9 @@ RCT_REMAP_METHOD(setConfig,
     if ([context.allKeys containsObject:@"enableTrackNativeFreeze"]){
         rumConfig.enableTrackAppFreeze = [RCTConvert BOOL:context[@"enableTrackNativeFreeze"]];
     }
+    if ([context.allKeys containsObject:@"nativeFreezeDurationMs"]){
+        rumConfig.freezeDurationMs = [RCTConvert double:context[@"nativeFreezeDurationMs"]];
+    }
     if ([context.allKeys containsObject:@"globalContext"]) {
         rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
     }
