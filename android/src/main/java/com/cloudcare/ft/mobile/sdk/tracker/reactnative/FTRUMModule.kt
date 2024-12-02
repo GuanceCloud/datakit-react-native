@@ -46,7 +46,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
 
   //是否是 debug 发送网络请求
   private fun isDevUrl(text: String, regexArray: Array<Regex>): Boolean {
-    return regexArray.any {it.matches(text) }
+    return regexArray.any { it.matches(text) }
   }
 
   @ReactMethod
@@ -61,6 +61,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     val enableTrackNativeCrash = map["enableTrackNativeCrash"] as Boolean?
     val enableTrackNativeAppANR = map["enableTrackNativeAppANR"] as Boolean?
     val enableTrackNativeFreeze = map["enableTrackNativeFreeze"] as Boolean?
+    val nativeFreezeDurationMs = map["nativeFreezeDurationMs"] as Double?
     val monitorType = ReactNativeUtils.convertToNativeInt(map["errorMonitorType"])
     val deviceMonitorType = ReactNativeUtils.convertToNativeInt(map["deviceMonitorType"])
     val detectFrequency = ReactNativeUtils.convertToNativeInt(map["detectFrequency"])
@@ -91,7 +92,11 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
     }
 
     if (enableTrackNativeFreeze != null) {
-      rumConfig.isEnableTrackAppUIBlock = enableTrackNativeFreeze
+      if (nativeFreezeDurationMs != null) {
+        rumConfig.setEnableTrackAppUIBlock(enableTrackNativeFreeze, nativeFreezeDurationMs.toLong())
+      } else {
+        rumConfig.isEnableTrackAppUIBlock = enableTrackNativeFreeze
+      }
     }
 
     if (enableTrackNativeAppANR != null) {
@@ -173,7 +178,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   fun addError(stack: String, message: String, map: ReadableMap?, promise: Promise) {
     if (map != null) {
       FTRUMGlobalManager.get()
-        .addError(stack, message,"reactnative_crash", AppState.RUN, map.toHashMap())
+        .addError(stack, message, "reactnative_crash", AppState.RUN, map.toHashMap())
     } else {
       FTRUMGlobalManager.get().addError(stack, message, ErrorType.JAVA, AppState.RUN)
     }
@@ -181,15 +186,21 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-    fun addErrorWithType(errorType:String,stack: String, message: String, map: ReadableMap?, promise: Promise) {
-      if (map != null) {
-        FTRUMGlobalManager.get()
-          .addError(stack, message,errorType, AppState.RUN, map.toHashMap())
-      } else {
-        FTRUMGlobalManager.get().addError(stack, message, errorType, AppState.RUN)
-      }
-      promise.resolve(null)
+  fun addErrorWithType(
+    errorType: String,
+    stack: String,
+    message: String,
+    map: ReadableMap?,
+    promise: Promise
+  ) {
+    if (map != null) {
+      FTRUMGlobalManager.get()
+        .addError(stack, message, errorType, AppState.RUN, map.toHashMap())
+    } else {
+      FTRUMGlobalManager.get().addError(stack, message, errorType, AppState.RUN)
     }
+    promise.resolve(null)
+  }
 
   @ReactMethod
   fun startResource(key: String, map: ReadableMap?, promise: Promise) {
