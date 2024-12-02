@@ -13,7 +13,6 @@ import com.ft.sdk.FTRUMConfig
 import com.ft.sdk.FTRUMGlobalManager
 import com.ft.sdk.FTSdk
 import com.ft.sdk.garble.bean.AppState
-import com.ft.sdk.garble.bean.ErrorType
 import com.ft.sdk.garble.bean.NetStatusBean
 import com.ft.sdk.garble.bean.ResourceParams
 import okhttp3.Interceptor
@@ -26,6 +25,7 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
       Regex("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"),//expo
       Regex("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector).*$")//rn
     )
+    private const val DEFAULT_ERROR_TYPE = "reactnative_crash"
   }
 
   init {
@@ -173,9 +173,9 @@ class FTRUMModule(reactContext: ReactApplicationContext) :
   fun addError(stack: String, message: String, map: ReadableMap?, promise: Promise) {
     if (map != null) {
       FTRUMGlobalManager.get()
-        .addError(stack, message,"reactnative_crash", AppState.RUN, map.toHashMap())
+        .addError(stack, message, DEFAULT_ERROR_TYPE, AppState.RUN, map.toHashMap())
     } else {
-      FTRUMGlobalManager.get().addError(stack, message, ErrorType.JAVA, AppState.RUN)
+      FTRUMGlobalManager.get().addError(stack, message, DEFAULT_ERROR_TYPE,AppState.RUN)
     }
     promise.resolve(null)
   }
