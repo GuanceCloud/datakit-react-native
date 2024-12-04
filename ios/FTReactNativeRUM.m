@@ -92,8 +92,8 @@ RCT_REMAP_METHOD(startAction,
                  actionName:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] addActionName:actionName actionType:actionType property:property];
-    resolve(nil);
+  [[FTExternalDataManager sharedManager] startAction:actionName actionType:actionType property:property];
+  resolve(nil);
 }
 RCT_REMAP_METHOD(onCreateView,
                   viewName:(NSString *)viewName loadTime:(double)loadTime
