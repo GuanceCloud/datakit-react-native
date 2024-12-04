@@ -29,6 +29,7 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     val syncPageSize = ReactNativeUtils.convertToNativeInt(map["syncPageSize"])
     val syncSleepTime = ReactNativeUtils.convertToNativeInt(map["syncSleepTime"])
     val enableDataIntegerCompatible = map["enableDataIntegerCompatible"] as Boolean?
+    val compressIntakeRequests = map["compressIntakeRequests"] as Boolean?
     val env = ReactNativeUtils.convertToNativeInt(map["envType"])
     val serviceName = map["service"] as String?
     val globalContext = map["globalContext"] as HashMap<String, Any>?
@@ -83,7 +84,9 @@ class FTMobileModule(reactContext: ReactApplicationContext) :
     if (enableDataIntegerCompatible != null && enableDataIntegerCompatible) {
       sdkConfig.enableDataIntegerCompatible()
     }
-
+    if (compressIntakeRequests != null && compressIntakeRequests) {
+      sdkConfig.setCompressIntakeRequests(compressIntakeRequests)
+    }
     globalContext?.let {
       for ((key, value) in it) {
         sdkConfig.addGlobalContext(key, value.toString())

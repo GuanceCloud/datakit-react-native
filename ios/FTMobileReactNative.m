@@ -64,6 +64,9 @@ RCT_REMAP_METHOD(sdkConfig,
         if ([context.allKeys containsObject:@"enableDataIntegerCompatible"]) {
             config.enableDataIntegerCompatible = [RCTConvert BOOL:context[@"enableDataIntegerCompatible"]];
         }
+        if ([context.allKeys containsObject:@"compressIntakeRequests"]) {
+            config.compressIntakeRequests = [RCTConvert BOOL:context[@"compressIntakeRequests"]];
+        }
         if ([context.allKeys containsObject:@"globalContext"]) {
             config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
         }

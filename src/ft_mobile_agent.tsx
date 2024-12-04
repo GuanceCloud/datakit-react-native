@@ -20,6 +20,7 @@ export enum EnvType {
  * @param syncPageSize 数据同步时每条请求同步条数,最小值 5 默认：10
  * @param syncSleepTime 数据同步时每条请求间隔时间 单位毫秒 0< syncSleepTime <100
  * @param enableDataIntegerCompatible 数据同步时是否开启数据整数兼容
+ * @param compressIntakeRequests 是否对同步数据进行压缩
  * @param globalContext 自定义全局参数 
  * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
  */
@@ -39,6 +40,7 @@ export enum EnvType {
    syncPageSize?:number,
    syncSleepTime?:number,
    enableDataIntegerCompatible?:boolean,
+   compressIntakeRequests?:boolean,
    globalContext?:object,
    groupIdentifiers?:Array<string>
  }
