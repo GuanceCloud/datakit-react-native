@@ -4,43 +4,43 @@ PODS:
   - FBLazyVector (0.74.5)
   - fmt (9.1.0)
   - FTMobileReactNativeSDK (0.3.6):
-    - FTMobileSDK (= 1.5.5)
+    - FTMobileSDK (= 1.5.7)
     - React-Core
-  - FTMobileSDK (1.5.5):
-    - FTMobileSDK/FTMobileAgent (= 1.5.5)
-  - FTMobileSDK/FTMobileAgent (1.5.5):
+  - FTMobileSDK (1.5.7):
+    - FTMobileSDK/FTMobileAgent (= 1.5.7)
+  - FTMobileSDK/FTMobileAgent (1.5.7):
     - FTMobileSDK/FTSDKCore
-  - FTMobileSDK/FTSDKCore (1.5.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/DataManager (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/FTRUM (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/Logger (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/Protocol (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.5.5)
-  - FTMobileSDK/FTSDKCore/BaseUtils (1.5.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.5.5)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.5.5)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.5.5)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.5.5):
+  - FTMobileSDK/FTSDKCore (1.5.7):
+    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/DataManager (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/FTRUM (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/Logger (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/Protocol (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.5.7)
+  - FTMobileSDK/FTSDKCore/BaseUtils (1.5.7):
+    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.5.7)
+    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.5.7)
+  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.5.7)
+  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.5.7):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
-  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.5.5)
-  - FTMobileSDK/FTSDKCore/DataManager (1.5.5):
+  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.5.7)
+  - FTMobileSDK/FTSDKCore/DataManager (1.5.7):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/BaseUtils/Thread
-  - FTMobileSDK/FTSDKCore/FTRUM (1.5.5):
+  - FTMobileSDK/FTSDKCore/FTRUM (1.5.7):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/BaseUtils/Thread
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/FTWKWebView (1.5.5):
+  - FTMobileSDK/FTSDKCore/FTWKWebView (1.5.7):
     - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Logger (1.5.5):
+  - FTMobileSDK/FTSDKCore/Logger (1.5.7):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Protocol (1.5.5)
-  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.5.5):
+  - FTMobileSDK/FTSDKCore/Protocol (1.5.7)
+  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.5.7):
     - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
     - FTMobileSDK/FTSDKCore/Protocol
   - glog (0.3.5)
@@ -1565,8 +1565,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  FTMobileReactNativeSDK: 885b0c92d52c50ac9e89667ed5adb5bddae9e4d7
-  FTMobileSDK: 6b791b0f128601ec76aeafd3ac47302dadf3167f
+  FTMobileReactNativeSDK: 44088ba32c496a1e4c76f1ddcccf6a6826d70e84
+  FTMobileSDK: 6ebab32bfd15106e2ba1256ffa0df6f04747d843
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
