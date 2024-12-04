@@ -35,7 +35,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param enableTrackNativeCrash 是否采集 Native Error
  * @param enableTrackNativeAppANR 是否采集 Native ANR
  * @param enableTrackNativeFreeze 是否采集 Native Freeze
- * @param nativeFreezeDurationMs 设置采集 Native 卡顿的阈值。单位毫秒 100 < freezeDurationMs ，默认 250ms
+ * @param nativeFreezeDurationMs 设置采集 Native Freeze 卡顿的阈值，取值范围 [100,)，单位毫秒。iOS 默认 250ms，Android 默认 1000ms
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
  * @param enableNativeUserResource 是否自动采集 react-native Resource
