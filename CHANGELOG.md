@@ -1,5 +1,22 @@
 # 0.3.7
 * 修正 Android RN 错误数据类型标注错误的问题
+* 支持通过 `FTRUMConfig.nativeFreezeDurationMs` 设置卡顿检测阀值
+* 支持使用 `FTMobileConfig.compressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
+* 适配 iOS SDK 1.5.6
+  * 支持使用 `FTMobileConfig.compressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
+  * RUM 添加 `addAction:actionType:property` 与 `startAction:actionType:property:` 方法，优化 RUM Action 采集逻辑
+  * 修复使用 `NSFileHandle` 废弃 api 导致的崩溃问题
+* 适配 iOS SDK 1.5.7
+  * 支持通过 `FTRUMConfig.freezeDurationMs` 设置卡顿检测阀值
+  * 优化 SDK 的 `shutDown` 方法，避免主线程同步等待导致的卡顿或 WatchDog 崩溃
+* 适配 Android SDK ft-sdk 1.6.2
+  * RUM 新增 `addAction` 方法，支持 property 扩展属性与频繁连续数据上报
+* 适配 Android SDK ft-sdk 1.6.3
+  * 优化自定义 `addAction` 在高频率调用时的性能表现
+  * 支持使用  `FTSDKConfig.setCompressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
+* 适配 Android SDK ft-sdk 1.6.4
+  * 优化 App 启动时间在 API 24 以上统计时间
+  * 支持通过 `FTRUMConfig.setEnableTrackAppUIBlock(true, blockDurationMs)` 设置检测时间范围
 ----
 # 0.3.6
 * 适配 iOS SDK 1.5.5
