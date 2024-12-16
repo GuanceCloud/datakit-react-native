@@ -16,6 +16,7 @@ import com.ft.sdk.FTSdk;
 import com.ft.sdk.LogCacheDiscard;
 import com.ft.sdk.garble.bean.Status;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class FTLogModule extends ReactContextBaseJavaModule {
         Map<String, Object> map = context.toHashMap();
         Integer discardStrategy = ReactNativeUtils.convertToNativeInt(map.get("discardStrategy"));
         Double sampleRate = (Double) map.get("sampleRate");
-        ReadableArray logTypeReadArr = (ReadableArray) map.get("logLevelFilters");
+        ArrayList<Object> logTypeReadArr = (ArrayList<Object>) map.get("logLevelFilters");
         Boolean enableLinkRumData = (Boolean) map.get("enableLinkRumData");
         Boolean enableCustomLog = (Boolean) map.get("enableCustomLog");
         HashMap<String, Object> globalContext = (HashMap<String, Object>) map.get("globalContext");
@@ -69,14 +70,16 @@ public class FTLogModule extends ReactContextBaseJavaModule {
         }
 
         if (logTypeReadArr != null) {
-            List<Object> logTypeList = logTypeReadArr.toArrayList();
+            ArrayList<Object> logTypeList = logTypeReadArr;
             Status[] arr = new Status[logTypeList.size()];
             for (int i = 0; i < logTypeList.size(); i++) {
-                Object item = logTypeList.get(i);
-                if (item instanceof Integer) {
-                    int ordinal = (Integer) item;
-                    arr[i] = Status.values()[ordinal];
-                }
+              Object item = logTypeList.get(i);
+              int ordinal = ReactNativeUtils.convertToNativeInt(item);
+              if(ordinal>Status.INFO.ordinal()){
+                arr[i] = Status.values()[ordinal+1];// Android 多一个 Debug
+              }else{
+                arr[i] = Status.values()[ordinal];
+              }
             }
             logConfig.setLogLevelFilters(arr);
         }
