@@ -1,6 +1,4 @@
 buildscript {
-  // Buildscript is evaluated before everything else so we can't use getExtOrDefault
-  def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['FtMobileAgent_kotlinVersion']
 
   repositories {
     mavenCentral()
@@ -10,13 +8,10 @@ buildscript {
 
   dependencies {
     classpath 'com.android.tools.build:gradle:7.3.1'
-    // noinspection DifferentKotlinGradleVersion
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['FtMobileAgent_' + name]
@@ -67,17 +62,11 @@ android {
       sourceCompatibility JavaVersion.VERSION_11
       targetCompatibility JavaVersion.VERSION_11
     }
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
   } else {
    //可能存在编译兼容问题
     compileOptions {
       sourceCompatibility JavaVersion.VERSION_17
       targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_17.majorVersion
     }
   }
 }
@@ -153,13 +142,10 @@ repositories {
   }
 }
 
-def kotlin_version = getExtOrDefault('kotlinVersion')
-
 dependencies {
   // noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
   implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-sdk:1.6.4'
   implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-native:1.1.1'
   implementation 'com.google.code.gson:gson:2.8.5'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
