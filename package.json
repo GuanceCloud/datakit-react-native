@@ -1,6 +1,6 @@
 {
   "name": "@cloudcare/react-native-mobile",
-  "version": "0.3.8-alpha.1",
+  "version": "0.3.8-alpha.2",
   "description": "基于观测云 Android iOS React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
