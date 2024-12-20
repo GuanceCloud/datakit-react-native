@@ -1,12 +1,7 @@
 # 0.3.8-beta.1
-* 同 0.3.8-alpha.1
+* 同 0.3.8-alpha.2
 
 ---
-# 0.3.8-alpha.1
-* Android React Native AGP 高版本混合项目兼容适配
-
----
-
 # 0.3.8-alpha.2
 * 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
 
