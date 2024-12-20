@@ -133,6 +133,7 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     }
 
     FTSdk.initRUMWithConfig(rumConfig);
+    //LogUtils.d("configCheck","rumConfig:"+new Gson().toJson(rumConfig));
     promise.resolve(null);
   }
 

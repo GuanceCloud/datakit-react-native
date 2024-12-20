@@ -11,7 +11,6 @@ import com.ft.sdk.FTSdk;
 import com.ft.sdk.FTTraceConfig;
 import com.ft.sdk.FTTraceManager;
 import com.ft.sdk.TraceType;
-import com.ft.sdk.garble.utils.LogUtils;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -78,6 +77,7 @@ public class FTTraceModule extends ReactContextBaseJavaModule {
     }
 
     FTSdk.initTraceWithConfig(traceConfig);
+    //LogUtils.d("configCheck","traceConfig:"+new Gson().toJson(traceConfig));
     promise.resolve(null);
   }
 

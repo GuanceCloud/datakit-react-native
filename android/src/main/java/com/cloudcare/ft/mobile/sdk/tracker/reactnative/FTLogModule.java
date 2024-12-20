@@ -103,6 +103,7 @@ public class FTLogModule extends ReactContextBaseJavaModule {
         }
 
         FTSdk.initLogWithConfig(logConfig);
+//        LogUtils.d("configCheck","logConfig:"+new Gson().toJson(logConfig));
         promise.resolve(null);
     }
 

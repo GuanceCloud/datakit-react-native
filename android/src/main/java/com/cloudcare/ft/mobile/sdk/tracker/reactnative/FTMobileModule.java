@@ -90,6 +90,7 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         }
 
         FTSdk.install(sdkConfig);
+//        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));
         promise.resolve(null);
     }
 
@@ -112,7 +113,8 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
 
         userData.setExts(convertedMap);
         FTSdk.bindRumUserData(userData);
-        promise.resolve(null);
+      LogUtils.d("configCheck","UserData:"+new Gson().toJson(userData));
+      promise.resolve(null);
     }
 
     @ReactMethod
