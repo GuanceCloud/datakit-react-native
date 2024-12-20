@@ -28,9 +28,9 @@ class LogScreen extends React.Component {
 
     return (
       <ScrollView style={styles.container} contentOffset={{ x: 0, y: 50 }}>
-        <PressableItem title="Log Status: info" onPress={
-          this.logging("info log content", FTLogStatus.info)
-        } />
+        <PressableItem title="Log Status: info" onPress={() => {
+          this.logging("info log content", FTLogStatus.info);
+        }} />
         <PressableItem title="Log Status: warning" onPress={() => {
           this.logging("warning log content", FTLogStatus.warning);
         }} />

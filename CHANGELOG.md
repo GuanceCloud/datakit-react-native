@@ -1,3 +1,11 @@
+# 0.3.8-alpha.2
+* 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
+
+---
+# 0.3.8-alpha.1
+* Android React Native AGP 高版本混合项目兼容适配
+
+---
 # 0.3.7
 * 修正 Android RN 错误数据类型标注错误的问题
 * 支持通过 `FTRUMConfig.nativeFreezeDurationMs` 设置卡顿检测阀值
