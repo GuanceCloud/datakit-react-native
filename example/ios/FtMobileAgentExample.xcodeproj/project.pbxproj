@@ -282,6 +282,20 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FtMobileAgentExample/Pods-FtMobileAgentExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		7C5DE747636A46E492D7D3A7 /* Zip dSYMs and Sourcemap */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Zip dSYMs and Sourcemap";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nexport SOURCEMAP_FILE=$DERIVED_FILE_DIR/main.jsbundle.map\n../node_modules/.bin/ft-cli sourcemaps zipinxcode";
+		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -320,20 +334,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FtMobileAgentExample/Pods-FtMobileAgentExample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		7C5DE747636A46E492D7D3A7 /* Zip dSYMs and Sourcemap */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			name = "Zip dSYMs and Sourcemap";
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			shellPath = /bin/sh;
-			shellScript = "set -e\nexport SOURCEMAP_FILE=$DERIVED_FILE_DIR/main.jsbundle.map\n../node_modules/.bin/ft-cli sourcemaps zipinxcode";
 		};
 /* End PBXShellScriptBuildPhase section */
 

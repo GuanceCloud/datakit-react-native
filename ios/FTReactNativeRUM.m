@@ -39,54 +39,60 @@ RCT_REMAP_METHOD(setConfig,
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
-    FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
-    if ([context.allKeys containsObject:@"sampleRate"]) {
-        rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
-    }
-    if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
-        rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
-    }
-    if ([context.allKeys containsObject:@"enableNativeUserView"]) {
-        rumConfig.enableTraceUserView = [RCTConvert BOOL:context[@"enableNativeUserView"]];
-    }
-    if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
-        rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
-    }
-    if ([context.allKeys containsObject:@"errorMonitorType"]) {
-        rumConfig.errorMonitorType =(FTErrorMonitorType)[RCTConvert int:context[@"errorMonitorType"]];
-    }
-    if ([context.allKeys containsObject:@"deviceMonitorType"]) {
-        rumConfig.deviceMetricsMonitorType =(FTDeviceMetricsMonitorType)[RCTConvert int:context[@"deviceMonitorType"]];
-    }
-    if ([context.allKeys containsObject:@"detectFrequency"]) {
-        rumConfig.monitorFrequency =(FTMonitorFrequency)[RCTConvert int:context[@"detectFrequency"]];
-    }
-    if ([context.allKeys containsObject:@"enableResourceHostIP"]) {
-        rumConfig.enableResourceHostIP = [RCTConvert BOOL:context[@"enableResourceHostIP"]];
-    }
-    if ([context.allKeys containsObject:@"enableTrackNativeCrash"]){
-        rumConfig.enableTrackAppCrash = [RCTConvert BOOL:context[@"enableTrackNativeCrash"]];
-    }
-    if ([context.allKeys containsObject:@"enableTrackNativeAppANR"]){
-        rumConfig.enableTrackAppANR = [RCTConvert BOOL:context[@"enableTrackNativeAppANR"]];
-    }
-    if ([context.allKeys containsObject:@"enableTrackNativeFreeze"]){
-        rumConfig.enableTrackAppFreeze = [RCTConvert BOOL:context[@"enableTrackNativeFreeze"]];
-    }
-    if ([context.allKeys containsObject:@"nativeFreezeDurationMs"]){
-        rumConfig.freezeDurationMs = [RCTConvert double:context[@"nativeFreezeDurationMs"]];
-    }
-    if ([context.allKeys containsObject:@"globalContext"]) {
-        rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
-    }
+  NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
+  FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
+  if ([context.allKeys containsObject:@"sampleRate"]) {
+    rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
+  }
+  if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
+    rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
+  }
+  if ([context.allKeys containsObject:@"enableNativeUserView"]) {
+    rumConfig.enableTraceUserView = [RCTConvert BOOL:context[@"enableNativeUserView"]];
+  }
+  if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
+    rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
+  }
+  if ([context.allKeys containsObject:@"errorMonitorType"]) {
+    rumConfig.errorMonitorType =(FTErrorMonitorType)[RCTConvert int:context[@"errorMonitorType"]];
+  }
+  if ([context.allKeys containsObject:@"deviceMonitorType"]) {
+    rumConfig.deviceMetricsMonitorType =(FTDeviceMetricsMonitorType)[RCTConvert int:context[@"deviceMonitorType"]];
+  }
+  if ([context.allKeys containsObject:@"detectFrequency"]) {
+    rumConfig.monitorFrequency =(FTMonitorFrequency)[RCTConvert int:context[@"detectFrequency"]];
+  }
+  if ([context.allKeys containsObject:@"enableResourceHostIP"]) {
+    rumConfig.enableResourceHostIP = [RCTConvert BOOL:context[@"enableResourceHostIP"]];
+  }
+  if ([context.allKeys containsObject:@"enableTrackNativeCrash"]){
+    rumConfig.enableTrackAppCrash = [RCTConvert BOOL:context[@"enableTrackNativeCrash"]];
+  }
+  if ([context.allKeys containsObject:@"enableTrackNativeAppANR"]){
+    rumConfig.enableTrackAppANR = [RCTConvert BOOL:context[@"enableTrackNativeAppANR"]];
+  }
+  if ([context.allKeys containsObject:@"enableTrackNativeFreeze"]){
+    rumConfig.enableTrackAppFreeze = [RCTConvert BOOL:context[@"enableTrackNativeFreeze"]];
+  }
+  if ([context.allKeys containsObject:@"nativeFreezeDurationMs"]){
+    rumConfig.freezeDurationMs = [RCTConvert double:context[@"nativeFreezeDurationMs"]];
+  }
+  if ([context.allKeys containsObject:@"globalContext"]) {
+    rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
+  }
+  if ([context.allKeys containsObject:@"rumDiscardStrategy"]) {
+    rumConfig.rumDiscardType = [RCTConvert int:context[@"rumDiscardStrategy"]];
+  }
+  if ([context.allKeys containsObject:@"rumCacheLimitCount"]) {
+    rumConfig.rumCacheLimitCount = [RCTConvert int:context[@"rumCacheLimitCount"]];
+  }
 #if DEBUG
-    rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
-        return filterBlackResource(url);
-    };
+  rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
+    return filterBlackResource(url);
+  };
 #endif
-    [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
-    resolve(nil);
+  [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
+  resolve(nil);
 }
 RCT_REMAP_METHOD(startAction,
                  actionName:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property

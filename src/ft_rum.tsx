@@ -25,6 +25,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
   * 设备信息监控周期。
   */
  export enum DetectFrequency { normal, frequent, rare }
+
+ export enum FTRUMCacheDiscard { discard, discardOldest };
+
 /**
  * 设置 RUM 追踪条件。
  * @param androidAppId appId，监测中申请
@@ -44,6 +47,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param deviceMonitorType 页面监控补充类型
  * @param detectFrequency 监控频率
  * @param globalContext 自定义全局参数
+ * @param rumCacheLimitCount RUM 最大缓存量,  默认 100_000
+ * @param rumDiscardStrategy RUM 数据废弃策略
  */
  export interface FTRUMConfig{
    androidAppId:string,
@@ -63,10 +68,12 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    deviceMonitorType?:DeviceMetricsMonitorType,
    detectFrequency?:DetectFrequency
    globalContext?:object,
+   rumCacheLimitCount?:number,
+   rumDiscardStrategy?:FTRUMCacheDiscard,
  }
 /**
  * RUM Resource 资源数据。
- * @param url] 请求地址
+ * @param url 请求地址
  * @param httpMethod 请求方法
  * @param requestHeader 请求头参数
  * @param responseHeader 返回头参数
