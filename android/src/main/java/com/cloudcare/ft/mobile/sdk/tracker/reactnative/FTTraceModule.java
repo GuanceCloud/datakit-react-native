@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import com.ft.sdk.garble.utils.LogUtils;
 
 public class FTTraceModule extends ReactContextBaseJavaModule {
   private static final String TAG = "FTTraceModule";
