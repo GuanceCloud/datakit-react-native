@@ -1,4 +1,4 @@
-# 0.3.8
+# 0.3.9
 * 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
 * 适配 Android SDK ft-sdk 1.6.5
   * 弱化 Webview 在 AOP 过程中参数为 null 的提示
