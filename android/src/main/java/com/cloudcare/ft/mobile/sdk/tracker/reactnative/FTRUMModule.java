@@ -12,6 +12,7 @@ import com.ft.sdk.DetectFrequency;
 import com.ft.sdk.FTRUMConfig;
 import com.ft.sdk.FTRUMGlobalManager;
 import com.ft.sdk.FTSdk;
+import com.ft.sdk.RUMCacheDiscard;
 import com.ft.sdk.garble.bean.AppState;
 import com.ft.sdk.garble.bean.NetStatusBean;
 import com.ft.sdk.garble.bean.ResourceParams;
@@ -71,6 +72,8 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     Integer deviceMonitorType = ReactNativeUtils.convertToNativeInt(map.get("deviceMonitorType"));
     Integer detectFrequency = ReactNativeUtils.convertToNativeInt(map.get("detectFrequency"));
     Map<String, Object> globalContext = (Map<String, Object>) map.get("globalContext");
+    Integer rumCacheLimitCount = ReactNativeUtils.convertToNativeInt(map.get("rumCacheLimitCount"));
+    Integer rumDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("rumDiscardStrategy"));
 
     FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId);
     if (sampleRate != null) {
@@ -131,7 +134,16 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     if (BuildConfig.DEBUG) {
       rumConfig.setResourceUrlHandler(url -> isDevUrl(url, RN_DEV_INNER_URL_REGEX));
     }
-
+    if (rumCacheLimitCount != null) {
+      rumConfig.setRumCacheLimitCount(rumCacheLimitCount);
+    }
+    if (rumDiscardStrategy != null) {
+      RUMCacheDiscard rumCacheDiscard = RUMCacheDiscard.DISCARD;
+      if(rumDiscardStrategy == 1){
+        rumCacheDiscard = RUMCacheDiscard.DISCARD_OLDEST;
+      }
+      rumConfig.setRumCacheDiscardStrategy(rumCacheDiscard);
+    }
     FTSdk.initRUMWithConfig(rumConfig);
     //LogUtils.d("configCheck","rumConfig:"+new Gson().toJson(rumConfig));
     promise.resolve(null);
