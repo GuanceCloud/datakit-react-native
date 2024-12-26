@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.ft.sdk.DetectFrequency;
+import com.ft.sdk.FTInTakeUrlHandler;
 import com.ft.sdk.FTRUMConfig;
 import com.ft.sdk.FTRUMGlobalManager;
 import com.ft.sdk.FTSdk;
@@ -24,10 +25,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
 public class FTRUMModule extends ReactContextBaseJavaModule {
-  private static final Regex[] RN_DEV_INNER_URL_REGEX = {
-    new Regex("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"), // expo
-    new Regex("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector).*$") // rn
-  };
+
   private static final String DEFAULT_ERROR_TYPE = "reactnative_crash";
 
   public FTRUMModule(ReactApplicationContext reactContext) {
@@ -43,15 +41,6 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "FTReactNativeRUM";
-  }
-
-  private boolean isDevUrl(String text, Regex[] regexArray) {
-    for (Regex regex : regexArray) {
-      if (regex.matches(text)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   @ReactMethod
@@ -129,7 +118,12 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
       }
     }
     if (BuildConfig.DEBUG) {
-      rumConfig.setResourceUrlHandler(url -> isDevUrl(url, RN_DEV_INNER_URL_REGEX));
+      rumConfig.setResourceUrlHandler(new FTInTakeUrlHandler() {
+        @Override
+        public boolean isInTakeUrl(String url) {
+          return ReactNativeUtils.isReactNativeDevUrl(url);
+        }
+      });
     }
 
     FTSdk.initRUMWithConfig(rumConfig);
