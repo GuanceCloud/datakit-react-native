@@ -10,6 +10,7 @@
 #import <React/RCTBridgeModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
+BOOL filterBlackResource(NSURL *url);
 
 @interface FTReactNativeRUM : NSObject<RCTBridgeModule>
 
