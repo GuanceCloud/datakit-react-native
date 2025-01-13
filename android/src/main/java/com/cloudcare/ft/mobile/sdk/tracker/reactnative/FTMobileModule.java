@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.ft.sdk.DBCacheDiscard;
 import com.ft.sdk.EnvType;
 import com.ft.sdk.FTSDKConfig;
 import com.ft.sdk.FTSdk;
@@ -40,6 +41,9 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         Integer env = ReactNativeUtils.convertToNativeInt(map.get("envType"));
         String serviceName = (String) map.get("service");
         Map<String, Object> globalContext = (Map<String, Object>) map.get("globalContext");
+        Boolean enableLimitWithDbSize = (Boolean) map.get("enableLimitWithDbSize");
+        Long dbCacheLimit = ReactNativeUtils.convertToNativeLong(map.get("dbCacheLimit"));
+        Integer dbDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("dbDiscardStrategy"));
 
         FTSDKConfig sdkConfig = (datakitUrl != null)
             ? FTSDKConfig.builder(datakitUrl)
@@ -87,6 +91,20 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
             for (Map.Entry<String, Object> entry : globalContext.entrySet()) {
                 sdkConfig.addGlobalContext(entry.getKey(), entry.getValue().toString());
             }
+        }
+        if (enableLimitWithDbSize != null && enableLimitWithDbSize) {
+          if (dbCacheLimit != null) {
+            sdkConfig.enableLimitWithDbSize(dbCacheLimit);
+          } else {
+            sdkConfig.enableLimitWithDbSize();
+          }
+        }
+        if (dbDiscardStrategy != null) {
+          DBCacheDiscard dbCacheDiscard = DBCacheDiscard.DISCARD;
+          if (dbDiscardStrategy == 1){
+            dbCacheDiscard = DBCacheDiscard.DISCARD_OLDEST;
+          }
+          sdkConfig.setDbCacheDiscard(dbCacheDiscard);
         }
 
         FTSdk.install(sdkConfig);

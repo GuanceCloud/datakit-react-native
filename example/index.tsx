@@ -19,6 +19,8 @@ import {
   FTRUMConfig,
   FTTraceConfig,
   TraceType,
+  FTDBCacheDiscard,
+  FTRUMCacheDiscard
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
@@ -61,6 +63,9 @@ async function initSDK() {
     datakitUrl:Config.SERVER_URL,
     debug: true,
     env:'test',
+    enableLimitWithDbSize:true,
+    dbCacheLimit:50*1024*1024,
+    dbDiscardStrategy:FTDBCacheDiscard.discard,
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
   };
@@ -101,7 +106,9 @@ async function initSDK() {
     enableTrackNativeFreeze:true,
     errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
-    detectFrequency:DetectFrequency.rare
+    detectFrequency:DetectFrequency.rare,
+    rumCacheLimitCount:1000,
+    rumDiscardStrategy:FTRUMCacheDiscard.discardOldest,
   };
   // 静态设置 globalContext
   //.env.dubug、.env.release 等配置的环境文件中设置

@@ -7,6 +7,7 @@ import { version as sdkVersion } from './version'
 export enum EnvType {
   prod, gray, pre, common, local
 };
+export enum FTDBCacheDiscard { discard, discardOldest };
 /**
  * 配置启动 SDK 参数。
  * @param serverUrl 数据上报地址，已废弃，使用 [datakitUrl] 替换
@@ -23,6 +24,9 @@ export enum EnvType {
  * @param compressIntakeRequests 是否对同步数据进行压缩
  * @param globalContext 自定义全局参数 
  * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
+ * @param enableLimitWithDbSize 设置是否开启使用 db 限制数据大小，开启后 `FTLogConfig.logCacheLimitCount` 与 `FTRUMConfig.rumCacheLimitCount` 将不再起效
+ * @param dbCacheLimit db 缓存限制大小,最小值 30MB ,默认 100MB ,单位 byte
+ * @param dbDiscardStrategy db 数据废弃策略
  */
  export interface FTMobileConfig {
    /**
@@ -42,7 +46,10 @@ export enum EnvType {
    enableDataIntegerCompatible?:boolean,
    compressIntakeRequests?:boolean,
    globalContext?:object,
-   groupIdentifiers?:Array<string>
+   groupIdentifiers?:Array<string>,
+   enableLimitWithDbSize?:boolean,
+   dbCacheLimit?:number,
+   dbDiscardStrategy?:FTDBCacheDiscard,
  }
 
 
