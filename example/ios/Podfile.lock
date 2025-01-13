@@ -3,44 +3,44 @@ PODS:
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.5)
   - fmt (9.1.0)
-  - FTMobileReactNativeSDK (0.3.8-beta.1):
-    - FTMobileSDK (= 1.5.8)
+  - FTMobileReactNativeSDK (0.3.10-alpha.1):
+    - FTMobileSDK (= 1.5.9)
     - React-Core
-  - FTMobileSDK (1.5.8):
-    - FTMobileSDK/FTMobileAgent (= 1.5.8)
-  - FTMobileSDK/FTMobileAgent (1.5.8):
+  - FTMobileSDK (1.5.9):
+    - FTMobileSDK/FTMobileAgent (= 1.5.9)
+  - FTMobileSDK/FTMobileAgent (1.5.9):
     - FTMobileSDK/FTSDKCore
-  - FTMobileSDK/FTSDKCore (1.5.8):
-    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/DataManager (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/FTRUM (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/Logger (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/Protocol (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.5.8)
-  - FTMobileSDK/FTSDKCore/BaseUtils (1.5.8):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.5.8)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.5.8)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.5.8)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.5.8):
+  - FTMobileSDK/FTSDKCore (1.5.9):
+    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/DataManager (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/FTRUM (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/Logger (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/Protocol (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.5.9)
+  - FTMobileSDK/FTSDKCore/BaseUtils (1.5.9):
+    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.5.9)
+    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.5.9)
+  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.5.9):
+    - FTMobileSDK/FTSDKCore/BaseUtils/Thread
+  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.5.9):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
-  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.5.8)
-  - FTMobileSDK/FTSDKCore/DataManager (1.5.8):
+  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.5.9)
+  - FTMobileSDK/FTSDKCore/DataManager (1.5.9):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/BaseUtils/Thread
-  - FTMobileSDK/FTSDKCore/FTRUM (1.5.8):
+  - FTMobileSDK/FTSDKCore/FTRUM (1.5.9):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/FTWKWebView (1.5.8):
+  - FTMobileSDK/FTSDKCore/FTWKWebView (1.5.9):
     - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Logger (1.5.8):
+  - FTMobileSDK/FTSDKCore/Logger (1.5.9):
     - FTMobileSDK/FTSDKCore/BaseUtils/Base
     - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Protocol (1.5.8)
-  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.5.8):
+  - FTMobileSDK/FTSDKCore/Protocol (1.5.9)
+  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.5.9):
     - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
     - FTMobileSDK/FTSDKCore/Protocol
   - glog (0.3.5)
@@ -1565,8 +1565,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  FTMobileReactNativeSDK: 6e313bb31641764cb0f72928579b90e56418ae81
-  FTMobileSDK: a0d9c0cee8035fc822e8c1e14b2bbba65257dc83
+  FTMobileReactNativeSDK: fd29744e0d267890ddeda24f8c2f2052ac84d253
+  FTMobileSDK: 1e31d5ab2d23ad8409df56cfd744ae9e6cf87570
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
@@ -1628,6 +1628,6 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
-PODFILE CHECKSUM: 922eaf5d6292639f4e5e3ea60da0201c705ec767
+PODFILE CHECKSUM: c4bbf18ad9cdc287b349625e0bc1d006b8179ca4
 
 COCOAPODS: 1.15.2

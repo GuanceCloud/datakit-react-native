@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React-Core"
-  s.dependency 'FTMobileSDK', '1.5.8'
+  s.dependency 'FTMobileSDK', '1.5.9'
 end
