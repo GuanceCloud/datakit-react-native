@@ -12,8 +12,6 @@ import com.ft.sdk.FTTraceConfig;
 import com.ft.sdk.FTTraceManager;
 import com.ft.sdk.TraceType;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import com.ft.sdk.garble.utils.LogUtils;
@@ -85,16 +83,10 @@ public class FTTraceModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getTraceHeaderFields(String url, String key, Promise promise) {
     HashMap<String, String> hashMap = null;
-    try {
-      if (key == null) {
-        hashMap = FTTraceManager.get().getTraceHeader(url);
-      } else {
-        hashMap = FTTraceManager.get().getTraceHeader(key, url);
-      }
-    } catch (MalformedURLException e) {
-      LogUtils.e(TAG, LogUtils.getStackTraceString(e));
-    } catch (URISyntaxException e) {
-      LogUtils.e(TAG, LogUtils.getStackTraceString(e));
+    if (key == null) {
+      hashMap = FTTraceManager.get().getTraceHeader(url);
+    } else {
+      hashMap = FTTraceManager.get().getTraceHeader(key, url);
     }
 
     WritableNativeMap map = new WritableNativeMap();
