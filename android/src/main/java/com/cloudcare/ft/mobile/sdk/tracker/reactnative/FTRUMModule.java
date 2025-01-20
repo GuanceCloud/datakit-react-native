@@ -154,6 +154,16 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addAction(String actionName, String actionType, ReadableMap map, Promise promise) {
+    if (map != null) {
+      FTRUMGlobalManager.get().addAction(actionName, actionType, map.toHashMap());
+    } else {
+      FTRUMGlobalManager.get().addAction(actionName, actionType);
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
   public void onCreateView(String viewName, Double duration, Promise promise) {
     FTRUMGlobalManager.get().onCreateView(viewName, duration.longValue());
     promise.resolve(null);

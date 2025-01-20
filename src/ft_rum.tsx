@@ -115,13 +115,24 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    */
    setConfig(config:FTRUMConfig): Promise<void>;
   /**
-   * 执行 action 。
+   * 启动 RUM Action。
+   * RUM 会绑定该 Action 可能触发的 Resource、Error、LongTask 事件。
+   * 避免在 0.1 s 内多次添加，同一个 View 在同一时间只会关联一个 Action，在上一个 Action 未结束时，新增的 Action 会被丢弃。
+   * 与 `addAction` 方法添加 Action 互不影响.。
    * @param actionName action 名称
    * @param actionType action 类型
    * @param property 事件上下文(可选)
    * @returns a Promise.
    */
    startAction(actionName:string,actionType:string,property?:object): Promise<void>;
+   /**
+   * 添加 Action 事件。此类数据无法关联 Error，Resource，LongTask 数据，无丢弃逻辑。
+   * @param actionName action 名称
+   * @param actionType action 类型
+   * @param property 事件上下文(可选)
+   * @returns a Promise.
+   */
+   addAction(actionName:string,actionType:string,property?:object): Promise<void>;
   /**
    * view加载时长。
    * @param viewName view 名称
@@ -197,6 +208,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    }
    startAction(actionName:string,actionType:string,property?:object): Promise<void>{
      return this.rum.startAction(actionName,actionType,property);
+   }
+   addAction(actionName: string, actionType: string, property?: object): Promise<void> {
+    return this.rum.addAction(actionName,actionType,property);
    }
    onCreateView(viewName:string,loadTime:number): Promise<void>{
      return this.rum.onCreateView(viewName,loadTime);

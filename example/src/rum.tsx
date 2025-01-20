@@ -93,9 +93,17 @@ class RUMScreen extends React.Component {
                                     title: "Start Action",
                                     onPress: () => {
                                           console.log('Action 点击');
-                                          FTReactNativeRUM.startAction('actionName', 'actionType');
+                                          FTReactNativeRUM.startAction('start_actionName', 'actionType');
                                     }
-                              }, {
+                              }, 
+                              {
+                                    title: "Add Action",
+                                    onPress: () => {
+                                          console.log('Action 点击');
+                                          FTReactNativeRUM.addAction('add_actionName', 'actionType');
+                                    }
+                              },
+                              {
                                     title: "View: onCreateView",
                                     onPress: () => {
                                           FTReactNativeRUM.onCreateView("RUM", 100000000);
