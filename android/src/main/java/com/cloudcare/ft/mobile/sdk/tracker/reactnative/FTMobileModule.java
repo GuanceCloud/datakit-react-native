@@ -10,6 +10,7 @@ import com.ft.sdk.DBCacheDiscard;
 import com.ft.sdk.EnvType;
 import com.ft.sdk.FTSDKConfig;
 import com.ft.sdk.FTSdk;
+import com.ft.sdk.InnerClassProxy;
 import com.ft.sdk.garble.bean.UserData;
 
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         Boolean enableLimitWithDbSize = (Boolean) map.get("enableLimitWithDbSize");
         Long dbCacheLimit = ReactNativeUtils.convertToNativeLong(map.get("dbCacheLimit"));
         Integer dbDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("dbDiscardStrategy"));
+        String sdkPkgInfo = (String)map.get("pkgInfo");
 
         FTSDKConfig sdkConfig = (datakitUrl != null)
             ? FTSDKConfig.builder(datakitUrl)
@@ -107,6 +109,9 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
           sdkConfig.setDbCacheDiscard(dbCacheDiscard);
         }
 
+        if(sdkPkgInfo!=null){
+          InnerClassProxy.addPkgInfo(sdkConfig,"reactnative",sdkPkgInfo);
+        }
         FTSdk.install(sdkConfig);
 //        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));
         promise.resolve(null);

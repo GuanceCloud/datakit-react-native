@@ -62,7 +62,6 @@ public class FTLogModule extends ReactContextBaseJavaModule {
         }
 
         FTLoggerConfig logConfig = new FTLoggerConfig()
-                .setEnableCustomLog(true)
                 .setLogCacheDiscardStrategy(logCacheDiscard);
 
         if (sampleRate != null) {
