@@ -8,6 +8,7 @@
 
 #import "FTMobileReactNative.h"
 #import <FTMobileSDK/FTMobileAgent.h>
+#import <FTMobileSDK/FTMobileConfig+Private.h>
 #import <React/RCTConvert.h>
 #import <FTMobileSDK/FTThreadDispatchManager.h>
 @implementation FTMobileReactNative
@@ -81,6 +82,8 @@ RCT_REMAP_METHOD(sdkConfig,
     if ([context.allKeys containsObject:@"dbCacheLimit"]){
       config.dbCacheLimit = [RCTConvert double:context[@"dbCacheLimit"]];
     }
+    NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
+    [config addPkgInfo:@"reactnative" value:pkgInfo];
     [FTMobileAgent startWithConfigOptions:config];
     resolve(nil);
   }];
