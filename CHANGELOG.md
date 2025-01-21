@@ -1,3 +1,12 @@
+# 0.3.10
+* 修改 iOS bridge 代码中引用 native SDK 头文件方式
+* 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
+  支持通过 `FTRUMConfig.rumDiscardStrategy` 设置来指定丢弃新数据或丢弃旧数据
+* 新增支持通过 `FTMobileConfig.enableLimitWithDbSize` 限制总缓存大小功能，开启之后
+   `FTLoggerConfig.logCacheLimitCount` 及 `FTRUMConfig.rumCacheLimitCount` 将失效，
+   支持通过 `FTMobileConfig.dbDiscardStrategy` 设置 db 废弃策略，支持通过 `FTMobileConfig.dbCacheLimit` 设置 db 缓存限制大小
+* 适配 iOS SDK 1.5.10，Android SDK ft-sdk 1.6.8
+---   
 # 0.3.10-alpha.1
 * 修改 iOS bridge 代码中引用 native SDK 头文件方式
 * 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
