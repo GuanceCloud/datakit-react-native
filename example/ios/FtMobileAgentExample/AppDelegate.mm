@@ -1,7 +1,7 @@
 #import "AppDelegate.h"
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 #import <React/RCTBundleURLProvider.h>
-#import <FTMobileReactNativeSDK/FTReactNativeRUM.h>
+#import <FTMobileReactNativeSDK/FTReactNativeUtils.h>
 #import <FTMobileSDK/FTMobileAgent.h>
 @implementation AppDelegate
 
@@ -30,7 +30,7 @@
   #if DEBUG
     // 需要过滤掉仅在开发环境中发生的 React Native 符号化调用请求和 Expo日志调用请求
     rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
-      return filterBlackResource(url);
+      return [FTReactNativeUtils filterBlackResource:url];
     };
   #endif
   // ...

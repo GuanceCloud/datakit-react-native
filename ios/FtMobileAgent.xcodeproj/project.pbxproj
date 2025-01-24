@@ -6,6 +6,10 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		17C492802D43B4F900487920 /* FTReactNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C4927F2D43B4F900487920 /* FTReactNativeUtils.m */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +24,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFtMobileAgent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFtMobileAgent.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17C4927E2D43B4F900487920 /* FTReactNativeUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeUtils.h; sourceTree = "<group>"; };
+		17C4927F2D43B4F900487920 /* FTReactNativeUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTReactNativeUtils.m; sourceTree = "<group>"; };
 		7C3C28A527684CDF009DB8E2 /* FTMobileReactNative.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTMobileReactNative.h; sourceTree = "<group>"; };
 		7C3C28A627684CDF009DB8E2 /* FTMobileReactNative.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTMobileReactNative.m; sourceTree = "<group>"; };
 		7C3C28A727684D03009DB8E2 /* FTReactNativeRUM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeRUM.h; sourceTree = "<group>"; };
@@ -60,6 +66,8 @@
 				7C3C28A827684D03009DB8E2 /* FTReactNativeRUM.m */,
 				7C3C28A527684CDF009DB8E2 /* FTMobileReactNative.h */,
 				7C3C28A627684CDF009DB8E2 /* FTMobileReactNative.m */,
+				17C4927E2D43B4F900487920 /* FTReactNativeUtils.h */,
+				17C4927F2D43B4F900487920 /* FTReactNativeUtils.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -121,6 +129,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17C492802D43B4F900487920 /* FTReactNativeUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
