@@ -1,3 +1,7 @@
+# 0.3.12-alpha.1
+* Android 适配 1.6.9-beta02 版本
+
+---
 # 0.3.11
 * 原生 与 React Native 混合开发 SDK 配置优化
   * 支持通过 `FTRumActionTracking.startTracking()` 方法，自动采集 React Native 控件点击事件，`FTRumErrorTracking.startTracking()` 方法，自动采集 React Native 错误日志
@@ -12,7 +16,7 @@
    `FTLoggerConfig.logCacheLimitCount` 及 `FTRUMConfig.rumCacheLimitCount` 将失效，
    支持通过 `FTMobileConfig.dbDiscardStrategy` 设置 db 废弃策略，支持通过 `FTMobileConfig.dbCacheLimit` 设置 db 缓存限制大小
 * 适配 iOS SDK 1.5.10，Android SDK ft-sdk 1.6.8
----   
+---
 # 0.3.10-alpha.1
 * 修改 iOS bridge 代码中引用 native SDK 头文件方式
 * 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
