@@ -1,3 +1,8 @@
+# 0.3.12
+* `FTMobileConfig.enableDataIntegerCompatible` 默认开启
+* 适配 Android ft-sdk 1.6.9， iOS 1.5.12、1.5.13、1.5.14
+
+---
 # 0.3.12-alpha.1
 * Android 适配 1.6.9-beta02 版本
 
