@@ -25,6 +25,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
   * 设备信息监控周期。
   */
  export enum DetectFrequency { normal, frequent, rare }
+
+ export enum FTRUMCacheDiscard { discard, discardOldest };
+
 /**
  * 设置 RUM 追踪条件。
  * @param androidAppId appId，监测中申请
@@ -35,6 +38,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param enableTrackNativeCrash 是否采集 Native Error
  * @param enableTrackNativeAppANR 是否采集 Native ANR
  * @param enableTrackNativeFreeze 是否采集 Native Freeze
+ * @param nativeFreezeDurationMs 设置采集 Native Freeze 卡顿的阈值，取值范围 [100,)，单位毫秒。iOS 默认 250ms，Android 默认 1000ms
  * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
  * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
  * @param enableNativeUserResource 是否自动采集 react-native Resource
@@ -43,6 +47,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param deviceMonitorType 页面监控补充类型
  * @param detectFrequency 监控频率
  * @param globalContext 自定义全局参数
+ * @param rumCacheLimitCount RUM 最大缓存量,  默认 100_000
+ * @param rumDiscardStrategy RUM 数据废弃策略
  */
  export interface FTRUMConfig{
    androidAppId:string,
@@ -53,6 +59,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    enableTrackNativeCrash?:boolean,
    enableTrackNativeAppANR?:boolean,
    enableTrackNativeFreeze?:boolean,
+   nativeFreezeDurationMs?:number,
    enableNativeUserAction?:boolean,
    enableNativeUserView?:boolean,
    enableNativeUserResource?:boolean,
@@ -61,10 +68,12 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    deviceMonitorType?:DeviceMetricsMonitorType,
    detectFrequency?:DetectFrequency
    globalContext?:object,
+   rumCacheLimitCount?:number,
+   rumDiscardStrategy?:FTRUMCacheDiscard,
  }
 /**
  * RUM Resource 资源数据。
- * @param url] 请求地址
+ * @param url 请求地址
  * @param httpMethod 请求方法
  * @param requestHeader 请求头参数
  * @param responseHeader 返回头参数
@@ -106,13 +115,24 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    */
    setConfig(config:FTRUMConfig): Promise<void>;
   /**
-   * 执行 action 。
+   * 启动 RUM Action。
+   * RUM 会绑定该 Action 可能触发的 Resource、Error、LongTask 事件。
+   * 避免在 0.1 s 内多次添加，同一个 View 在同一时间只会关联一个 Action，在上一个 Action 未结束时，新增的 Action 会被丢弃。
+   * 与 `addAction` 方法添加 Action 互不影响.。
    * @param actionName action 名称
    * @param actionType action 类型
    * @param property 事件上下文(可选)
    * @returns a Promise.
    */
    startAction(actionName:string,actionType:string,property?:object): Promise<void>;
+   /**
+   * 添加 Action 事件。此类数据无法关联 Error，Resource，LongTask 数据，无丢弃逻辑。
+   * @param actionName action 名称
+   * @param actionType action 类型
+   * @param property 事件上下文(可选)
+   * @returns a Promise.
+   */
+   addAction(actionName:string,actionType:string,property?:object): Promise<void>;
   /**
    * view加载时长。
    * @param viewName view 名称
@@ -188,6 +208,9 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    }
    startAction(actionName:string,actionType:string,property?:object): Promise<void>{
      return this.rum.startAction(actionName,actionType,property);
+   }
+   addAction(actionName: string, actionType: string, property?: object): Promise<void> {
+    return this.rum.addAction(actionName,actionType,property);
    }
    onCreateView(viewName:string,loadTime:number): Promise<void>{
      return this.rum.onCreateView(viewName,loadTime);

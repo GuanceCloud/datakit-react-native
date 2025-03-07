@@ -28,6 +28,7 @@
     "react-native-webview": "^13.6.4"
   },
   "devDependencies": {
+    "@cloudcare/react-native-mobile-cli":"file:../cloudcare-react-native-mobile-cli-v1.0.0.tgz",
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.1.6",
     "@babel/runtime": "^7.20.0",

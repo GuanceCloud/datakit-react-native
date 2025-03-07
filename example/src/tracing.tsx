@@ -1,7 +1,18 @@
 import * as React from 'react';
-import { ScrollView,View, Button } from 'react-native';
+import { ScrollView,View, Pressable,Text } from 'react-native';
 import { FTReactNativeTrace} from '@cloudcare/react-native-mobile';
 import { styles} from './utils';
+function PressableItem(props: any) {
+  return (
+    <View style={styles.list}>
+      <Pressable onPress={props.onPress}>
+        {({ pressed }) => (
+          <Text
+            style={{ fontSize: 18, color: pressed ? 'gray' : '#007AFFFF' }}>{props.title}</Text>
+        )}
+      </Pressable></View>
+  );
+}
 class TraceScreen extends React.Component {
   static options(props) {
     return {
@@ -15,11 +26,10 @@ class TraceScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
-      <View style={styles.list}>
-      <Button title="网络链路追踪" onPress={() => {
+      <PressableItem title="网络链路追踪" onPress={() => {
         this.getHttp("https://console-api.guance.com/not/found/");
       }}
-      /></View>
+      />
       </ScrollView>
       );
   }

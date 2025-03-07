@@ -8,6 +8,7 @@ import TraceScreen from './tracing';
 import WebViewScreen from './webView';
 import LocalWebViewScreen from './localWebView';
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function startReactNativeNavigation() {
   console.log("startReactNativeNavigation");
@@ -62,18 +63,26 @@ const HomeScreen = (props) => {
       <Button title='RUM数据采集' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
       <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
       <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
-      <Button title='LocalWebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
+      <Button title='Local WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
+      <Button title='关闭 SDK' onPress={() => FTMobileReactNative.shutDown()} />
+      <Button title='清理 SDK 缓存数据' onPress={() => {
+         FTMobileReactNative.clearAllData();
+      }} />
       <Button title='GlobalContext 属性动态设置' onPress={() => {
          FTMobileReactNative.appendGlobalContext({'global_key':'global_value'});
          FTMobileReactNative.appendLogGlobalContext({'log_key':'log_value'});
          FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
       }} />
-      <Button title='关闭 SDK' onPress={() => {
-         FTMobileReactNative.shutDown();
-      }} />
-      <Button title='清理 SDK 缓存数据' onPress={() => {
-         FTMobileReactNative.clearAllData();
-      }} />
+      <Button title="运行时读写文件方式设置 GlobalContext " onPress={() => {
+          AsyncStorage.setItem("track_id", "dynamic_id", (error: any) => {
+            if (error) {
+              console.log('存储失败' + error);
+            } else {
+              console.log('存储成功');
+            }
+          })
+        }}
+        />
     </View>
   );
 };

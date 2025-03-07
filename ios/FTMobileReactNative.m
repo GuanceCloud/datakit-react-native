@@ -7,10 +7,10 @@
 //
 
 #import "FTMobileReactNative.h"
-#import "FtMobileAgent.h"
 #import <FTMobileSDK/FTMobileAgent.h>
+#import <FTMobileSDK/FTMobileConfig+Private.h>
 #import <React/RCTConvert.h>
-#import <FTThreadDispatchManager.h>
+#import <FTMobileSDK/FTThreadDispatchManager.h>
 @implementation FTMobileReactNative
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(sdkConfig,
@@ -18,61 +18,75 @@ RCT_REMAP_METHOD(sdkConfig,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-    [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
-        FTMobileConfig *config;
-        NSString *datakitUrl = [RCTConvert NSString:context[@"datakitUrl"]];
-        NSString *dataWayUrl = [RCTConvert NSString:context[@"datawayUrl"]];
-        NSString *clientToken = [RCTConvert NSString:context[@"clientToken"]];
-        if(dataWayUrl && dataWayUrl.length>0 && clientToken && clientToken.length>0){
-            config = [[FTMobileConfig alloc]initWithDatawayUrl:dataWayUrl clientToken:clientToken];
-        }else if(datakitUrl && datakitUrl.length>0){
-            config = [[FTMobileConfig alloc]initWithDatakitUrl:datakitUrl];
-        }else{
-            resolve(nil);
-            return;
+  [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
+    FTMobileConfig *config;
+    NSString *datakitUrl = [RCTConvert NSString:context[@"datakitUrl"]];
+    NSString *dataWayUrl = [RCTConvert NSString:context[@"datawayUrl"]];
+    NSString *clientToken = [RCTConvert NSString:context[@"clientToken"]];
+    if(dataWayUrl && dataWayUrl.length>0 && clientToken && clientToken.length>0){
+      config = [[FTMobileConfig alloc]initWithDatawayUrl:dataWayUrl clientToken:clientToken];
+    }else if(datakitUrl && datakitUrl.length>0){
+      config = [[FTMobileConfig alloc]initWithDatakitUrl:datakitUrl];
+    }else{
+      resolve(nil);
+      return;
+    }
+    if ([context.allKeys containsObject:@"debug"]) {
+      config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
+    }
+    if ([context.allKeys containsObject:@"service"]) {
+      config.service = [RCTConvert NSString:context[@"service"]];
+    }
+    if([context.allKeys containsObject:@"env"]){
+      id env = context[@"env"];
+      if([env isKindOfClass:NSString.class]){
+        config.env = env;
+      }
+    }
+    if([context.allKeys containsObject:@"envType"]){
+      id env = context[@"envType"];
+      if([env isKindOfClass:NSNumber.class]){
+        int envType = [env intValue];
+        if(envType>=0 && envType<5){
+          [config setEnvWithType:envType];
         }
-        if ([context.allKeys containsObject:@"debug"]) {
-            config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];
-        }
-        if ([context.allKeys containsObject:@"service"]) {
-            config.service = [RCTConvert NSString:context[@"service"]];
-        }
-        if([context.allKeys containsObject:@"env"]){
-            id env = context[@"env"];
-            if([env isKindOfClass:NSString.class]){
-                config.env = env;
-            }
-        }
-         if([context.allKeys containsObject:@"envType"]){
-            id env = context[@"envType"];
-            if([env isKindOfClass:NSNumber.class]){
-                int envType = [env intValue];
-                if(envType>=0 && envType<5){
-                    [config setEnvWithType:envType];
-                }
-            }
-        }
-        if ([context.allKeys containsObject:@"autoSync"]) {
-            config.autoSync = [RCTConvert BOOL:context[@"autoSync"]];
-        }
-        if ([context.allKeys containsObject:@"syncPageSize"]) {
-            config.syncPageSize = [RCTConvert int:context[@"syncPageSize"]];
-        }
-        if ([context.allKeys containsObject:@"syncSleepTime"]) {
-            config.syncSleepTime = [RCTConvert int:context[@"syncSleepTime"]];
-        }
-        if ([context.allKeys containsObject:@"enableDataIntegerCompatible"]) {
-            config.enableDataIntegerCompatible = [RCTConvert BOOL:context[@"enableDataIntegerCompatible"]];
-        }
-        if ([context.allKeys containsObject:@"globalContext"]) {
-            config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
-        }
-        if ([context.allKeys containsObject:@"groupIdentifiers"]){
-            config.groupIdentifiers = [RCTConvert NSArray:context[@"groupIdentifiers"]];
-        }
-        [FTMobileAgent startWithConfigOptions:config];
-        resolve(nil);
-    }];
+      }
+    }
+    if ([context.allKeys containsObject:@"autoSync"]) {
+      config.autoSync = [RCTConvert BOOL:context[@"autoSync"]];
+    }
+    if ([context.allKeys containsObject:@"syncPageSize"]) {
+      config.syncPageSize = [RCTConvert int:context[@"syncPageSize"]];
+    }
+    if ([context.allKeys containsObject:@"syncSleepTime"]) {
+      config.syncSleepTime = [RCTConvert int:context[@"syncSleepTime"]];
+    }
+    if ([context.allKeys containsObject:@"enableDataIntegerCompatible"]) {
+      config.enableDataIntegerCompatible = [RCTConvert BOOL:context[@"enableDataIntegerCompatible"]];
+    }
+    if ([context.allKeys containsObject:@"compressIntakeRequests"]) {
+      config.compressIntakeRequests = [RCTConvert BOOL:context[@"compressIntakeRequests"]];
+    }
+    if ([context.allKeys containsObject:@"globalContext"]) {
+      config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
+    }
+    if ([context.allKeys containsObject:@"groupIdentifiers"]){
+      config.groupIdentifiers = [RCTConvert NSArray:context[@"groupIdentifiers"]];
+    }
+    if ([context.allKeys containsObject:@"dbDiscardStrategy"]){
+      config.dbDiscardType = [RCTConvert int:context[@"dbDiscardStrategy"]];
+    }
+    if ([context.allKeys containsObject:@"enableLimitWithDbSize"]){
+      config.enableLimitWithDbSize = [RCTConvert BOOL:context[@"enableLimitWithDbSize"]];
+    }
+    if ([context.allKeys containsObject:@"dbCacheLimit"]){
+      config.dbCacheLimit = [RCTConvert double:context[@"dbCacheLimit"]];
+    }
+    NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
+    [config addPkgInfo:@"reactnative" value:pkgInfo];
+    [FTMobileAgent startWithConfigOptions:config];
+    resolve(nil);
+  }];
 }
 
 RCT_REMAP_METHOD(bindRUMUserData,

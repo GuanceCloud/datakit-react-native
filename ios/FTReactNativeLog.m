@@ -9,7 +9,7 @@
 #import "FTReactNativeLog.h"
 #import <FTMobileSDK/FTMobileAgent.h>
 #import <React/RCTConvert.h>
-#import "FTLogger+Private.h"
+#import <FTMobileSDK/FTLogger+Private.h>
 @implementation FTReactNativeLog
 RCT_EXPORT_MODULE()
 

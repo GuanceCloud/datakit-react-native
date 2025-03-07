@@ -7,6 +7,7 @@ import { version as sdkVersion } from './version'
 export enum EnvType {
   prod, gray, pre, common, local
 };
+export enum FTDBCacheDiscard { discard, discardOldest };
 /**
  * 配置启动 SDK 参数。
  * @param serverUrl 数据上报地址，已废弃，使用 [datakitUrl] 替换
@@ -19,9 +20,13 @@ export enum EnvType {
  * @param autoSync 数据是否进行自动同步上传 默认：true
  * @param syncPageSize 数据同步时每条请求同步条数,最小值 5 默认：10
  * @param syncSleepTime 数据同步时每条请求间隔时间 单位毫秒 0< syncSleepTime <100
- * @param enableDataIntegerCompatible 数据同步时是否开启数据整数兼容
- * @param globalContext 自定义全局参数 
+ * @param enableDataIntegerCompatible 数据同步时是否开启数据整数兼容, 默认开启
+ * @param compressIntakeRequests 是否对同步数据进行压缩
+ * @param globalContext 自定义全局参数
  * @param groupIdentifiers iOS 端设置采集的 Widget Extension 对应的 AppGroups Identifier 数组
+ * @param enableLimitWithDbSize 设置是否开启使用 db 限制数据大小，开启后 `FTLogConfig.logCacheLimitCount` 与 `FTRUMConfig.rumCacheLimitCount` 将不再起效
+ * @param dbCacheLimit db 缓存限制大小,最小值 30MB ,默认 100MB ,单位 byte
+ * @param dbDiscardStrategy db 数据废弃策略
  */
  export interface FTMobileConfig {
    /**
@@ -39,8 +44,13 @@ export enum EnvType {
    syncPageSize?:number,
    syncSleepTime?:number,
    enableDataIntegerCompatible?:boolean,
+   compressIntakeRequests?:boolean,
    globalContext?:object,
-   groupIdentifiers?:Array<string>
+   groupIdentifiers?:Array<string>,
+   enableLimitWithDbSize?:boolean,
+   dbCacheLimit?:number,
+   dbDiscardStrategy?:FTDBCacheDiscard,
+   pkgInfo?: string,
  }
 
 
@@ -89,7 +99,7 @@ type FTMobileReactNativeType = {
     * @returns a Promise.
    */
    flushSyncData():Promise<void>;
-  
+
    /**
    * 同步 ios Widget Extension 中的事件，仅支持 iOS
    * @param groupIdentifier app groupId
@@ -112,9 +122,7 @@ type FTMobileReactNativeType = {
      if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
        config.datakitUrl = config.serverUrl;
      }
-     config.globalContext = Object.assign({
-        'sdk_package_reactnative': sdkVersion,
-      },config.globalContext)
+     config.pkgInfo = sdkVersion;
      return this.sdk.sdkConfig(config);
    }
    bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {

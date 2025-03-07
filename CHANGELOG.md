@@ -1,3 +1,85 @@
+# 0.3.12
+* 新增 RUM `Resource` 数据字段 `resource_first_byte_time`、`resource_dns_time`、`resource_download_time`、`resource_connect_time`、`resource_ssl_time`、`resource_redirect_time`，支持在观测云上 Resource 耗时增强展示，并在支持「应用性能监测」火焰图对齐时间轴
+* `FTMobileConfig.enableDataIntegerCompatible` 默认开启
+* 适配 Android ft-sdk 1.6.9， iOS 1.5.12、1.5.13、1.5.14
+
+---
+# 0.3.12-alpha.1
+* Android 适配 1.6.9-beta02 版本
+
+---
+# 0.3.11
+* 原生 与 React Native 混合开发 SDK 配置优化
+  * 支持通过 `FTRumActionTracking.startTracking()` 方法，自动采集 React Native 控件点击事件，`FTRumErrorTracking.startTracking()` 方法，自动采集 React Native 错误日志
+  * 开启 RUM Resource 自动采集时，新增方法 iOS 端 `FTReactNativeUtils.filterBlackResource(url)`、Android 端 `ReactNativeUtils.isReactNativeDevUrl(url)` 过滤开发环境中的 React Native 符号化请求及 Expo 日志请求，减少冗余数据
+* 适配 iOS SDK 1.5.11
+---
+# 0.3.10
+* 修改 iOS bridge 代码中引用 native SDK 头文件方式
+* 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
+  支持通过 `FTRUMConfig.rumDiscardStrategy` 设置来指定丢弃新数据或丢弃旧数据
+* 新增支持通过 `FTMobileConfig.enableLimitWithDbSize` 限制总缓存大小功能，开启之后
+   `FTLoggerConfig.logCacheLimitCount` 及 `FTRUMConfig.rumCacheLimitCount` 将失效，
+   支持通过 `FTMobileConfig.dbDiscardStrategy` 设置 db 废弃策略，支持通过 `FTMobileConfig.dbCacheLimit` 设置 db 缓存限制大小
+* 适配 iOS SDK 1.5.10，Android SDK ft-sdk 1.6.8
+---
+# 0.3.10-alpha.1
+* 修改 iOS bridge 代码中引用 native SDK 头文件方式
+* 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
+  支持通过 `FTRUMConfig.rumDiscardStrategy` 设置来指定丢弃新数据或丢弃旧数据
+* 新增支持通过 `FTMobileConfig.enableLimitWithDbSize` 限制总缓存大小功能，开启之后
+   `FTLoggerConfig.logCacheLimitCount` 及 `FTRUMConfig.rumCacheLimitCount` 将失效，
+   支持通过 `FTMobileConfig.dbDiscardStrategy` 设置 db 废弃策略，支持通过 `FTMobileConfig.dbCacheLimit` 设置 db 缓存限制大小
+* 适配 iOS SDK 1.5.9，Android SDK ft-sdk 1.6.7
+---
+# 0.3.9
+* 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
+* 适配 Android SDK ft-sdk 1.6.5
+  * 弱化 Webview 在 AOP 过程中参数为 null 的提示
+  * 优化应用在后台长 Session 更新的机制
+---
+# 0.3.8-beta.1
+* 同 0.3.8-alpha.2
+
+---
+# 0.3.8-alpha.2
+* 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
+
+---
+# 0.3.8-alpha.1
+* Android React Native AGP 高版本混合项目兼容适配
+
+---
+# 0.3.7
+* 修正 Android RN 错误数据类型标注错误的问题
+* 支持通过 `FTRUMConfig.nativeFreezeDurationMs` 设置卡顿检测阀值
+* 支持使用 `FTMobileConfig.compressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
+* 适配 iOS SDK 1.5.6
+  * 支持使用 `FTMobileConfig.compressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
+  * RUM 添加 `addAction:actionType:property` 与 `startAction:actionType:property:` 方法，优化 RUM Action 采集逻辑
+  * 修复使用 `NSFileHandle` 废弃 api 导致的崩溃问题
+* 适配 iOS SDK 1.5.7
+  * 支持通过 `FTRUMConfig.freezeDurationMs` 设置卡顿检测阀值
+  * 优化 SDK 的 `shutDown` 方法，避免主线程同步等待导致的卡顿或 WatchDog 崩溃
+* 适配 Android SDK ft-sdk 1.6.2
+  * RUM 新增 `addAction` 方法，支持 property 扩展属性与频繁连续数据上报
+* 适配 Android SDK ft-sdk 1.6.3
+  * 优化自定义 `addAction` 在高频率调用时的性能表现
+  * 支持使用  `FTSDKConfig.setCompressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
+* 适配 Android SDK ft-sdk 1.6.4
+  * 优化 App 启动时间在 API 24 以上统计时间
+  * 支持通过 `FTRUMConfig.setEnableTrackAppUIBlock(true, blockDurationMs)` 设置检测时间范围
+----
+# 0.3.6
+* 适配 iOS SDK 1.5.5
+  * 修复 `FTResourceMetricsModel` 中数组越界导致的崩溃问题
+----
+# 0.3.5
+* 支持采集 Native Error、ANR、Freeze
+* 修改 react-native 自动采集 error 的默认错误类型
+* 对拥有 `onPress` 属性的组件，新增支持在开启 `enableAutoTrackUserAction` 后通过添加自定义属性
+  `ft-enable-track` 定义是否采集该组件的点击事件、通过 `ft-extra-property` 添加 Action 额外属性
+----
 # 0.3.4
 * addError 添加自定错误类型
 * 支持全局动态添加 globalContext 属性
@@ -31,6 +113,10 @@
 ----
 # 0.3.3
 * 适配 iOS SDK 1.5.3
+----
+# 0.3.2-hotfix.1
+* 适配 iOS SDK 1.5.2-hotfix.1
+  * 修复 `FTResourceMetricsModel` 中数组越界崩溃的问题
 ----
 # 0.3.2
 * 修复 Android 配置 `FTMobileConfig.env` 无效问题
