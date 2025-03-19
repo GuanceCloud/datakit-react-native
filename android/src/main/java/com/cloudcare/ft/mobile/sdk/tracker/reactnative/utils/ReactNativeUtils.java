@@ -1,13 +1,14 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils;
 
-import kotlin.text.Regex;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class ReactNativeUtils {
 
-  private static final Regex[] RN_DEV_INNER_URL_REGEX = {
-    new Regex("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"), // expo
-    new Regex("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector).*$") // rn
-  };
+    private static final Pattern[] RN_DEV_INNER_URL_REGEX = {
+        Pattern.compile("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"), // expo
+        Pattern.compile("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector).*$") // rn
+    };
 
     private ReactNativeUtils() {
         // Private constructor to prevent instantiation
@@ -41,20 +42,18 @@ public class ReactNativeUtils {
         }
     }
 
-  /**
-   * 判断是否是 React Native debug 阶段生成的 url 请求
-   * @param url
-   * @return
-   */
-
-  public static boolean isReactNativeDevUrl(String url) {
-    for (Regex regex : RN_DEV_INNER_URL_REGEX) {
-      if (regex.matches(url)) {
-        return true;
-      }
+    /**
+     * 判断是否是 React Native debug 阶段生成的 url 请求
+     * @param url
+     * @return
+     */
+    public static boolean isReactNativeDevUrl(String url) {
+        for (Pattern pattern : RN_DEV_INNER_URL_REGEX) {
+            Matcher matcher = pattern.matcher(url);
+            if (matcher.matches()) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
-
-
 }
