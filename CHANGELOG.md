@@ -1,3 +1,7 @@
+# 0.3.13
+* Android Java 8 兼容性调整，去除 kotlin 库依赖
+
+---
 # 0.3.12
 * 新增 RUM `Resource` 数据字段 `resource_first_byte_time`、`resource_dns_time`、`resource_download_time`、`resource_connect_time`、`resource_ssl_time`、`resource_redirect_time`，支持在观测云上 Resource 耗时增强展示，并在支持「应用性能监测」火焰图对齐时间轴
 * `FTMobileConfig.enableDataIntegerCompatible` 默认开启
