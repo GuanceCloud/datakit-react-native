@@ -56,6 +56,7 @@ async function reactNativeInitSDK() {
     dbDiscardStrategy:FTDBCacheDiscard.discard,
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
+    dataModifier: {'device_uuid':'xxxx'},
   };
   await FTMobileReactNative.sdkConfig(config);
 

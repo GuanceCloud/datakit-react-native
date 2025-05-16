@@ -25,6 +25,9 @@ RCT_REMAP_METHOD(setConfig,
   if ([context.allKeys containsObject:@"sampleRate"]) {
     rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
   }
+  if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
+    rumConfig.sessionOnErrorSampleRate  = [RCTConvert double:context[@"sessionOnErrorSampleRate"]]*100;
+  }
   if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
     rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
   }

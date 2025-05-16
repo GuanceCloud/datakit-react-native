@@ -49,6 +49,8 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     Map<String, Object> map = context.toHashMap();
     String rumAppId = (String) map.get("androidAppId");
     Double sampleRate = (Double) map.get("sampleRate");
+    Double sessionOnErrorSampleRate = (Double) map.get("sessionOnErrorSampleRate");
+
     Boolean enableNativeUserAction = (Boolean) map.get("enableNativeUserAction");
     Boolean enableNativeUserView = (Boolean) map.get("enableNativeUserView");
     Boolean enableNativeUserResource = (Boolean) map.get("enableNativeUserResource");
@@ -67,6 +69,9 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId);
     if (sampleRate != null) {
       rumConfig.setSamplingRate(sampleRate.floatValue());
+    }
+    if (sessionOnErrorSampleRate != null) {
+      rumConfig.setSessionErrorSampleRate(sampleRate.floatValue());
     }
     if (enableNativeUserAction != null) {
       rumConfig.setEnableTraceUserAction(enableNativeUserAction);

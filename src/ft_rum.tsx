@@ -33,6 +33,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param androidAppId appId，监测中申请
  * @param iOSAppId appId，监测中申请
  * @param sampleRate 采样率
+ * @param sessionOnErrorSampleRate 错误会话采样率。未被采样命中的 Session ，命中 ERROR 采样，发生错误时，采集错误前 1 分钟数据
  * @param enableAutoTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
  * @param enableTrackError  是否自动采集 react-native Error
  * @param enableTrackNativeCrash 是否采集 Native Error

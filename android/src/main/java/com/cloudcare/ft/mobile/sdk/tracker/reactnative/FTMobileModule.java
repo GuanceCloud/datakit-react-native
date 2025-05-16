@@ -12,7 +12,7 @@ import com.ft.sdk.FTSDKConfig;
 import com.ft.sdk.FTSdk;
 import com.ft.sdk.InnerClassProxy;
 import com.ft.sdk.garble.bean.UserData;
-
+import com.ft.sdk.DataModifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +46,7 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         Long dbCacheLimit = ReactNativeUtils.convertToNativeLong(map.get("dbCacheLimit"));
         Integer dbDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("dbDiscardStrategy"));
         String sdkPkgInfo = (String)map.get("pkgInfo");
+        Map<String, Object> dataModifier = (Map<String, Object>) map.get("dataModifier");
 
         FTSDKConfig sdkConfig = (datakitUrl != null)
             ? FTSDKConfig.builder(datakitUrl)
@@ -111,6 +112,18 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
 
         if(sdkPkgInfo!=null){
           InnerClassProxy.addPkgInfo(sdkConfig,"reactnative",sdkPkgInfo);
+        }
+        if (dataModifier!=null) {
+          sdkConfig.setDataModifier(new DataModifier() {
+                                      @Override
+                                      public Object modify(String key, Object value) {
+                                        if (dataModifier.containsKey(key)) {
+                                          return dataModifier.get(key);
+                                        }
+                                        return null;
+                                      }
+                                    }
+          );
         }
         FTSdk.install(sdkConfig);
 //        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));

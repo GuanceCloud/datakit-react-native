@@ -82,6 +82,15 @@ RCT_REMAP_METHOD(sdkConfig,
     if ([context.allKeys containsObject:@"dbCacheLimit"]){
       config.dbCacheLimit = [RCTConvert double:context[@"dbCacheLimit"]];
     }
+    if ([context.allKeys containsObject:@"dataModifier"]){
+      NSDictionary *dataModifierDict = [[RCTConvert NSDictionary:context[@"dataModifier"]] copy];
+      config.dataModifier = ^id _Nullable(NSString * _Nonnull key, id  _Nonnull value) {
+        if ([dataModifierDict.allKeys containsObject:key]) {
+          return dataModifierDict[key];
+        }
+        return value;
+      };
+    }
     NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
     [config addPkgInfo:@"reactnative" value:pkgInfo];
     [FTMobileAgent startWithConfigOptions:config];
