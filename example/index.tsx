@@ -57,6 +57,9 @@ async function reactNativeInitSDK() {
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
     dataModifier: {'device_uuid':'xxxx'},
+    lineDataModifier:{"log":{"log_example":"testLineDataModifier"},
+                      "view":{"track_id":"view_xxxx"},
+    }
   };
   await FTMobileReactNative.sdkConfig(config);
 
@@ -87,7 +90,8 @@ async function reactNativeInitSDK() {
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
-    sampleRate:1.0,
+    sampleRate:0,
+    sessionOnErrorSampleRate:1,
     enableNativeUserResource: true,
     enableResourceHostIP:true,
     enableTrackNativeAppANR:true,
