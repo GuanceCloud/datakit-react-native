@@ -27,7 +27,8 @@ export enum FTDBCacheDiscard { discard, discardOldest };
  * @param enableLimitWithDbSize 设置是否开启使用 db 限制数据大小，开启后 `FTLogConfig.logCacheLimitCount` 与 `FTRUMConfig.rumCacheLimitCount` 将不再起效
  * @param dbCacheLimit db 缓存限制大小,最小值 30MB ,默认 100MB ,单位 byte
  * @param dbDiscardStrategy db 数据废弃策略
- * @param dataModifier 数据更改器，进行敏感字段替换 [key:value],设置后 SDK 根据 key 将原始值替换为设置的 value 
+ * @param dataModifier 数据更改器，对单个字段进行更改 {key:value},设置后 SDK 根据 key 将原始值替换为设置的 value 
+ * @param lineDataModifier 数据更改器，对单条数据数据进行更改 {"measurement":measurement,"data":{key:value}},设置后 SDK 根据 key 将原始值替换为设置的 value 
  */
  export interface FTMobileConfig {
    /**
@@ -52,7 +53,8 @@ export enum FTDBCacheDiscard { discard, discardOldest };
    dbCacheLimit?:number,
    dbDiscardStrategy?:FTDBCacheDiscard,
    pkgInfo?: string,
-   dataModifier?:object
+   dataModifier?:object,
+   lineDataModifier?:object
  }
 
 

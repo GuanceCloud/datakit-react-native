@@ -71,7 +71,7 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
       rumConfig.setSamplingRate(sampleRate.floatValue());
     }
     if (sessionOnErrorSampleRate != null) {
-      rumConfig.setSessionErrorSampleRate(sampleRate.floatValue());
+      rumConfig.setSessionErrorSampleRate(sessionOnErrorSampleRate.floatValue());
     }
     if (enableNativeUserAction != null) {
       rumConfig.setEnableTraceUserAction(enableNativeUserAction);

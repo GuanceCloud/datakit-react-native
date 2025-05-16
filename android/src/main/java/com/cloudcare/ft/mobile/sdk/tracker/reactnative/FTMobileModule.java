@@ -1,5 +1,6 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
+import static com.ft.sdk.garble.utils.Constants.FT_LOG_DEFAULT_MEASUREMENT;
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,6 +12,7 @@ import com.ft.sdk.EnvType;
 import com.ft.sdk.FTSDKConfig;
 import com.ft.sdk.FTSdk;
 import com.ft.sdk.InnerClassProxy;
+import com.ft.sdk.LineDataModifier;
 import com.ft.sdk.garble.bean.UserData;
 import com.ft.sdk.DataModifier;
 import java.util.HashMap;
@@ -47,6 +49,7 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         Integer dbDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("dbDiscardStrategy"));
         String sdkPkgInfo = (String)map.get("pkgInfo");
         Map<String, Object> dataModifier = (Map<String, Object>) map.get("dataModifier");
+        Map<String, Map<String,Object>> lineDataModifier = (Map<String, Map<String,Object>>) map.get("lineDataModifier");
 
         FTSDKConfig sdkConfig = (datakitUrl != null)
             ? FTSDKConfig.builder(datakitUrl)
@@ -113,18 +116,28 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         if(sdkPkgInfo!=null){
           InnerClassProxy.addPkgInfo(sdkConfig,"reactnative",sdkPkgInfo);
         }
-        if (dataModifier!=null) {
-          sdkConfig.setDataModifier(new DataModifier() {
-                                      @Override
-                                      public Object modify(String key, Object value) {
-                                        if (dataModifier.containsKey(key)) {
-                                          return dataModifier.get(key);
-                                        }
-                                        return null;
-                                      }
+      if (dataModifier != null) {
+        sdkConfig.setDataModifier(new DataModifier() {
+                                    @Override
+                                    public Object modify(String key, Object value) {
+                                      return dataModifier.get(key);
                                     }
-          );
-        }
+                                  }
+        );
+      }
+      if (lineDataModifier != null) {
+        sdkConfig.setLineDataModifier(new LineDataModifier() {
+                                        @Override
+                                        public Map<String, Object> modify(String measurement, HashMap<String, Object> data) {
+                                          if (measurement.equals(FT_LOG_DEFAULT_MEASUREMENT)) {
+                                            return lineDataModifier.get("log");
+                                          } else {
+                                            return lineDataModifier.get(measurement);
+                                          }
+                                        }
+                                      }
+        );
+      }
         FTSdk.install(sdkConfig);
 //        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));
         promise.resolve(null);

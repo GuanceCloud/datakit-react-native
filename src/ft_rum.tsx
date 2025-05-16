@@ -55,6 +55,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    androidAppId:string,
    iOSAppId:string,
    sampleRate?:number,
+   sessionOnErrorSampleRate?:number,
    enableAutoTrackUserAction?:boolean,
    enableAutoTrackError?:boolean,
    enableTrackNativeCrash?:boolean,

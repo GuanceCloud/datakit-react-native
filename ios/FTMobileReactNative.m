@@ -11,6 +11,7 @@
 #import <FTMobileSDK/FTMobileConfig+Private.h>
 #import <React/RCTConvert.h>
 #import <FTMobileSDK/FTThreadDispatchManager.h>
+#import <FTMobileSDK/FTConstants.h>
 @implementation FTMobileReactNative
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(sdkConfig,
@@ -89,6 +90,16 @@ RCT_REMAP_METHOD(sdkConfig,
           return dataModifierDict[key];
         }
         return value;
+      };
+    }
+    if ([context.allKeys containsObject:@"lineDataModifier"]){
+      NSDictionary *dataModifierDict = [[RCTConvert NSDictionary:context[@"lineDataModifier"]] copy];
+      config.lineDataModifier = ^NSDictionary<NSString *,id> * _Nullable(NSString * _Nonnull measurement, NSDictionary<NSString *,id> * _Nonnull data) {
+        if ([measurement isEqualToString:FT_LOGGER_SOURCE] || [measurement isEqualToString:FT_LOGGER_TVOS_SOURCE]) {
+          return [dataModifierDict valueForKey:@"log"];
+        }else{
+          return [dataModifierDict valueForKey:measurement];
+        }
       };
     }
     NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
