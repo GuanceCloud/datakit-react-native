@@ -1,3 +1,8 @@
+# 0.3.14
+* 支持通过 `FTRUMConfig.sessionErrorSampleRate` 设置错误采样，在未被 sampleRate 采样时，在发生错误时可以对 1 分钟前的 rum 的数据进行取样采集
+* 添加 `FTMobileConfig.lineDataModifier`、`FTMobileConfig.dataModifier` 支持数据写入替换，支持数据脱敏
+* 适配  Android ft-sdk 1.6.11，iOS 1.5.16
+---
 # 0.3.13
 * Android Java 8 兼容性调整，去除 kotlin 库依赖
 
