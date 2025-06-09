@@ -21,7 +21,6 @@ import com.ft.sdk.garble.bean.ResourceParams;
 import java.util.HashMap;
 import java.util.Map;
 
-import kotlin.text.Regex;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
