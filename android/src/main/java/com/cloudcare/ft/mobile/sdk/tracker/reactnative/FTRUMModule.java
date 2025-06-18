@@ -6,8 +6,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.facebook.react.modules.network.ReactCookieJarContainer;
 import com.ft.sdk.DetectFrequency;
 import com.ft.sdk.FTInTakeUrlHandler;
 import com.ft.sdk.FTRUMConfig;
@@ -17,12 +15,8 @@ import com.ft.sdk.RUMCacheDiscard;
 import com.ft.sdk.garble.bean.AppState;
 import com.ft.sdk.garble.bean.NetStatusBean;
 import com.ft.sdk.garble.bean.ResourceParams;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
 
 public class FTRUMModule extends ReactContextBaseJavaModule {
 
@@ -30,12 +24,6 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
 
   public FTRUMModule(ReactApplicationContext reactContext) {
     super(reactContext);
-
-    OkHttpClientProvider.setOkHttpClientFactory(() -> new OkHttpClient.Builder()
-      .addNetworkInterceptor((Interceptor.Chain chain) -> chain.proceed(chain.request()))
-      .cookieJar(new ReactCookieJarContainer())
-      .build()
-    );
   }
 
   @Override
@@ -137,7 +125,7 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     }
     if (rumDiscardStrategy != null) {
       RUMCacheDiscard rumCacheDiscard = RUMCacheDiscard.DISCARD;
-      if(rumDiscardStrategy == 1){
+      if (rumDiscardStrategy == 1) {
         rumCacheDiscard = RUMCacheDiscard.DISCARD_OLDEST;
       }
       rumConfig.setRumCacheDiscardStrategy(rumCacheDiscard);
@@ -258,7 +246,7 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
 //    Long sslEndTime = ReactNativeUtils.convertToNativeLong(metricsMap.get("sslEndTime"));
 
     ResourceParams params = new ResourceParams();
-    params.url =url != null ? url : "";
+    params.url = url != null ? url : "";
     params.responseHeader = responseHeader != null ? responseHeader.toString() : "";
     params.resourceMethod = method;
     params.requestHeader = requestHeader != null ? requestHeader.toString() : "";
