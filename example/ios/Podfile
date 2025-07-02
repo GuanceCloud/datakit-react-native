@@ -23,7 +23,7 @@ target 'FtMobileAgentExample' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
- 
+
       pod 'FTMobileReactNativeSDK', :path => '../..'
 
   # Enables Flipper.
@@ -42,32 +42,32 @@ target 'FtMobileAgentExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
-    
-    # 替换 #import <FTThreadDispatchManager.h> 为 #import <FTMobileSDK/FTThreadDispatchManager.h>
+
+    # Replace #import <FTThreadDispatchManager.h> with #import <FTMobileSDK/FT  ThreadDispatchManager.h>
 #    installer.pods_project.targets.each do |cocoapods_target|
 #      if cocoapods_target.name == 'FTMobileReactNativeSDK'
-#        # 假设我们知道 cocoapods_target 对应的 Xcode target 名称相同
+#        # Assume we know the Xcode target name is the same as cocoapods_target
 #        xcode_target_name = cocoapods_target.name
-#        # 获取 Xcode 项目对象
+#        # Get Xcode project object
 #        xcode_project = installer.pods_project
-#        # 遍历 Xcode 项目中的 targets
+#        # Iterate through targets in Xcode project
 #        xcode_project.native_targets.each do |xcode_target|
 #          if xcode_target.name == xcode_target_name
-#            # 访问 “Compile Sources” build phase
+#            # Access "Compile Sources" build phase
 #            compile_sources_phase = xcode_target.build_phases.find { |phase| phase.isa == 'PBXSourcesBuildPhase' }
 #            if compile_sources_phase
-#              # 遍历源文件列表
+#              # Iterate through source file list
 #              compile_sources_phase.files_references.each do |file_reference|
-#                # 获取源文件路径（相对于 Xcode 项目）
+#                # Get source file path (relative to Xcode project)
 #                source_file_path = file_reference.real_path
 #                fileName = File.basename(source_file_path)
-#                # 判断文件名是否是 FTMobileReactNative.m
+#                # Check if filename is FTMobileReactNative.m
 #                if fileName == 'FTMobileReactNative.m'
 #                  puts "Updated #{source_file_path}"
 #                  content = File.read(source_file_path)
-#                                  # 替换 import 语句
+#                                  # Replace import statement
 #                  updated_content = content.gsub(/#import <FTThreadDispatchManager\.h>/, '#import <FTMobileSDK/FTThreadDispatchManager.h>')
-#                                 # 写回文件
+#                                 # Write back to file
 #                 File.write(source_file_path, updated_content)
 #                end
 #              end

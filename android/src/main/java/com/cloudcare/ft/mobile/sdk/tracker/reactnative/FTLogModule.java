@@ -75,7 +75,7 @@ public class FTLogModule extends ReactContextBaseJavaModule {
               Object item = logTypeList.get(i);
               int ordinal = ReactNativeUtils.convertToNativeInt(item);
               if(ordinal>Status.INFO.ordinal()){
-                arr[i] = Status.values()[ordinal+1];// Android 多一个 Debug
+                arr[i] = Status.values()[ordinal+1];// Android has one more Debug level
               }else{
                 arr[i] = Status.values()[ordinal];
               }

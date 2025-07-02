@@ -62,7 +62,7 @@ android {
       targetCompatibility JavaVersion.VERSION_1_8
     }
   } else {
-   //可能存在编译兼容问题
+   // There may be compilation compatibility issues
     compileOptions {
       sourceCompatibility JavaVersion.VERSION_17
       targetCompatibility JavaVersion.VERSION_17

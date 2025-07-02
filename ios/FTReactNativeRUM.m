@@ -2,7 +2,7 @@
 //  FTReactNativeRUM.m
 //  FtMobileAgent
 //
-//  Created by 胡蕾蕾 on 2021/12/14.
+//  Created by Hu Leilei on 2021/12/14.
 //  Copyright © 2021 Facebook. All rights reserved.
 //
 

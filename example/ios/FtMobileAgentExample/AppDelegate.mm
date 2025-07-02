@@ -7,7 +7,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-//  //混合开发 SDK 初始化示例
+//  //Hybrid development SDK initialization example
 //  [self guanceSDKInit];
   
   self.moduleName = @"FtMobileAgentExample";
@@ -28,7 +28,7 @@
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:@"rumAppId"];
   rumConfig.enableTraceUserResource = YES;
   #if DEBUG
-    // 需要过滤掉仅在开发环境中发生的 React Native 符号化调用请求和 Expo日志调用请求
+    // Need to filter out React Native symbolication requests and Expo log requests that only occur in development environment
     rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
       return [FTReactNativeUtils filterBlackResource:url];
     };

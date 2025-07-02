@@ -122,7 +122,7 @@ export class FTRumActionTracking {
                         try {
                             jsonObject = JSON.parse(extraProperty)
                         } catch (error) {
-                            console.warn(`解析JSON字符串 ${extraProperty} 出错:`,error);
+                            console.warn(`Error parsing JSON string ${extraProperty}:`,error);
                         }
                     }
                     if (jsonObject){
@@ -218,7 +218,7 @@ const areObjectShallowEqual = (
 const getJsxRuntime = () => {
     // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     const [major, minor] = require('react/package.json').version.split('.');
-	// JSX Transform 适用于 > 16.14.0
+	// JSX Transform applies to > 16.14.0
     if (Number(major)<=16&&Number(minor)<14) {
          throw new Error('React version does not support new jsx transform');
     }

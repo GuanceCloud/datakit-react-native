@@ -1,234 +1,233 @@
 # 0.3.14
-* 支持通过 `FTRUMConfig.sessionErrorSampleRate` 设置错误采样，在未被 sampleRate 采样时，在发生错误时可以对 1 分钟前的 rum 的数据进行取样采集
-* 添加 `FTMobileConfig.lineDataModifier`、`FTMobileConfig.dataModifier` 支持数据写入替换，支持数据脱敏
-* 适配  Android ft-sdk 1.6.11，iOS 1.5.16
+* Support setting error sampling through `FTRUMConfig.sessionErrorSampleRate`. When not sampled by sampleRate, RUM data from 1 minute before the error occurs can be sampled when an error occurs
+* Add `FTMobileConfig.lineDataModifier`, `FTMobileConfig.dataModifier` to support data write replacement and data desensitization
+* Compatible with Android ft-sdk 1.6.11, iOS 1.5.16
 ---
 # 0.3.13
-* Android Java 8 兼容性调整，去除 kotlin 库依赖
+* Android Java 8 compatibility adjustments, remove kotlin library dependency
 
 ---
 # 0.3.12
-* 新增 RUM `Resource` 数据字段 `resource_first_byte_time`、`resource_dns_time`、`resource_download_time`、`resource_connect_time`、`resource_ssl_time`、`resource_redirect_time`，支持在观测云上 Resource 耗时增强展示，并在支持「应用性能监测」火焰图对齐时间轴
-* `FTMobileConfig.enableDataIntegerCompatible` 默认开启
-* 适配 Android ft-sdk 1.6.9， iOS 1.5.12、1.5.13、1.5.14
+* Add new RUM `Resource` data fields `resource_first_byte_time`, `resource_dns_time`, `resource_download_time`, `resource_connect_time`, `resource_ssl_time`, `resource_redirect_time`, support enhanced Resource time display on Guance Cloud and align timeline with "Application Performance Monitoring" flame graph
+* `FTMobileConfig.enableDataIntegerCompatible` enabled by default
+* Compatible with Android ft-sdk 1.6.9, iOS 1.5.12, 1.5.13, 1.5.14
 
 ---
 # 0.3.12-alpha.1
-* Android 适配 1.6.9-beta02 版本
+* Android compatible with 1.6.9-beta02 version
 
 ---
 # 0.3.11
-* 原生 与 React Native 混合开发 SDK 配置优化
-  * 支持通过 `FTRumActionTracking.startTracking()` 方法，自动采集 React Native 控件点击事件，`FTRumErrorTracking.startTracking()` 方法，自动采集 React Native 错误日志
-  * 开启 RUM Resource 自动采集时，新增方法 iOS 端 `FTReactNativeUtils.filterBlackResource(url)`、Android 端 `ReactNativeUtils.isReactNativeDevUrl(url)` 过滤开发环境中的 React Native 符号化请求及 Expo 日志请求，减少冗余数据
-* 适配 iOS SDK 1.5.11
+* Native and React Native hybrid development SDK configuration optimization
+  * Support automatic collection of React Native control click events through `FTRumActionTracking.startTracking()` method, and automatic collection of React Native error logs through `FTRumErrorTracking.startTracking()` method
+  * When enabling RUM Resource auto collection, add new methods iOS `FTReactNativeUtils.filterBlackResource(url)`, Android `ReactNativeUtils.isReactNativeDevUrl(url)` to filter React Native symbolication requests and Expo log requests in development environment, reducing redundant data
+* Compatible with iOS SDK 1.5.11
 ---
 # 0.3.10
-* 修改 iOS bridge 代码中引用 native SDK 头文件方式
-* 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
-  支持通过 `FTRUMConfig.rumDiscardStrategy` 设置来指定丢弃新数据或丢弃旧数据
-* 新增支持通过 `FTMobileConfig.enableLimitWithDbSize` 限制总缓存大小功能，开启之后
-   `FTLoggerConfig.logCacheLimitCount` 及 `FTRUMConfig.rumCacheLimitCount` 将失效，
-   支持通过 `FTMobileConfig.dbDiscardStrategy` 设置 db 废弃策略，支持通过 `FTMobileConfig.dbCacheLimit` 设置 db 缓存限制大小
-* 适配 iOS SDK 1.5.10，Android SDK ft-sdk 1.6.8
+* Modify iOS bridge code to reference native SDK header files
+* Add RUM entry count limit functionality, support limiting SDK maximum cache entry data through `FTRUMConfig.rumCacheLimitCount`,
+  support specifying whether to discard new data or old data through `FTRUMConfig.rumDiscardStrategy` setting
+* Add support for limiting total cache size through `FTMobileConfig.enableLimitWithDbSize`. After enabling,
+   `FTLoggerConfig.logCacheLimitCount` and `FTRUMConfig.rumCacheLimitCount` will be invalid,
+   support setting db discard strategy through `FTMobileConfig.dbDiscardStrategy`, support setting db cache limit size through `FTMobileConfig.dbCacheLimit`
+* Compatible with iOS SDK 1.5.10, Android SDK ft-sdk 1.6.8
 ---
 # 0.3.10-alpha.1
-* 修改 iOS bridge 代码中引用 native SDK 头文件方式
-* 新增 RUM 条目数量限制功能、支持通过 `FTRUMConfig.rumCacheLimitCount` 来限制 SDK 最大缓存条目数据限制，
-  支持通过 `FTRUMConfig.rumDiscardStrategy` 设置来指定丢弃新数据或丢弃旧数据
-* 新增支持通过 `FTMobileConfig.enableLimitWithDbSize` 限制总缓存大小功能，开启之后
-   `FTLoggerConfig.logCacheLimitCount` 及 `FTRUMConfig.rumCacheLimitCount` 将失效，
-   支持通过 `FTMobileConfig.dbDiscardStrategy` 设置 db 废弃策略，支持通过 `FTMobileConfig.dbCacheLimit` 设置 db 缓存限制大小
-* 适配 iOS SDK 1.5.9，Android SDK ft-sdk 1.6.7
+* Modify iOS bridge code to reference native SDK header files
+* Add RUM entry count limit functionality, support limiting SDK maximum cache entry data through `FTRUMConfig.rumCacheLimitCount`,
+  support specifying whether to discard new data or old data through `FTRUMConfig.rumDiscardStrategy` setting
+* Add support for limiting total cache size through `FTMobileConfig.enableLimitWithDbSize`. After enabling,
+   `FTLoggerConfig.logCacheLimitCount` and `FTRUMConfig.rumCacheLimitCount` will be invalid,
+   support setting db discard strategy through `FTMobileConfig.dbDiscardStrategy`, support setting db cache limit size through `FTMobileConfig.dbCacheLimit`
+* Compatible with iOS SDK 1.5.9, Android SDK ft-sdk 1.6.7
 ---
 # 0.3.9
-* 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
-* 适配 Android SDK ft-sdk 1.6.5
-  * 弱化 Webview 在 AOP 过程中参数为 null 的提示
-  * 优化应用在后台长 Session 更新的机制
+* To improve React Android compatibility, change Android React Native Bridge part from Kotlin to Java
+* Compatible with Android SDK ft-sdk 1.6.5
+  * Weaken Webview null parameter prompts during AOP process
+  * Optimize long Session update mechanism when app is in background
 ---
 # 0.3.8-beta.1
-* 同 0.3.8-alpha.2
+* Same as 0.3.8-alpha.2
 
 ---
 # 0.3.8-alpha.2
-* 为提升 React Android 兼容性，更改 Android React Native Bridge 部分由 Kotlin 语言为 Java
+* To improve React Android compatibility, change Android React Native Bridge part from Kotlin to Java
 
 ---
 # 0.3.8-alpha.1
-* Android React Native AGP 高版本混合项目兼容适配
+* Android React Native AGP high version hybrid project compatibility adaptation
 
 ---
 # 0.3.7
-* 修正 Android RN 错误数据类型标注错误的问题
-* 支持通过 `FTRUMConfig.nativeFreezeDurationMs` 设置卡顿检测阀值
-* 支持使用 `FTMobileConfig.compressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
-* 适配 iOS SDK 1.5.6
-  * 支持使用 `FTMobileConfig.compressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
-  * RUM 添加 `addAction:actionType:property` 与 `startAction:actionType:property:` 方法，优化 RUM Action 采集逻辑
-  * 修复使用 `NSFileHandle` 废弃 api 导致的崩溃问题
-* 适配 iOS SDK 1.5.7
-  * 支持通过 `FTRUMConfig.freezeDurationMs` 设置卡顿检测阀值
-  * 优化 SDK 的 `shutDown` 方法，避免主线程同步等待导致的卡顿或 WatchDog 崩溃
-* 适配 Android SDK ft-sdk 1.6.2
-  * RUM 新增 `addAction` 方法，支持 property 扩展属性与频繁连续数据上报
-* 适配 Android SDK ft-sdk 1.6.3
-  * 优化自定义 `addAction` 在高频率调用时的性能表现
-  * 支持使用  `FTSDKConfig.setCompressIntakeRequests` 对同步数据进行 `deflate` 压缩配置
-* 适配 Android SDK ft-sdk 1.6.4
-  * 优化 App 启动时间在 API 24 以上统计时间
-  * 支持通过 `FTRUMConfig.setEnableTrackAppUIBlock(true, blockDurationMs)` 设置检测时间范围
+* Fix Android RN error data type annotation error issue
+* Support setting freeze detection threshold through `FTRUMConfig.nativeFreezeDurationMs`
+* Support using `FTMobileConfig.compressIntakeRequests` to configure `deflate` compression for synchronized data
+* Compatible with iOS SDK 1.5.6
+  * Support using `FTMobileConfig.compressIntakeRequests` to configure `deflate` compression for synchronized data
+  * RUM add `addAction:actionType:property` and `startAction:actionType:property:` methods, optimize RUM Action collection logic
+  * Fix crash issue caused by using deprecated `NSFileHandle` api
+* Compatible with iOS SDK 1.5.7
+  * Support setting freeze detection threshold through `FTRUMConfig.freezeDurationMs`
+  * Optimize SDK's `shutDown` method to avoid stuttering or WatchDog crash caused by main thread synchronous waiting
+* Compatible with Android SDK ft-sdk 1.6.2
+  * RUM add `addAction` method, support property extension attributes and frequent continuous data reporting
+* Compatible with Android SDK ft-sdk 1.6.3
+  * Optimize custom `addAction` performance during high-frequency calls
+  * Support using `FTSDKConfig.setCompressIntakeRequests` to configure `deflate` compression for synchronized data
+* Compatible with Android SDK ft-sdk 1.6.4
+  * Optimize App startup time statistics on API 24 and above
+  * Support setting detection time range through `FTRUMConfig.setEnableTrackAppUIBlock(true, blockDurationMs)`
 ----
 # 0.3.6
-* 适配 iOS SDK 1.5.5
-  * 修复 `FTResourceMetricsModel` 中数组越界导致的崩溃问题
+* Compatible with iOS SDK 1.5.5
+  * Fix crash issue caused by array out of bounds in `FTResourceMetricsModel`
 ----
 # 0.3.5
-* 支持采集 Native Error、ANR、Freeze
-* 修改 react-native 自动采集 error 的默认错误类型
-* 对拥有 `onPress` 属性的组件，新增支持在开启 `enableAutoTrackUserAction` 后通过添加自定义属性
-  `ft-enable-track` 定义是否采集该组件的点击事件、通过 `ft-extra-property` 添加 Action 额外属性
+* Support collecting Native Error, ANR, Freeze
+* Modify react-native auto collection error default error type
+* For components with `onPress` property, add support for defining whether to collect click events of this component through custom property `ft-enable-track` after enabling `enableAutoTrackUserAction`, and add Action extra properties through `ft-extra-property`
 ----
 # 0.3.4
-* addError 添加自定错误类型
-* 支持全局动态添加 globalContext 属性
-* 支持通过 FTMobileReactNative.shutDown() 关闭 SDK
-* 支持通过 FTMobileReactNative.clearAllData() 清理 SDK 数据
-* 修复自动采集 react-native Error 时，参数 `stack` 与 `message` 赋值相反问题
-* 适配 Android SDK ft-sdk 1.6.1
-  * 修复 RUM 单独调用自定义 startView，导致监控指标 FTMetricsMTR 线程未被回收的问题
-	* 支持通过 FTSdk.appendGlobalContext(globalContext)、FTSdk.appendRUMGlobalContext(globalContext)、
-   		 FTSdk.appendLogGlobalContext(globalContext)添加动态属性
-	*	支持通过 FTSdk.clearAllData() 清理未上报缓存数据
-* 适配 iOS SDK 1.5.4
-  * 添加全局、log、RUM globalContext 属性动态设置方式
-  * 添加清除数据方法，支持删除所有尚未上传至服务器的数据
-  * 调整同步间歇支持的最大时间间隔至 5000 毫秒
+* addError add custom error type
+* Support globally dynamic addition of globalContext properties
+* Support shutting down SDK through FTMobileReactNative.shutDown()
+* Support clearing SDK data through FTMobileReactNative.clearAllData()
+* Fix issue where `stack` and `message` parameters are assigned in reverse when auto collecting react-native Error
+* Compatible with Android SDK ft-sdk 1.6.1
+  * Fix issue where FTMetricsMTR thread is not recycled when RUM custom startView is called separately
+	* Support adding dynamic properties through FTSdk.appendGlobalContext(globalContext), FTSdk.appendRUMGlobalContext(globalContext),
+   		 FTSdk.appendLogGlobalContext(globalContext)
+	*	Support clearing unreported cache data through FTSdk.clearAllData()
+* Compatible with iOS SDK 1.5.4
+  * Add global, log, RUM globalContext property dynamic setting methods
+  * Add data clearing method, support deleting all data not yet uploaded to server
+  * Adjust maximum time interval supported by sync interval to 5000 milliseconds
 ----
 # 0.3.4-alpha.3
-* 支持通过 FTMobileReactNative.shutDown() 关闭 SDK
-* 支持通过 FTMobileReactNative.clearAllData() 清理 SDK 数据
+* Support shutting down SDK through FTMobileReactNative.shutDown()
+* Support clearing SDK data through FTMobileReactNative.clearAllData()
 
 ----
 # 0.3.4-alpha.2
-* addError 添加自定错误类型
-* 支持全局动态添加 globalContext 属性
-* 适配 Android SDK ft-sdk 1.6.1-alpha04
-  * 修复 RUM 单独调用自定义 startView，导致监控指标 FTMetricsMTR 线程未被回收的问题
-  * 添加全局、log、RUM globalContext 属性动态设置方式
-* 适配 iOS SDK 1.5.4.alpha.2
-  * 添加全局、log、RUM globalContext 属性动态设置方式
+* addError add custom error type
+* Support globally dynamic addition of globalContext properties
+* Compatible with Android SDK ft-sdk 1.6.1-alpha04
+  * Fix issue where FTMetricsMTR thread is not recycled when RUM custom startView is called separately
+  * Add global, log, RUM globalContext property dynamic setting methods
+* Compatible with iOS SDK 1.5.4.alpha.2
+  * Add global, log, RUM globalContext property dynamic setting methods
 
 ----
 # 0.3.3
-* 适配 iOS SDK 1.5.3
+* Compatible with iOS SDK 1.5.3
 ----
 # 0.3.2-hotfix.1
-* 适配 iOS SDK 1.5.2-hotfix.1
-  * 修复 `FTResourceMetricsModel` 中数组越界崩溃的问题
+* Compatible with iOS SDK 1.5.2-hotfix.1
+  * Fix crash issue caused by array out of bounds in `FTResourceMetricsModel`
 ----
 # 0.3.2
-* 修复 Android 配置 `FTMobileConfig.env` 无效问题
+* Fix Android configuration `FTMobileConfig.env` invalid issue
 ----
 # 0.3.1
-* 适配 iOS SDK 1.5.2
-* 兼容修复 React 版本低于 16.14.0 时使用 `react/jsx-runtime` 报错
-* Android 兼容 react native 0.63 低版本
-* 修改过滤指向本地主机（localhost）URL 的正则表达式，增加匹配范围
+* Compatible with iOS SDK 1.5.2
+* Compatibility fix for error when using `react/jsx-runtime` with React version below 16.14.0
+* Android compatible with react native 0.63 low version
+* Modify regex for filtering URLs pointing to localhost, increase matching range
 ----
 # 0.3.1-alpha.4
-* 修复 `replace-react-require.js` 文件未找到问题
+* Fix issue where `replace-react-require.js` file not found
 -----
 # 0.3.1-alpha.3
-* 兼容修复 React 版本低于 16.14.0 时使用 `react/jsx-runtime` 报错
+* Compatibility fix for error when using `react/jsx-runtime` with React version below 16.14.0
 -----
 # 0.3.1-alpha.2
-* Android 兼容 react native 0.63 低版本
+* Android compatible with react native 0.63 low version
 
 -----
 # 0.3.0
-* 新增支持数据同步参数配置，请求条目数据，同步间歇时间，以及日志缓存条目数
-* RUM resource 网络请求添加 remote ip 地址解析功能
-* 添加行协议 Integer 数据兼容模式，处理 web 数据类型冲突问题
-* 日志添加自定义 status 方法
-* react-native 采集 action 方法修改，适配 React 17 无法从 React.createElement 拦截点击事件问题
-* 在 Debug 场景下，RUM Resource 采集过滤掉指向本地主机（localhost）的热更新连接
-* 修正 Android 底层 Double 适配问题
+* Add support for data sync parameter configuration, request entry data, sync interval time, and log cache entry count
+* RUM resource network request add remote ip address resolution functionality
+* Add line protocol Integer data compatibility mode to handle web data type conflicts
+* Log add custom status method
+* React-native action collection method modification, adapt to React 17 issue where click events cannot be intercepted from React.createElement
+* In Debug scenarios, RUM Resource collection filters out hot update connections pointing to localhost
+* Fix Android underlying Double adaptation issue
 -----
 # 0.3.0-alpha.2
-* Android 兼容 react native 0.63 低版本
+* Android compatible with react native 0.63 low version
 
 -----
 # 0.3.0-beta.2
-* 在 Debug 场景下，RUM Resource 采集过滤掉指向本地主机（localhost）的热更新连接
-* 修正 Android 底层 Double 适配问题
+* In Debug scenarios, RUM Resource collection filters out hot update connections pointing to localhost
+* Fix Android underlying Double adaptation issue
 -----
 # 0.3.0-beta.1
-* 同 0.3.0-alpha.1
+* Same as 0.3.0-alpha.1
 -----
 # 0.3.0-alpha.1
-* 新增支持数据同步参数配置，请求条目数据，同步间歇时间，以及日志缓存条目数
-* RUM resource 网络请求添加 remote ip 地址解析功能
-* 添加行协议 Integer 数据兼容模式，处理 web 数据类型冲突问题
-* 日志添加自定义 status 方法
-* react-native 采集 action 方法修改，适配 React 17 无法从 React.createElement 拦截点击事件问题
+* Add support for data sync parameter configuration, request entry data, sync interval time, and log cache entry count
+* RUM resource network request add remote ip address resolution functionality
+* Add line protocol Integer data compatibility mode to handle web data type conflicts
+* Log add custom status method
+* React-native action collection method modification, adapt to React 17 issue where click events cannot be intercepted from React.createElement
 
 -----
 # 0.2.9-beta.2
-* 调整 调整 peerDependencies 限制
+* Adjust peerDependencies restrictions
 
 -----
 # 0.2.9-beta.1
-* 适配 iOS SDK 1.5.1
-* 适配 Android ft-sdk 1.5.2, ft-native 1.1.1, ft-plugin-legacy 1.1.7
+* Compatible with iOS SDK 1.5.1
+* Compatible with Android ft-sdk 1.5.2, ft-native 1.1.1, ft-plugin-legacy 1.1.7
 
 -----
 # 0.2.8
-* 适配 iOS SDK 1.4.9-beta.4
-* 适配 Android 1.4.1-beta01
-* 新增 dataway 上传方式
+* Compatible with iOS SDK 1.4.9-beta.4
+* Compatible with Android 1.4.1-beta01
+* Add dataway upload method
 -----
 # 0.2.7
-* 适配 iOS SDK 1.4.7-beta.1
-* 适配 Android 1.3.16-beta02
-* 新增 env 字符自定义模式
+* Compatible with iOS SDK 1.4.7-beta.1
+* Compatible with Android 1.3.16-beta02
+* Add env character custom mode
 -----
 # 0.2.6
-* 适配 iOS SDK 1.4.3-beta.1
-* 适配 android agent 1.3.12-beta01
-* 添加 SDK 版本字段 sdk_package_reactnative
+* Compatible with iOS SDK 1.4.3-beta.1
+* Compatible with android agent 1.3.12-beta01
+* Add SDK version field sdk_package_reactnative
 
 -----
 # 0.2.5
-* 适配 iOS SDK 1.4.1-alpha.3
-* 适配 android ft-plugin-legacy 1.1.4-beta02
-* 适配 android agent 1.3.11-beta02
-* 适配 android native 1.0.0-beta01
+* Compatible with iOS SDK 1.4.1-alpha.3
+* Compatible with android ft-plugin-legacy 1.1.4-beta02
+* Compatible with android agent 1.3.11-beta02
+* Compatible with android native 1.0.0-beta01
 
 -----
 # 0.2.4
-* 修正设备指标监控传参错误
+* Fix device metrics monitoring parameter error
 
 -----
 # 0.2.3
-* 适配 iOS SDK 1.3.10-beta.1
-* 适配 Android 1.3.9-beta02
+* Compatible with iOS SDK 1.3.10-beta.1
+* Compatible with Android 1.3.9-beta02
 
 -----
 # 0.2.2
-* Android Native SDK 调整
+* Android Native SDK adjustments
 
 -----
 # 0.2.1
-* demo 修改
-* Native SDK 调整
+* Demo modifications
+* Native SDK adjustments
 
 -----
 # 0.2.0
-* startView 参数优化
-* 添加 onCreateView 方法
+* startView parameter optimization
+* Add onCreateView method
 
 -----
 # 0.1.1
-* Android 调用方法修正
-* 兼容性适配
+* Android method call corrections
+* Compatibility adaptations

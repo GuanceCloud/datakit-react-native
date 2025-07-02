@@ -4,17 +4,19 @@ import { FTReactNativeRUM } from '@cloudcare/react-native-mobile';
 
 
 /**
- * 使用 react-native-navigation 时 RUM 采集 view 
+ * RUM collection view when using react-native-navigation
  */
 export class FTRumReactNativeNavigationTracking {
 
     private static isTracking = false
     private static trackedComponentIds : Array<any> = [];
     private static originalCreateElement: any = undefined
+    private static currentViewName: string | null = null;
+    private static currentViewStartTime: number = 0;
 
 
     /**
-     * 开始采集页面的生命周期
+     * Start collecting page lifecycle
      */
     static startTracking(): void {
         if (FTRumReactNativeNavigationTracking.isTracking) {
@@ -60,7 +62,7 @@ export class FTRumReactNativeNavigationTracking {
     }
 
     /**
-     * 停止采集页面跳转
+     * Stop collecting page navigation
      */
     static stopTracking(): void {
         if (!FTRumReactNativeNavigationTracking.isTracking) {

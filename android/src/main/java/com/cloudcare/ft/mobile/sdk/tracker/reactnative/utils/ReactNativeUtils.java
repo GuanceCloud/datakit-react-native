@@ -15,7 +15,7 @@ public class ReactNativeUtils {
     }
 
     /**
-     * React Native number 转化为 int
+     * Convert React Native number to int
      */
     public static Integer convertToNativeInt(Object value) {
         if (value == null) {
@@ -29,7 +29,7 @@ public class ReactNativeUtils {
     }
 
     /**
-     * React Native number 转化为 long
+     * Convert React Native number to long
      */
     public static Long convertToNativeLong(Object value) {
         if (value == null) {
@@ -43,7 +43,7 @@ public class ReactNativeUtils {
     }
 
     /**
-     * 判断是否是 React Native debug 阶段生成的 url 请求
+     * Check if it's a React Native debug stage generated URL request
      * @param url
      * @return
      */
