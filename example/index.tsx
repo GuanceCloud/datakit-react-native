@@ -21,15 +21,118 @@ import {
   TraceType,
   SessionReplayPrivacy,
   FTReactNativeSessionReplay,
-  FTSessionReplayConfig
+  FTSessionReplayConfig,
+  FTDBCacheDiscard,
+  FTRUMCacheDiscard,
+  FTRumActionTracking,
+  FTRumErrorTracking
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 
+
 console.log('navigationLib library: ' + navigationLib);
-// 根据 app.json 中设置的 navigationLib 初始化对应导航组件，启动 APP
-// 导航组件使用 react-navigation
+
+  //React Native development
+reactNativeInitSDK();
+
+//  //Native development, some pages or business processes use React Native implementation
+//  //Initialize SDK in native project, no need to initialize configuration on React Native side
+//  //Enable configuration as needed
+// hybridConfig();
+
+function hybridConfig(){
+  //Enable automatic collection of react-native control clicks
+  FTRumActionTracking.startTracking();
+  //Enable automatic collection of react-native Error
+  FTRumErrorTracking.startTracking();
+}
+
+// SDK initialization
+async function reactNativeInitSDK() {
+  //Basic configuration
+  let config: FTMobileConfig = {
+    datawayUrl:Config.DATAWAY_URL,
+    clientToken:Config.CLIENT_TOKEN,
+    debug: true,
+    env:'test',
+    enableLimitWithDbSize:true,
+    dbCacheLimit:50*1024*1024,
+    dbDiscardStrategy:FTDBCacheDiscard.discard,
+    // envType:EnvType.prod,
+    globalContext: { 'sdk_example': 'example1' },
+  };
+  await FTMobileReactNative.sdkConfig(config);
+
+  // log settings
+  let logConfig: FTLogConfig = {
+    enableCustomLog: true,
+    enableLinkRumData: true,
+    logCacheLimitCount: 2000,
+    sampleRate:1,
+    globalContext: { 'log_example': 'example2' },
+  };
+  await FTReactNativeLog.logConfig(logConfig);
+
+  // trace settings
+  let traceConfig: FTTraceConfig = {
+    enableLinkRUMData: true,
+    enableNativeAutoTrace: true,
+    sampleRate:1.0,
+    traceType: TraceType.ddTrace,
+  };
+  await FTReactNativeTrace.setConfig(traceConfig);
+
+  // rum settings
+  let rumConfig: FTRUMConfig = {
+    androidAppId: Config.ANDROID_APP_ID,
+    iOSAppId:Config.IOS_APP_ID,
+    enableAutoTrackUserAction: true,
+    enableAutoTrackError: true,
+    enableNativeUserAction: true,
+    enableNativeUserView: false,
+    sampleRate:1,
+    enableNativeUserResource: true,
+    enableResourceHostIP:true,
+    enableTrackNativeAppANR:true,
+    enableTrackNativeCrash:true,
+    enableTrackNativeFreeze:true,
+    errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
+    deviceMonitorType:DeviceMetricsMonitorType.all,
+    detectFrequency:DetectFrequency.rare,
+    rumCacheLimitCount:1000,
+    rumDiscardStrategy:FTRUMCacheDiscard.discardOldest,
+  };
+  // Static globalContext setting
+  //Set in environment files like .env.debug, .env.release, etc.
+  rumConfig.globalContext = { 'track_id': Config.TRACK_ID };
+  await FTReactNativeRUM.setConfig(rumConfig);
+  /** Dynamic globalContext setting
+   new Promise(function(resolve) {
+       AsyncStorage.getItem("track_id",(error,result)=>{
+        if (result === null){
+          console.log('Get failed: ' + error);
+        }else {
+          console.log('Get successful: ' + result);
+          if( result != undefined){
+            rumConfig.globalContext = {"track_id":result};
+          }
+        }
+        resolve(FTReactNativeRUM.setConfig(rumConfig));
+      })
+     })
+   */
+  let sessionReplayConfig:FTSessionReplayConfig = {
+    sampleRate:1,
+    privacy:SessionReplayPrivacy.ALLOW
+  }
+  await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);
+  FTReactNativeLog.logging('config complete', FTLogStatus.info);
+}
+
+
+// Initialize corresponding navigation component based on navigationLib set in app.json, start APP
+// Navigation component uses react-navigation
 if (navigationLib == 'react-navigation') {
-  initSDK();
   AppRegistry.registerComponent(appName, () => App);
   Navigation.events().registerAppLaunchedListener(() => {
     Navigation.setRoot({
@@ -52,82 +155,6 @@ if (navigationLib == 'react-navigation') {
     });
   });
 } else if (navigationLib == 'react-native-navigation') {
-  // 导航组件使用 react-native-navigation
-  initSDK();
+  // Navigation component uses react-native-navigation
   startReactNativeNavigation();
-}
-
-
-async function initSDK() {
-  //基础配置
-  let config: FTMobileConfig = {
-    datawayUrl:Config.DATAWAY_URL,
-    clientToken:Config.CLIENT_TOKEN,
-    debug: true,
-    env:'test',
-    // envType:EnvType.prod,
-    globalContext: { 'sdk_example': 'example1' },
-  };
-  await FTMobileReactNative.sdkConfig(config);
-
-  // log 设置
-  let logConfig: FTLogConfig = {
-    enableCustomLog: true,
-    enableLinkRumData: true,
-    logCacheLimitCount: 2000,
-    sampleRate:1,
-    globalContext: { 'log_example': 'example2' },
-  };
-  await FTReactNativeLog.logConfig(logConfig);
-
-  // trace 设置
-  let traceConfig: FTTraceConfig = {
-    enableLinkRUMData: true,
-    enableNativeAutoTrace: true,
-    sampleRate:1.0,
-    traceType: TraceType.ddTrace,
-  };
-  await FTReactNativeTrace.setConfig(traceConfig);
-
-  // rum 设置
-  let rumConfig: FTRUMConfig = {
-    androidAppId: Config.ANDROID_APP_ID,
-    iOSAppId:Config.IOS_APP_ID,
-    enableAutoTrackUserAction: true,
-    enableAutoTrackError: true,
-    enableNativeUserAction: true,
-    enableNativeUserView: false,
-    sampleRate:1.0,
-    enableNativeUserResource: true,
-    enableResourceHostIP:true,
-
-    errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
-    deviceMonitorType:DeviceMetricsMonitorType.all,
-    detectFrequency:DetectFrequency.rare
-  };
-  // 静态设置 globalContext
-  //.env.dubug、.env.release 等配置的环境文件中设置
-  rumConfig.globalContext = { 'track_id': Config.TRACK_ID };
-  await FTReactNativeRUM.setConfig(rumConfig);
-  /** 动态设置 globalContext
-   new Promise(function(resolve) {
-       AsyncStorage.getItem("track_id",(error,result)=>{
-        if (result === null){
-          console.log('获取失败' + error);
-        }else {
-          console.log('获取成功' + result);
-          if( result != undefined){
-            rumConfig.globalContext = {"track_id":result};
-          }
-        }
-        resolve(FTReactNativeRUM.setConfig(rumConfig));
-      })
-     })
-   */
-  let sessionReplayConfig:FTSessionReplayConfig = {
-    sampleRate:1,
-    privacy:SessionReplayPrivacy.ALLOW
-  }
-  await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);
-  FTReactNativeLog.logging('config complete', FTLogStatus.info);
 }

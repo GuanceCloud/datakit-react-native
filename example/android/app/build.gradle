@@ -5,6 +5,7 @@ apply plugin: "com.facebook.react"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 apply plugin: 'ft-plugin'
+apply from: "../../node_modules/@cloudcare/react-native-mobile-cli/ft-sourcemaps.gradle"
 
 // FTExt {
 //   showLog = true
@@ -123,7 +124,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-    implementation project(':reactnativeftmobileagent')
+    api project(':reactnativeftmobileagent')
 
 }
 

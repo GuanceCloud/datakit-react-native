@@ -1,15 +1,17 @@
 import type { ErrorHandlerCallback } from 'react-native';
 import { FTReactNativeRUM } from '../ft_rum';
+const EMPTY_MESSAGE = 'Unknown Error';
+const CONSOLE_ERROR = "console_error";
 
 export class FTRumErrorTracking {
   private static isTracking = false;
 
   private static isInDefaultErrorHandler = false;
 
-  // 原有的 error 处理方法
+  // Original error handler method
   private static defaultErrorHandler: ErrorHandlerCallback = (_error: any, _isFatal?: boolean) => { }
 
-  // 原有的 console error 处理方法
+  // Original console error handler method
   private static defaultConsoleError = (..._params: unknown[]) => { }
 
   static startTracking(): void {
@@ -28,12 +30,12 @@ export class FTRumErrorTracking {
     const message = FTRumErrorTracking.getErrorMessage(error);
     const stacktrace = FTRumErrorTracking.getErrorStackTrace(error);
     FTReactNativeRUM.addError(
-      message,
       stacktrace,
+      message
       ).then(() => {
         try {
           FTRumErrorTracking.isInDefaultErrorHandler = true;
-          //调用原有的 error 处理方法
+          //Call the original error handler method
           FTRumErrorTracking.defaultErrorHandler(error, isFatal);
         } finally {
           FTRumErrorTracking.isInDefaultErrorHandler = false;
@@ -56,25 +58,26 @@ export class FTRumErrorTracking {
         }
       }
 
-      const message = params.map((param) => { 
+      const message = params.map((param) => {
         if (typeof param === 'string') { return param; }
         else { return FTRumErrorTracking.getErrorMessage(param); }
       }).join(' ');
 
 
-      FTReactNativeRUM.addError(
+      FTReactNativeRUM.addErrorWithType(
+        CONSOLE_ERROR,
+        stack,
         message,
-        stack
         ).then(() => {
           FTRumErrorTracking.defaultConsoleError.apply(console, params);
         });
 
       }
       private static getErrorMessage(error: any | undefined): string {
-        let message = '';
-        if (error == undefined) {
-          message = '';
-        } else if ("message" in error){
+        let message = EMPTY_MESSAGE;
+        if (error == undefined || error === null) {
+          message = EMPTY_MESSAGE;
+        } else if (typeof error === 'object' && 'message' in error){
           message = String(error.message);
         } else {
           message = String(error);

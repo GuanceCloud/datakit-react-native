@@ -1,6 +1,7 @@
 import React from 'react'
 import { FTReactNativeRUM } from '../ft_rum';
-
+const FT_ENABLE_TRACK = 'ft-enable-track';
+const FT_EXTRA_PROPERTY = 'ft-extra-property';
 export class FTRumActionTracking {
 	private static isTracking = false
 	private static preActionTimestamp = Number.MIN_VALUE;
@@ -109,14 +110,30 @@ export class FTRumActionTracking {
 		}
 	}
 
-	private static handleTargetEvent(targetNode:any | null){
-		if (targetNode) {
-			const  elementTypeName = FTRumActionTracking.resolveActionName(targetNode);
-			if (elementTypeName) {
-				FTReactNativeRUM.startAction(elementTypeName,'click');
-			}
-		}
-	}
+    private static handleTargetEvent(targetNode: any | null) {
+        if (targetNode) {
+            const enable = FTRumActionTracking.findActionEnableTrack(targetNode);
+            if (enable) {
+                const extraProperty = FTRumActionTracking.findActionProperty(targetNode);
+                const elementTypeName = FTRumActionTracking.resolveActionName(targetNode);
+                if (elementTypeName) {
+                    let jsonObject = null
+                    if (extraProperty) {
+                        try {
+                            jsonObject = JSON.parse(extraProperty)
+                        } catch (error) {
+                            console.warn(`Error parsing JSON string ${extraProperty}:`,error);
+                        }
+                    }
+                    if (jsonObject){
+                        FTReactNativeRUM.startAction(elementTypeName, 'click',jsonObject);
+                    }else{
+                        FTReactNativeRUM.startAction(elementTypeName, 'click');
+                    }
+                }
+            }
+        }
+    }
 
 	private static resolveActionName(targetNode:any): string | null {
 		const accessibilityLabel = targetNode.memoizedProps?.accessibilityLabel
@@ -153,7 +170,32 @@ export class FTRumActionTracking {
 			return null;
    
 	}
+    private static findActionProperty(targetNode: any): string | null {
+        let currentNode = targetNode;
+        while (currentNode) {
+            const props = currentNode.memoizedProps;
+            if (props && props[FT_EXTRA_PROPERTY]) {
+                return props[FT_EXTRA_PROPERTY];
+            }
+            currentNode = currentNode.return;
+        }
+        return null;
+    }
+    private static findActionEnableTrack(targetNode: any): boolean {
+        let currentNode = targetNode;
+        let enable = true
+        while (currentNode) {
+            const props = currentNode.memoizedProps;
+            if (props && props[FT_ENABLE_TRACK]) {
+                enable = props[FT_ENABLE_TRACK] == "true";
+                break;
+            }
+            currentNode = currentNode.return;
+        }
+        return enable;
+    }
 }
+
 const areObjectShallowEqual = (
 	objectA: Record<string, unknown> | undefined | null,
 	objectB: Record<string, unknown> | undefined | null
@@ -176,7 +218,7 @@ const areObjectShallowEqual = (
 const getJsxRuntime = () => {
     // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     const [major, minor] = require('react/package.json').version.split('.');
-	// JSX Transform 适用于 > 16.14.0
+	// JSX Transform applies to > 16.14.0
     if (Number(major)<=16&&Number(minor)<14) {
          throw new Error('React version does not support new jsx transform');
     }

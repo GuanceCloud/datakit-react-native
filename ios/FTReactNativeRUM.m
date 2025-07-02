@@ -2,7 +2,7 @@
 //  FTReactNativeRUM.m
 //  FtMobileAgent
 //
-//  Created by 胡蕾蕾 on 2021/12/14.
+//  Created by Hu Leilei on 2021/12/14.
 //  Copyright © 2021 Facebook. All rights reserved.
 //
 
@@ -12,76 +12,85 @@
 #import <FTMobileSDK/FTResourceMetricsModel.h>
 #import <FTMobileSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
-BOOL filterBlackResource(NSURL *url){
-    static NSMutableArray *internalDevResourceBlacklist;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        internalDevResourceBlacklist = [NSMutableArray new];
-        NSError *error = nil;
-        NSString *pattern = @"^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$";
-        NSRegularExpression * regularExpress = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
-        [internalDevResourceBlacklist addObject:regularExpress];
-        NSString *rn = @"^http://localhost:808[0-9]/(hot|symbolicate|message|inspector|status|assets).*$";
-        NSRegularExpression * rnRegularExpress = [NSRegularExpression regularExpressionWithPattern:rn options:NSRegularExpressionCaseInsensitive error:&error];
-        [internalDevResourceBlacklist addObject:rnRegularExpress];
-    });
-    for (NSRegularExpression *regex in internalDevResourceBlacklist) {
-        NSTextCheckingResult *firstMatch =[regex firstMatchInString:url.absoluteString options:0 range:NSMakeRange(0, [url.absoluteString length])];
-        if (firstMatch) {
-            return YES;
-        }
-    }
-    return NO;
-}
+#import "FTReactNativeUtils.h"
+
 @implementation FTReactNativeRUM
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(setConfig,
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
-    FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
-    if ([context.allKeys containsObject:@"sampleRate"]) {
-        rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
-    }
-    if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
-        rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
-    }
-    if ([context.allKeys containsObject:@"enableNativeUserView"]) {
-        rumConfig.enableTraceUserView = [RCTConvert BOOL:context[@"enableNativeUserView"]];
-    }
-    if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
-        rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
-    }
-    if ([context.allKeys containsObject:@"errorMonitorType"]) {
-        rumConfig.errorMonitorType =(FTErrorMonitorType)[RCTConvert int:context[@"errorMonitorType"]];
-    }
-    if ([context.allKeys containsObject:@"deviceMonitorType"]) {
-        rumConfig.deviceMetricsMonitorType =(FTDeviceMetricsMonitorType)[RCTConvert int:context[@"deviceMonitorType"]];
-    }
-    if ([context.allKeys containsObject:@"detectFrequency"]) {
-        rumConfig.monitorFrequency =(FTMonitorFrequency)[RCTConvert int:context[@"detectFrequency"]];
-    }
-    if ([context.allKeys containsObject:@"enableResourceHostIP"]) {
-        rumConfig.enableResourceHostIP = [RCTConvert BOOL:context[@"enableResourceHostIP"]];
-    }
-    if ([context.allKeys containsObject:@"globalContext"]) {
-        rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
-    }
+  NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
+  FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
+  if ([context.allKeys containsObject:@"sampleRate"]) {
+    rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
+  }
+  if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
+    rumConfig.sessionOnErrorSampleRate  = [RCTConvert double:context[@"sessionOnErrorSampleRate"]]*100;
+  }
+  if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
+    rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
+  }
+  if ([context.allKeys containsObject:@"enableNativeUserView"]) {
+    rumConfig.enableTraceUserView = [RCTConvert BOOL:context[@"enableNativeUserView"]];
+  }
+  if ([context.allKeys containsObject:@"enableNativeUserResource"]) {
+    rumConfig.enableTraceUserResource = [RCTConvert BOOL:context[@"enableNativeUserResource"]];
+  }
+  if ([context.allKeys containsObject:@"errorMonitorType"]) {
+    rumConfig.errorMonitorType =(FTErrorMonitorType)[RCTConvert int:context[@"errorMonitorType"]];
+  }
+  if ([context.allKeys containsObject:@"deviceMonitorType"]) {
+    rumConfig.deviceMetricsMonitorType =(FTDeviceMetricsMonitorType)[RCTConvert int:context[@"deviceMonitorType"]];
+  }
+  if ([context.allKeys containsObject:@"detectFrequency"]) {
+    rumConfig.monitorFrequency =(FTMonitorFrequency)[RCTConvert int:context[@"detectFrequency"]];
+  }
+  if ([context.allKeys containsObject:@"enableResourceHostIP"]) {
+    rumConfig.enableResourceHostIP = [RCTConvert BOOL:context[@"enableResourceHostIP"]];
+  }
+  if ([context.allKeys containsObject:@"enableTrackNativeCrash"]){
+    rumConfig.enableTrackAppCrash = [RCTConvert BOOL:context[@"enableTrackNativeCrash"]];
+  }
+  if ([context.allKeys containsObject:@"enableTrackNativeAppANR"]){
+    rumConfig.enableTrackAppANR = [RCTConvert BOOL:context[@"enableTrackNativeAppANR"]];
+  }
+  if ([context.allKeys containsObject:@"enableTrackNativeFreeze"]){
+    rumConfig.enableTrackAppFreeze = [RCTConvert BOOL:context[@"enableTrackNativeFreeze"]];
+  }
+  if ([context.allKeys containsObject:@"nativeFreezeDurationMs"]){
+    rumConfig.freezeDurationMs = [RCTConvert double:context[@"nativeFreezeDurationMs"]];
+  }
+  if ([context.allKeys containsObject:@"globalContext"]) {
+    rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
+  }
+  if ([context.allKeys containsObject:@"rumDiscardStrategy"]) {
+    rumConfig.rumDiscardType = [RCTConvert int:context[@"rumDiscardStrategy"]];
+  }
+  if ([context.allKeys containsObject:@"rumCacheLimitCount"]) {
+    rumConfig.rumCacheLimitCount = [RCTConvert int:context[@"rumCacheLimitCount"]];
+  }
 #if DEBUG
-    rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
-        return filterBlackResource(url);
-    };
+  rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
+    return [FTReactNativeUtils filterBlackResource:url];
+  };
 #endif
-    [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
-    resolve(nil);
+  [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
+  resolve(nil);
 }
 RCT_REMAP_METHOD(startAction,
                  actionName:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] addActionName:actionName actionType:actionType property:property];
-    resolve(nil);
+  [[FTExternalDataManager sharedManager] startAction:actionName actionType:actionType property:property];
+  resolve(nil);
+}
+RCT_REMAP_METHOD(addAction,
+                 addAction:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+  [[FTExternalDataManager sharedManager] addAction:actionName actionType:actionType property:property];
+  resolve(nil);
 }
 RCT_REMAP_METHOD(onCreateView,
                   viewName:(NSString *)viewName loadTime:(double)loadTime
@@ -108,10 +117,16 @@ RCT_REMAP_METHOD(addError,
                  stack:(NSString *)stack message:(NSString *)message property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative" message:message stack:stack property:property];
+    [[FTExternalDataManager sharedManager] addErrorWithType:@"reactnative_crash" message:message stack:stack property:property];
     resolve(nil);
 }
-
+RCT_REMAP_METHOD(addErrorWithType,
+                 type:(NSString *)type stack:(NSString *)stack message:(NSString *)message property:(NSDictionary *)property
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [[FTExternalDataManager sharedManager] addErrorWithType:type message:message stack:stack property:property];
+    resolve(nil);
+}
 RCT_REMAP_METHOD(startResource,
                  startResource:(NSString *)key property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve

@@ -2,7 +2,7 @@ import { NativeModules } from 'react-native';
 //FTReactNativeTrace
 
 /**
- * 使用 trace 的类型。
+ * Trace types for use.
  */
  export enum TraceType {
    ddTrace,
@@ -13,11 +13,11 @@ import { NativeModules } from 'react-native';
    jaeger,
  };
 /**
- * 配置 trace 。
- * @param sampleRate 采样率
- * @param traceType 链路类型
- * @param enableLinkRUMData 是否与 RUM 数据关联
- * @param enableNativeAutoTrace 是否开启自动追踪 
+ * Configure trace.
+ * @param sampleRate sampling rate
+ * @param traceType trace type
+ * @param enableLinkRUMData whether to link with RUM data
+ * @param enableNativeAutoTrace whether to enable automatic tracing
  */
  export interface FTTraceConfig{
    sampleRate?:number,
@@ -28,22 +28,22 @@ import { NativeModules } from 'react-native';
 
  type FTReactNativeTraceType = {
   /**
-   * 配置 trace 开启链路追踪。
-   * @param config trace 配置参数。
+   * Configure trace to enable distributed tracing.
+   * @param config trace configuration parameters.
    * @returns a Promise.
    */
    setConfig(config: FTTraceConfig): Promise<void>; 
   /**
-   * 获取 trace http 请求头数据。
-   * @param url 请求地址
-   * @returns trace 添加的请求头参数  
+   * Get trace HTTP request header data.
+   * @param url request URL
+   * @returns trace request header parameters
    * @deprecated use getTraceHeaderFields() replace.
    */
    getTraceHeader(key:String, url: String): Promise<object>;
    /**
-   * 获取 trace http 请求头数据。
-   * @param url 请求地址
-   * @returns trace 添加的请求头参数  
+   * Get trace HTTP request header data.
+   * @param url request URL
+   * @returns trace request header parameters
    */
    getTraceHeaderFields(url: String,key?:String): Promise<object>;
  };
@@ -55,18 +55,18 @@ import { NativeModules } from 'react-native';
      return this.trace.setConfig(config);
    }
   /**
-   * 获取 trace http 请求头数据。
-   * @param key 唯一 id
-   * @param url 请求地址
+   * Get trace HTTP request header data.
+   * @param key unique id
+   * @param url request URL
    * @returns a Promise.
    */
    getTraceHeader(key:String, url: String): Promise<object>{
      return this.trace.getTraceHeaderFields(url,key);
    }
     /**
-   * 获取 trace http 请求头数据。
-   * @param url 请求地址
-   * @param key 唯一 id
+   * Get trace HTTP request header data.
+   * @param url request URL
+   * @param key unique id
    * @returns a Promise.
    */
    getTraceHeaderFields(url: String,key?:String): Promise<object>{

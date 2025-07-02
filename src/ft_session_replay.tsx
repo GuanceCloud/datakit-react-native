@@ -1,16 +1,16 @@
 import { NativeModules } from 'react-native';
 /**
- * 会话重播中内容屏蔽的隐私级别。
+ * Privacy level for content masking in session replay.
  */
 export enum SessionReplayPrivacy {
     MASK ,
     ALLOW ,
-    MASK_USER_INPUT 
+    MASK_USER_INPUT
 }
 /**
- * 设置 Session Replay 配置.
- * @param sampleRate 采样率
- * @param privacy 会话重播中内容屏蔽的隐私级别
+ * Set Session Replay configuration.
+ * @param sampleRate Sampling rate
+ * @param privacy Privacy level for content masking in session replay
  */
 export interface FTSessionReplayConfig{
     sampleRate?:number,
@@ -18,8 +18,8 @@ export interface FTSessionReplayConfig{
   }
 type FTReactNativeSessionReplayType = {
   /**
-   * 设置 Session Replay 配置，开启会话重放
-   * @param config Session Replay 配置参数。
+   * Set Session Replay configuration and enable session replay
+   * @param config Session Replay configuration parameters.
    * @returns a Promise.
    */
     sessionReplayConfig(config:FTSessionReplayConfig): Promise<void>;

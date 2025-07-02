@@ -23,7 +23,7 @@ target 'FtMobileAgentExample' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
- 
+
       pod 'FTMobileReactNativeSDK', :path => '../..'
 
   # Enables Flipper.
@@ -42,5 +42,40 @@ target 'FtMobileAgentExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Replace #import <FTThreadDispatchManager.h> with #import <FTMobileSDK/FT  ThreadDispatchManager.h>
+#    installer.pods_project.targets.each do |cocoapods_target|
+#      if cocoapods_target.name == 'FTMobileReactNativeSDK'
+#        # Assume we know the Xcode target name is the same as cocoapods_target
+#        xcode_target_name = cocoapods_target.name
+#        # Get Xcode project object
+#        xcode_project = installer.pods_project
+#        # Iterate through targets in Xcode project
+#        xcode_project.native_targets.each do |xcode_target|
+#          if xcode_target.name == xcode_target_name
+#            # Access "Compile Sources" build phase
+#            compile_sources_phase = xcode_target.build_phases.find { |phase| phase.isa == 'PBXSourcesBuildPhase' }
+#            if compile_sources_phase
+#              # Iterate through source file list
+#              compile_sources_phase.files_references.each do |file_reference|
+#                # Get source file path (relative to Xcode project)
+#                source_file_path = file_reference.real_path
+#                fileName = File.basename(source_file_path)
+#                # Check if filename is FTMobileReactNative.m
+#                if fileName == 'FTMobileReactNative.m'
+#                  puts "Updated #{source_file_path}"
+#                  content = File.read(source_file_path)
+#                                  # Replace import statement
+#                  updated_content = content.gsub(/#import <FTThreadDispatchManager\.h>/, '#import <FTMobileSDK/FTThreadDispatchManager.h>')
+#                                 # Write back to file
+#                 File.write(source_file_path, updated_content)
+#                end
+#              end
+#            end
+#          end
+#        end
+#      end
+#    end
+
   end
 end
