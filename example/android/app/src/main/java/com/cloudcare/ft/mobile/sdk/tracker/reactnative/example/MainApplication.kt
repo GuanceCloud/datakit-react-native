@@ -40,18 +40,6 @@ class MainApplication : NavigationApplication(), ReactApplication {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
-//      // Hybrid development SDK initialization example
-//      FTMobileConfig config = new FTMobileConfig("datakitUrl");
-//      config.setEnableSDKDebugLog(true);
-//      FTMobileAgent.startWithConfigOptions(config);
-//
-//      FTRumConfig rumConfig = new FTRumConfig("rumAppId");
-//      rumConfig.setEnableTraceUserResource(true);
-//      #if DEBUG
-//        // Need to filter out React Native symbolication requests and Expo log requests that only occur in development environment
-//        rumConfig.setResourceUrlHandler(url -> FTReactNativeUtils.filterBlackResource(url));
-//      #endif
-//      FTMobileAgent.sharedInstance().startRumWithConfigOptions(rumConfig);
     }
   }
 
@@ -70,6 +58,7 @@ class MainApplication : NavigationApplication(), ReactApplication {
     // ...
     FTSdk.initRUMWithConfig(rumConfig)
     // ...
+    //todo session replay
   }
 
 }

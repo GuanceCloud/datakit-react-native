@@ -20,6 +20,7 @@ public class FTMobilePackage implements ReactPackage {
         modules.add(new FTLogModule(reactContext));
         modules.add(new FTTraceModule(reactContext));
         modules.add(new FTRUMModule(reactContext));
+        modules.add(new FTSessionReplayModule(reactContext));
         return modules;
     }
 

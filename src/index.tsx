@@ -10,7 +10,7 @@ import {FTRumErrorTracking} from './rum/FTRumErrorTracking'
  export {
    FTMobileReactNative,FTMobileConfig,EnvType,FTDBCacheDiscard,
    FTLogConfig, FTReactNativeLog,FTLogStatus,FTLogCacheDiscard,
-   FTRUMConfig,FTReactNativeRUM,FTRUMResource,ErrorMonitorType,DeviceMetricsMonitorType,DetectFrequency,FTRUMResourceMetrics,
+   FTRUMConfig,FTReactNativeRUM,FTRUMResource,ErrorMonitorType,DeviceMetricsMonitorType,DetectFrequency,FTRUMResourceMetrics,FTRUMCacheDiscard,
    FTTraceConfig,FTReactNativeTrace,TraceType,
    FTSessionReplayConfig,SessionReplayPrivacy,FTReactNativeSessionReplay,
    FTRumActionTracking,
