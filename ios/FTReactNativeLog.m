@@ -45,7 +45,7 @@ RCT_REMAP_METHOD(logging,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
   
-  LogStatus logStatus =(LogStatus)[status integerValue];
+  FTLogStatus logStatus =(FTLogStatus)[status integerValue];
   [[FTLogger sharedInstance] log:content statusType:logStatus property:property];
   resolve(nil);
 }

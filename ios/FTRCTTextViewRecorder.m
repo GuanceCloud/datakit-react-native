@@ -28,13 +28,13 @@
   if(self){
     _identifier = [[NSUUID UUID] UUIDString];
     _uiManager = uiManager;
-    _textObfuscator = ^id<FTSRTextObfuscatingProtocol> _Nullable(FTViewTreeRecordingContext * _Nonnull context) {
-      return context.recorder.privacy.staticTextObfuscator;
-  };
+    _textObfuscator = ^id<FTSRTextObfuscatingProtocol> _Nullable(FTViewTreeRecordingContext * _Nonnull context,FTViewAttributes *attributes) {
+      return [FTSRTextObfuscatingFactory staticTextObfuscator:[attributes resolveTextAndInputPrivacyLevel:context.recorder]];
+    };
   }
   return self;
 }
-- (nonnull FTSRNodeSemantics *)recorder:(nonnull UIView *)view attributes:(nonnull FTViewAttributes *)attributes context:(nonnull FTViewTreeRecordingContext *)context {
+- (FTSRNodeSemantics *)recorder:(nonnull UIView *)view attributes:(nonnull FTViewAttributes *)attributes context:(nonnull FTViewTreeRecordingContext *)context {
   if(![view isKindOfClass:[RCTTextView class]]){
     return nil;
   }
@@ -56,7 +56,7 @@
     builder.text = text;
     builder.textAlignment = shadow.textAttributes.alignment;
     builder.textColor = shadow.textAttributes.foregroundColor?shadow.textAttributes.foregroundColor:[UIColor blackColor];
-    builder.textObfuscator = self.textObfuscator(context);
+    builder.textObfuscator = self.textObfuscator(context,attributes);
     builder.fontSize = shadow.textAttributes.fontSize;
     builder.wireframeRect = attributes.frame;
     builder.contentRect = shadow.contentFrame;
@@ -98,10 +98,9 @@
   FTSRTextPosition *textPosition = [[FTSRTextPosition alloc]init];
   textPosition.alignment = [[FTAlignment alloc]initWithTextAlignment:self.textAlignment vertical:@"top"];
   CGRect textFrame = [self textFrame];
-  textPosition.padding = [[FTSRContentClip alloc]initWithLeft:CGRectGetMinX(frame)-CGRectGetMinX(textFrame) top:CGRectGetMinY(frame)-CGRectGetMinY(textFrame) right:CGRectGetMaxX(frame)-CGRectGetMaxX(textFrame) bottom:CGRectGetMaxY(frame)-CGRectGetMaxY(textFrame)];
+  textPosition.padding = [[FTPadding alloc]initWithLeft:CGRectGetMinX(frame)-CGRectGetMinX(textFrame) top:CGRectGetMinY(frame)-CGRectGetMinY(textFrame) right:CGRectGetMaxX(frame)-CGRectGetMaxX(textFrame) bottom:CGRectGetMaxY(frame)-CGRectGetMaxY(textFrame)];
   wireframe.textPosition = textPosition;
-  FTSRContentClip *clip = [[FTSRContentClip alloc]initWithLeft:0 top:-1 right:0 bottom:0];
-  wireframe.clip = clip;
+  wireframe.clip = [[FTSRContentClip alloc] initWithFrame:self.wireframeRect clip:self.attributes.clip];;
   return @[wireframe];
 }
 
