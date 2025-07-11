@@ -33,7 +33,7 @@
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
     "bootstrap": "yarn example && yarn && yarn pods",
-    "postinstall": "node scripts/replace-react-require.js"
+    "postinstall": "node scripts/replace-react-require.js && node scripts/set-ios-rn-version.js"
   },
   "keywords": [
     "cloudcare",

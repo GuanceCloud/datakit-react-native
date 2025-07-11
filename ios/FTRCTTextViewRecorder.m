@@ -19,8 +19,11 @@
 #import "FTViewTreeRecordingContext.h"
 #import "FTSRUtils.h"
 #import "RCTShadowView+Layout.h"
+#import "FTRCTFabricWrapper.h"
+
 @interface FTRCTTextViewRecorder ()
 @property (nonatomic, strong) RCTUIManager *uiManager;
+@property (nonatomic, strong) FTRCTFabricWrapper *fabricWrapper;
 @end
 @implementation FTRCTTextViewRecorder
 -(instancetype)initWithUIManager:(RCTUIManager *)uiManager{
@@ -28,44 +31,31 @@
   if(self){
     _identifier = [[NSUUID UUID] UUIDString];
     _uiManager = uiManager;
+    _fabricWrapper = [FTRCTFabricWrapper new];
     _textObfuscator = ^id<FTSRTextObfuscatingProtocol> _Nullable(FTViewTreeRecordingContext * _Nonnull context,FTViewAttributes *attributes) {
       return [FTSRTextObfuscatingFactory staticTextObfuscator:[attributes resolveTextAndInputPrivacyLevel:context.recorder]];
     };
   }
   return self;
 }
-- (FTSRNodeSemantics *)recorder:(nonnull UIView *)view attributes:(nonnull FTViewAttributes *)attributes context:(nonnull FTViewTreeRecordingContext *)context {
-  if(![view isKindOfClass:[RCTTextView class]]){
-    return nil;
+- (FTSRNodeSemantics *)recorder:(nonnull UIView *)view attributes:(nonnull FTViewAttributes *)attributes context:(nonnull FTViewTreeRecordingContext *)context{
+  FTRCTTextPropertiesWrapper *textProperties = [self.fabricWrapper tryToExtractTextPropertiesFromView:view]?:[self tryToExtractTextProperties:view];
+  if (!textProperties) {
+    return [view isKindOfClass:RCTTextView.class] ? [FTInvisibleElement constant] : nil;
   }
-  RCTTextView *textView = (RCTTextView *)view;
-  NSNumber *tag = textView.reactTag;
-  
-  __block RCTShadowView *shadowView = nil;
-  dispatch_queue_t queue = RCTGetUIManagerQueue();
-  dispatch_sync(queue, ^{
-    shadowView = [self.uiManager shadowViewForReactTag:tag];
-  });
-  
-  if([shadowView isKindOfClass:[RCTTextShadowView class]]){
-    RCTTextShadowView *shadow = (RCTTextShadowView *)shadowView;
-    NSString *text = [self extractTextFromSubViews:[shadowView reactSubviews]];
-    FTRCTTextViewBuilder *builder = [[FTRCTTextViewBuilder alloc]init];
-    builder.wireframeID = [context.viewIDGenerator SRViewID:textView nodeRecorder:self];
-    builder.attributes = attributes;
-    builder.text = text;
-    builder.textAlignment = shadow.textAttributes.alignment;
-    builder.textColor = shadow.textAttributes.foregroundColor?shadow.textAttributes.foregroundColor:[UIColor blackColor];
-    builder.textObfuscator = self.textObfuscator(context,attributes);
-    builder.fontSize = shadow.textAttributes.fontSize;
-    builder.wireframeRect = attributes.frame;
-    builder.contentRect = shadow.contentFrame;
-    
-    FTSpecificElement *element = [[FTSpecificElement alloc]initWithSubtreeStrategy:NodeSubtreeStrategyIgnore];
-    element.nodes = @[builder];
-    return element;
-  }
-  return [FTInvisibleElement constant];
+  FTRCTTextViewBuilder *builder =  [[FTRCTTextViewBuilder alloc]init];
+  builder.wireframeID = [context.viewIDGenerator SRViewID:view nodeRecorder:self];
+  builder.attributes = attributes;
+  builder.text = textProperties.text;
+  builder.textAlignment = textProperties.alignment;
+  builder.textColor = textProperties.foregroundColor;
+  builder.textObfuscator = self.textObfuscator(context,attributes);
+  builder.fontSize = textProperties.fontSize;
+  builder.wireframeRect = attributes.frame;
+  builder.contentRect = textProperties.contentRect;
+  FTSpecificElement *element = [[FTSpecificElement alloc]initWithSubtreeStrategy:NodeSubtreeStrategyIgnore];
+  element.nodes = @[builder];
+  return element;
 }
 - (NSString *)extractTextFromSubViews:(NSArray<RCTShadowView *>*)subViews{
   if(subViews && subViews.count>0){
@@ -84,6 +74,69 @@
   }
   return nil;
 }
+- (nullable NSString *)tryToExtractTextFromSubViews:(nullable NSArray<RCTShadowView *> *)subviews {
+    if (!subviews) {
+        return nil;
+    }
+    
+    NSMutableString *result = [NSMutableString new];
+    for (RCTShadowView *subview in subviews) {
+        if ([subview isKindOfClass:[RCTRawTextShadowView class]]) {
+            NSString *text = [(RCTRawTextShadowView *)subview text];
+            if (text) {
+                [result appendString:text];
+            }
+        } else if ([subview isKindOfClass:[RCTVirtualTextShadowView class]]) {
+            NSString *nestedText = [self tryToExtractTextFromSubViews:[(RCTVirtualTextShadowView *)subview reactSubviews]];
+            if (nestedText) {
+                [result appendString:nestedText];
+            }
+        }
+    }
+    
+    return result.length > 0 ? [result copy] : nil;
+}
+-(FTRCTTextPropertiesWrapper *)tryToExtractTextProperties:(UIView *)view{
+  if (![view isKindOfClass:RCTTextView.class]) {
+    return nil;
+  }
+  RCTTextView *textView = (RCTTextView *)view;
+  __block RCTTextShadowView *shadowView = nil;
+  NSNumber *tag = textView.reactTag;
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  NSTimeInterval timeout = 0.2;
+  
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    RCTShadowView *sView = [self.uiManager shadowViewForReactTag:tag];
+    if ([sView isKindOfClass:[RCTTextShadowView class]]) {
+      shadowView = (RCTTextShadowView *)sView;
+    }
+    dispatch_semaphore_signal(semaphore);
+  });
+  
+  dispatch_time_t waitTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeout * NSEC_PER_SEC));
+  if (dispatch_semaphore_wait(semaphore, waitTime) != 0) {
+    return nil;
+  }
+  if (!shadowView) {
+    return nil;
+  }
+  
+  FTRCTTextPropertiesWrapper *textProperties = [FTRCTTextPropertiesWrapper new];
+  NSString *extractedText = [self tryToExtractTextFromSubViews:shadowView.reactSubviews];
+  if (extractedText) {
+    textProperties.text = extractedText;
+  }
+  
+  if (shadowView.textAttributes.foregroundColor) {
+    textProperties.foregroundColor = shadowView.textAttributes.foregroundColor;
+  }
+  
+  textProperties.alignment = shadowView.textAttributes.alignment;
+  textProperties.fontSize = shadowView.textAttributes.fontSize;
+  textProperties.contentRect = shadowView.contentFrame;
+  return textProperties;
+}
 @end
 
 @implementation FTRCTTextViewBuilder
@@ -94,7 +147,7 @@
   wireframe.text = [self.textObfuscator mask:self.text];
   wireframe.border = [[FTSRShapeBorder alloc]initWithColor:[FTSRUtils colorHexString:self.attributes.layerBorderColor] width:self.attributes.layerBorderWidth];
   wireframe.shapeStyle = [[FTSRShapeStyle alloc]initWithBackgroundColor:[FTSRUtils colorHexString:self.attributes.backgroundColor.CGColor] cornerRadius:@(self.attributes.layerCornerRadius) opacity:@(self.attributes.alpha)];
-  wireframe.textStyle = [[FTSRTextStyle alloc]initWithSize:self.fontSize?self.fontSize:14 color:[FTSRUtils colorHexString:self.textColor.CGColor] family:nil];
+  wireframe.textStyle = [[FTSRTextStyle alloc]initWithSize:self.fontSize?self.fontSize:RCTTextPropertiesDefaultFontSize color:[FTSRUtils colorHexString:self.textColor.CGColor] family:nil];
   FTSRTextPosition *textPosition = [[FTSRTextPosition alloc]init];
   textPosition.alignment = [[FTAlignment alloc]initWithTextAlignment:self.textAlignment vertical:@"top"];
   CGRect textFrame = [self textFrame];
