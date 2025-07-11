@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+// import { NativeModules } from 'react-native';
 /**
  * Privacy level for content masking in session replay.
  */
@@ -26,7 +26,8 @@ type FTReactNativeSessionReplayType = {
 }
 
 class FTReactNativeSessionReplayWrapper implements FTReactNativeSessionReplayType {
-    private sessionReplay: FTReactNativeSessionReplayType = NativeModules.FTReactNativeSessionReplay;
+    private sessionReplay: FTReactNativeSessionReplayType = require('./specs/NativeFTReactNativeSessionReplay')
+        .default;
     sessionReplayConfig(config:FTSessionReplayConfig): Promise<void>{
         return this.sessionReplay.sessionReplayConfig(config);
     }

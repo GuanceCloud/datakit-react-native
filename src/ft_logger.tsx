@@ -1,4 +1,5 @@
-import { NativeModules } from 'react-native';
+// import { NativeModules } from 'react-native';
+
 /**
  * Set log level.
  */
@@ -51,7 +52,8 @@ import { NativeModules } from 'react-native';
  };
 
  class FTReactNativeLogWrapper  {
-   private logger: FTReactNativeLogType = NativeModules.FTReactNativeLog;
+   private logger: FTReactNativeLogType = require('./specs/NativeFTReactNativeLog')
+        .default;
   /**
    *Configure log output configuration to enable log collection.
    */

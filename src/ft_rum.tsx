@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+// import { NativeModules } from 'react-native';
 import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
 
@@ -197,7 +197,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  }
 
  class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
-   private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
+   private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
+        .default;
 
    setConfig(config:FTRUMConfig): Promise<void>{
      console.log('FTRUMConfig');
