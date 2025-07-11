@@ -2,8 +2,6 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.ft.sdk.DetectFrequency;
@@ -15,22 +13,14 @@ import com.ft.sdk.RUMCacheDiscard;
 import com.ft.sdk.garble.bean.AppState;
 import com.ft.sdk.garble.bean.NetStatusBean;
 import com.ft.sdk.garble.bean.ResourceParams;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class FTRUMModule extends ReactContextBaseJavaModule {
+public class FTRUMImpl {
 
   private static final String DEFAULT_ERROR_TYPE = "reactnative_crash";
   public static final String NAME = "FTReactNativeRUM";
-
-  public FTRUMModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
 
   @ReactMethod
   public void setConfig(ReadableMap context, Promise promise) {

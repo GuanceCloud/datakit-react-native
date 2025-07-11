@@ -19,15 +19,15 @@ public class FTMobilePackage extends BaseReactPackage {
   @Override
   public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext reactApplicationContext) {
     switch (name) {
-      case FTMobileModule.NAME:
+      case FTMobileImpl.NAME:
         return new FTMobileModule(reactApplicationContext);
-      case FTLogModule.NAME:
+      case FTLogImpl.NAME:
         return new FTLogModule(reactApplicationContext);
-      case FTTraceModule.NAME:
+      case FTTraceImpl.NAME:
         return new FTTraceModule(reactApplicationContext);
-      case FTRUMModule.NAME:
+      case FTRUMImpl.NAME:
         return new FTRUMModule(reactApplicationContext);
-      case FTSessionReplayModule.NAME:
+      case FTSessionReplayImpl.NAME:
         return new FTSessionReplayModule(reactApplicationContext);
       default:
         return null;
@@ -42,11 +42,11 @@ public class FTMobilePackage extends BaseReactPackage {
         boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
 
         String[] moduleNames = {
-          FTMobileModule.NAME,
-          FTLogModule.NAME,
-          FTRUMModule.NAME,
-          FTSessionReplayModule.NAME,
-          FTTraceModule.NAME
+          FTMobileImpl.NAME,
+          FTRUMImpl.NAME,
+          FTLogImpl.NAME,
+          FTTraceImpl.NAME,
+          FTSessionReplayImpl.NAME,
         };
         Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
 

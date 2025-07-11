@@ -2,8 +2,6 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -15,22 +13,12 @@ import com.ft.sdk.TraceType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FTTraceModule extends ReactContextBaseJavaModule {
+public class FTTraceImpl {
   public static final String NAME = "FTReactNativeTrace";
   private static final String TAG = "FTTraceModule";
 
-  public FTTraceModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
-
   @ReactMethod
-  public void setConfig(ReadableMap context, Promise promise)
-  {
+  public void setConfig(ReadableMap context, Promise promise) {
     Map<String, Object> map = context.toHashMap();
     Double sampleRate = (Double) map.get("sampleRate");
     Integer traceType = ReactNativeUtils.convertToNativeInt(map.get("traceType"));
