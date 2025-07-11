@@ -39,6 +39,10 @@ android.iml
 # Cocoapods
 #
 example/ios/Pods
+example-new-architecture/ios/Pods
+
+#ENV
+*.env
 
 # node.js
 #
