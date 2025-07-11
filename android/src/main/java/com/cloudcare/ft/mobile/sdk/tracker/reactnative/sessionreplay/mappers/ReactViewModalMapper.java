@@ -6,17 +6,16 @@
 
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers;
 
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.utils.DrawableUtils;
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.utils.ReactViewBackgroundDrawableUtils;
-import com.facebook.react.views.view.ReactViewGroup;
-import com.ft.sdk.sessionreplay.recorder.mapper.TraverseAllChildrenMapper;
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.utils.DrawableUtils;
+import com.facebook.react.views.modal.ReactModalHostView;
 
-public class ReactViewGroupMapper extends DefaultMapper<ReactViewGroup> implements TraverseAllChildrenMapper<ReactViewGroup> {
-    public ReactViewGroupMapper() {
+public class ReactViewModalMapper extends DefaultMapper<ReactModalHostView> {
+    public ReactViewModalMapper() {
         this(new ReactViewBackgroundDrawableUtils());
     }
 
-    public ReactViewGroupMapper(DrawableUtils drawableUtils) {
+    public ReactViewModalMapper(DrawableUtils drawableUtils) {
         super(drawableUtils);
     }
 } 

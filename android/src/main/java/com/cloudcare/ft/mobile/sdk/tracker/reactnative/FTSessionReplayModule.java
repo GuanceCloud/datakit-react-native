@@ -1,6 +1,7 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.ReactNativeSessionReplayExtensionSupport;
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.utils.text.TextViewUtils;
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -52,14 +53,14 @@ public class FTSessionReplayModule extends ReactContextBaseJavaModule {
         } else {
             sessionReplayPrivacy = SessionReplayPrivacy.MASK;
         }
-        sessionReplayConfig.setPrivacy(sessionReplayPrivacy);
-        sessionReplayConfig.addExtensionSupport(
-                new ReactNativeSessionReplayExtensionSupport(
-                        getReactApplicationContext(),
-                        SessionReplayManager.get().getInternalLogger()
-                )
-        ).setDelayInit(true);
-        FTSdk.initSessionReplayConfig(sessionReplayConfig);
-        promise.resolve(null);
+      sessionReplayConfig.setPrivacy(sessionReplayPrivacy);
+      TextViewUtils textViewUtils = TextViewUtils.create(getReactApplicationContext(),
+        SessionReplayManager.get().getInternalLogger());
+      sessionReplayConfig.addExtensionSupport(
+        new ReactNativeSessionReplayExtensionSupport(textViewUtils
+        )
+      ).setDelayInit(true);
+      FTSdk.initSessionReplayConfig(sessionReplayConfig);
+      promise.resolve(null);
     }
-} 
+}

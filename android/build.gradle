@@ -21,6 +21,17 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['FtMobileAgent_' + name]).toInteger()
 }
 
+def reactNativeDir = rootProject.file("../node_modules/react-native")
+def reactNativeVersion = new groovy.json.JsonSlurper()
+  .parseText(file("$reactNativeDir/package.json").text)
+  .version
+
+def (reactNativeMajorVersion, reactNativeMinorVersion) = reactNativeVersion.split("\\.").collect { it.isInteger() ? it.toInteger() : it }
+
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
 android {
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
   if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
@@ -42,8 +53,10 @@ android {
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   buildToolsVersion getExtOrDefault('buildToolsVersion')
   defaultConfig {
-    minSdkVersion 19
+    minSdkVersion 21
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
 
   }
 
@@ -66,6 +79,26 @@ android {
     compileOptions {
       sourceCompatibility JavaVersion.VERSION_17
       targetCompatibility JavaVersion.VERSION_17
+    }
+  }
+
+  sourceSets {
+    main {
+      if (reactNativeMajorVersion == 0) {
+        if (reactNativeMinorVersion >= 80) {
+          java.srcDirs += ['src/rn80/java']
+        } else if (reactNativeMinorVersion >= 79) {
+          java.srcDirs += ['src/rn79/java']
+        } else if (reactNativeMinorVersion >= 76) {
+          java.srcDirs += ['src/rn76/java']
+        } else if (reactNativeMinorVersion >= 75) {
+          java.srcDirs += ['src/rn75/java']
+        }else if (reactNativeMinorVersion >= 69) {
+          java.srcDirs += ['src/rn69/java']
+        } else {
+          java.srcDirs += ['src/rnlegacy/java']
+        }
+      }
     }
   }
 }
@@ -146,9 +179,9 @@ dependencies {
   implementation 'com.facebook.react:react-native:+'
   implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-sdk:1.7.0-alpha20'
   implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-native:1.1.1'
-  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-session-replay:0.1.2-alpha01'
+//  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-session-replay:0.1.2-alpha01'
 //   implementation files('../example/android/app/libs/ft-sdk-debug.aar')
-//   implementation files('../example/android/app/libs/ft-session-replay-debug.aar')
+   implementation files('../example/android/app/libs/ft-session-replay-debug.aar')
 
   implementation 'com.google.code.gson:gson:2.8.5'
 }
