@@ -1,6 +1,7 @@
 #import "FTReactNativeSessionReplay.h"
-#import "FTRumSessionReplay.h"
-#import "FTSessionReplayConfig+Private.h"
+#import <FTMobileSDK/FTRumSessionReplay.h>
+#import <FTMobileSDK/FTSessionReplayConfig.h>
+#import <FTMobileSDK/FTSessionReplayConfig+Private.h>
 #import <React/RCTConvert.h>
 #import "FTRCTTextViewRecorder.h"
 @implementation FTReactNativeSessionReplay
@@ -11,10 +12,19 @@ RCT_EXPORT_MODULE()
 // Example method
 // See // https://reactnative.dev/docs/native-modules-ios
 RCT_REMAP_METHOD(sessionReplayConfig,
-                  context:(NSDictionary *)context
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
+                 context:(NSDictionary *)context
+                 resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject){
+  [self sessionReplayConfig:context resolve:resolve reject:reject];
+}
+
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeFTReactNativeSessionReplaySpecJSI>(params);
+}
+#endif
+- (void)sessionReplayConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject{
   FTSessionReplayConfig *config = [[FTSessionReplayConfig alloc]init];
   if([context.allKeys containsObject:@"sampleRate"]){
     config.sampleRate = [RCTConvert double:context[@"sampleRate"]]*100;
@@ -39,6 +49,6 @@ RCT_REMAP_METHOD(sessionReplayConfig,
   resolve(nil);
 }
 + (BOOL)requiresMainQueueSetup {
-    return NO;
+  return NO;
 }
 @end
