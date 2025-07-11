@@ -91,7 +91,7 @@ public class ReactViewBackgroundDrawableUtils extends DrawableUtils {
     float height = (float) drawable.getIntrinsicHeight();
     LengthPercentage uniform = getBorderRadiusUniform(drawable);
     if (uniform != null) {
-      return BorderRadiusUtils.getRadius(uniform, width, height);
+      return LengthPercentageExt.getRadius(uniform, width, height);
     } else {
       return 0f;
     }

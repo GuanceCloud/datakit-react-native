@@ -129,7 +129,8 @@ public class ReactViewBackgroundDrawableUtils extends DrawableUtils {
         if (layer.getClass().getName().equals("com.facebook.react.uimanager.drawable.BackgroundDrawable")) {
           Integer backgroundColor = getBackgroundColor(layer);
           if (backgroundColor == null) backgroundColor = Color.TRANSPARENT;
-          float cornerRadius = getComputedBorderRadius(layer) != null ? ComputedBorderRadiusExt.getAverage(getComputedBorderRadius(layer)) : 0f;
+          ComputedBorderRadius borderRadius = getComputedBorderRadius(layer);
+          float cornerRadius = borderRadius != null ? ComputedBorderRadiusExt.getAverage(borderRadius) : 0f;
           return new BackgroundDrawableWrapper(
             ColorUtils.formatAsRgba(backgroundColor),
             cornerRadius

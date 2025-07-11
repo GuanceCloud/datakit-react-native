@@ -16,6 +16,16 @@ import com.ft.sdk.sessionreplay.model.ShapeStyle;
 public class ReactViewBackgroundDrawableUtils extends DrawableUtils {
   private static final String COLOR_FIELD_NAME = "mColor";
 
+  private final ReflectionUtils reflectionUtils;
+
+  public ReactViewBackgroundDrawableUtils() {
+    this(new ReflectionUtils());
+  }
+
+  public ReactViewBackgroundDrawableUtils(ReflectionUtils reflectionUtils) {
+    this.reflectionUtils = reflectionUtils;
+  }
+
   @UnstableReactNativeAPI
   @Override
   public Pair<ShapeStyle, ShapeBorder> resolveShapeAndBorder(
