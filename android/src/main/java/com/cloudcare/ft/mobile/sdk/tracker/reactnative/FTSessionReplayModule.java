@@ -14,13 +14,16 @@ import com.ft.sdk.sessionreplay.FTSessionReplayConfig;
 import com.ft.sdk.sessionreplay.SessionReplayPrivacy;
 
 public class FTSessionReplayModule extends ReactContextBaseJavaModule {
-    public FTSessionReplayModule(ReactApplicationContext reactContext) {
+
+  public static final String NAME = "FTReactNativeSessionReplay";
+
+  public FTSessionReplayModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 
     @Override
     public String getName() {
-        return "FTReactNativeSessionReplay";
+        return NAME;
     }
 
     @ReactMethod

@@ -8,7 +8,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.ft.sdk.FTLogger;
 import com.ft.sdk.FTLoggerConfig;
@@ -18,10 +17,11 @@ import com.ft.sdk.garble.bean.Status;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FTLogModule extends ReactContextBaseJavaModule {
+
+  public static final String NAME = "FTReactNativeLog";
 
   public FTLogModule(@Nullable ReactApplicationContext reactContext) {
     super(reactContext);
@@ -30,7 +30,7 @@ public class FTLogModule extends ReactContextBaseJavaModule {
   @NonNull
   @Override
   public String getName() {
-    return "FTReactNativeLog";
+    return NAME;
   }
 
   @ReactMethod

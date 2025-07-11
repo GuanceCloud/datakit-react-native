@@ -67,7 +67,7 @@ public class ReactEditTextMapper extends BaseAsyncBackgroundWireframeMapper<Reac
       asyncJobStatusCallback,
       internalLogger
     );
-    // 过滤掉 ImageWireframe 和 PlaceholderWireframe
+
     List<Wireframe> filteredEditTextWireframes = new ArrayList<>();
     for (Wireframe wf : editTextWireframes) {
       if (!(wf instanceof ImageWireframe) && !(wf instanceof PlaceholderWireframe)) {

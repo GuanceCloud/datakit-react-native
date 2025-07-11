@@ -14,9 +14,9 @@ import com.ft.sdk.TraceType;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.ft.sdk.garble.utils.LogUtils;
 
 public class FTTraceModule extends ReactContextBaseJavaModule {
+  public static final String NAME = "FTReactNativeTrace";
   private static final String TAG = "FTTraceModule";
 
   public FTTraceModule(ReactApplicationContext reactContext) {
@@ -25,11 +25,12 @@ public class FTTraceModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "FTReactNativeTrace";
+    return NAME;
   }
 
   @ReactMethod
-  public void setConfig(ReadableMap context, Promise promise) {
+  public void setConfig(ReadableMap context, Promise promise)
+  {
     Map<String, Object> map = context.toHashMap();
     Double sampleRate = (Double) map.get("sampleRate");
     Integer traceType = ReactNativeUtils.convertToNativeInt(map.get("traceType"));

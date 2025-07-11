@@ -84,6 +84,12 @@ android {
 
   sourceSets {
     main {
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += ['src/newarch/java']
+      } else {
+        java.srcDirs += ['src/oldarch/java']
+      }
+
       if (reactNativeMajorVersion == 0) {
         if (reactNativeMinorVersion >= 80) {
           java.srcDirs += ['src/rn80/java']
@@ -98,6 +104,13 @@ android {
         } else {
           java.srcDirs += ['src/rnlegacy/java']
         }
+
+        if (reactNativeMinorVersion >= 74) {
+          java.srcDirs += ['src/rnpost74/java']
+        } else {
+          java.srcDirs += ['src/rnpre74/java']
+        }
+
       }
     }
   }

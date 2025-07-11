@@ -21,6 +21,7 @@ import java.util.Map;
 public class FTRUMModule extends ReactContextBaseJavaModule {
 
   private static final String DEFAULT_ERROR_TYPE = "reactnative_crash";
+  public static final String NAME = "FTReactNativeRUM";
 
   public FTRUMModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -28,7 +29,7 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "FTReactNativeRUM";
+    return NAME;
   }
 
   @ReactMethod

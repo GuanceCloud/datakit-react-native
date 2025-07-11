@@ -20,13 +20,15 @@ import java.util.Map;
 
 public class FTMobileModule extends ReactContextBaseJavaModule {
 
-    public FTMobileModule(ReactApplicationContext reactContext) {
+  public static final String NAME = "FTMobileReactNative";
+
+  public FTMobileModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 
     @Override
     public String getName() {
-        return "FTMobileReactNative";
+        return NAME;
     }
 
     @ReactMethod
