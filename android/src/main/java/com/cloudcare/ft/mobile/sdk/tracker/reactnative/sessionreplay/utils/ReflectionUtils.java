@@ -10,6 +10,9 @@ import java.lang.reflect.Field;
 
 public class ReflectionUtils {
     public Object getDeclaredField(Object instance, String fieldName) {
+        if (instance == null) {
+            return null;
+        }
         Class<?> classInstance = instance.getClass();
         Field declaredField = searchForField(classInstance, fieldName);
 
@@ -30,11 +33,11 @@ public class ReflectionUtils {
                 return field;
             }
         }
-        
+
         if (className.getSuperclass() != null) {
             return searchForField(className.getSuperclass(), fieldName);
         } else {
             return null;
         }
     }
-} 
+}
