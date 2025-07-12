@@ -7,16 +7,17 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.extensions
 
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
 import com.facebook.react.uimanager.style.ComputedBorderRadiusProp;
+import com.facebook.react.uimanager.style.CornerRadii;
 
 public final class ComputedBorderRadiusExt {
-    
+
     private ComputedBorderRadiusExt() {
         // Utility class, prevent instantiation
     }
-    
+
     /**
      * Gets the average border radius from all four corners of a ComputedBorderRadius.
-     * 
+     *
      * @param computedBorderRadius the ComputedBorderRadius to calculate average from, can be null
      * @return the average border radius value, or 0f if computedBorderRadius is null
      */
@@ -24,18 +25,18 @@ public final class ComputedBorderRadiusExt {
         if (computedBorderRadius == null) {
             return 0f;
         }
-        
+
         float topRightRadius = getAverageForProp(computedBorderRadius, ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_RIGHT_RADIUS);
         float topLeftRadius = getAverageForProp(computedBorderRadius, ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_LEFT_RADIUS);
         float bottomRightRadius = getAverageForProp(computedBorderRadius, ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS);
         float bottomLeftRadius = getAverageForProp(computedBorderRadius, ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_LEFT_RADIUS);
-        
+
         return (topRightRadius + topLeftRadius + bottomRightRadius + bottomLeftRadius) / 4f;
     }
-    
+
     /**
      * Gets the average border radius for a specific property of ComputedBorderRadius.
-     * 
+     *
      * @param computedBorderRadius the ComputedBorderRadius to get value from, can be null
      * @param prop the ComputedBorderRadiusProp to get the average for
      * @return the average border radius value for the specified property, or 0f if computedBorderRadius is null
@@ -44,14 +45,14 @@ public final class ComputedBorderRadiusExt {
         if (computedBorderRadius == null) {
             return 0f;
         }
-        
-        var borderRadius = computedBorderRadius.get(prop);
+
+        CornerRadii borderRadius = computedBorderRadius.get(prop);
         if (borderRadius == null) {
             return 0f;
         }
-        
-        float vertical = borderRadius.vertical;
-        float horizontal = borderRadius.vertical; // Note: This appears to be a bug in the original Kotlin code - should be horizontal
+
+        float vertical = borderRadius.getVertical();
+        float horizontal = borderRadius.getHorizontal();
         return (vertical + horizontal) / 2f;
     }
-} 
+}
