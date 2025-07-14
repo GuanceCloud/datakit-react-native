@@ -3,9 +3,6 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 import static com.ft.sdk.garble.utils.Constants.FT_LOG_DEFAULT_MEASUREMENT;
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.ft.sdk.DBCacheDiscard;
 import com.ft.sdk.EnvType;
@@ -18,18 +15,9 @@ import com.ft.sdk.DataModifier;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FTMobileModule extends ReactContextBaseJavaModule {
+public class FTMobileImpl {
+    public static final String NAME = "FTMobileReactNative";
 
-    public FTMobileModule(ReactApplicationContext reactContext) {
-        super(reactContext);
-    }
-
-    @Override
-    public String getName() {
-        return "FTMobileReactNative";
-    }
-
-    @ReactMethod
     public void sdkConfig(ReadableMap context, Promise promise) {
         Map<String, Object> map = context.toHashMap();
         String datakitUrl = (String) map.get("datakitUrl");
@@ -143,7 +131,6 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void bindRUMUserData(String userId, String userName, String userEmail, ReadableMap extra, Promise promise) {
         UserData userData = new UserData();
         userData.setId(userId);
@@ -166,19 +153,16 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
       promise.resolve(null);
     }
 
-    @ReactMethod
     public void unbindRUMUserData(Promise promise) {
         FTSdk.unbindRumUserData();
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void flushSyncData(Promise promise) {
         FTSdk.flushSyncData();
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void appendGlobalContext(ReadableMap extra, Promise promise) {
         if (extra != null) {
             FTSdk.appendGlobalContext(extra.toHashMap());
@@ -186,7 +170,6 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void appendLogGlobalContext(ReadableMap extra, Promise promise) {
         if (extra != null) {
             FTSdk.appendLogGlobalContext(extra.toHashMap());
@@ -194,7 +177,6 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void appendRUMGlobalContext(ReadableMap extra, Promise promise) {
         if (extra != null) {
             FTSdk.appendRUMGlobalContext(extra.toHashMap());
@@ -202,13 +184,11 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void shutDown(Promise promise) {
         FTSdk.shutDown();
         promise.resolve(null);
     }
 
-    @ReactMethod
     public void clearAllData(Promise promise) {
         FTSdk.clearAllData();
         promise.resolve(null);
