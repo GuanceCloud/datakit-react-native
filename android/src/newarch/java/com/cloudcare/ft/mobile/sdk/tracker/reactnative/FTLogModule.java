@@ -1,25 +1,17 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-@ReactModule(name = FTLogModule.NAME)
-public class FTLogModule extends NativeFTLogSpec  {
-  private final FTLogInterface logImpl = new FTLogImpl();
+public class FTLogModule extends NativeFTReactNativeLogSpec {
+  private final FTLogImpl logImpl = new FTLogImpl();
 
   public FTLogModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @ReactMethod
@@ -28,8 +20,9 @@ public class FTLogModule extends NativeFTLogSpec  {
   }
 
   @ReactMethod
-  public void logging(String content, int logStatus, ReadableMap map, Promise promise) {
-    logImpl.logging(content, logStatus, map, promise);
+  @Override
+  public void logging(String content, double logStatus, @Nullable ReadableMap property, Promise promise) {
+    logImpl.logging(content, (int) logStatus, property, promise);
   }
 
   @ReactMethod

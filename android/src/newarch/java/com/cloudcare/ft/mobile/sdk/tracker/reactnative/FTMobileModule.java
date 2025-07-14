@@ -1,25 +1,16 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
-import androidx.annotation.NonNull;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-@ReactModule(name = FTMobileModule.NAME)
-public class FTMobileModule extends NativeFTMobileSpec {
-  public static final String NAME = FTMobileImpl.NAME;
+
+public class FTMobileModule extends NativeFTMobileReactNativeSpec {
   private final FTMobileImpl impl = new FTMobileImpl();
 
   public FTMobileModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @ReactMethod
@@ -40,6 +31,12 @@ public class FTMobileModule extends NativeFTMobileSpec {
   @ReactMethod
   public void flushSyncData(Promise promise) {
     impl.flushSyncData(promise);
+  }
+
+  @ReactMethod
+  @Override
+  public void trackEventFromExtension(String identifier, Promise promise) {
+    //only in react native
   }
 
   @ReactMethod

@@ -2,13 +2,10 @@ package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-@ReactModule(name = FTTraceModule.NAME)
-public class FTTraceModule extends NativeFTTraceSpec{
-  public static final String NAME = FTTraceImpl.NAME;
+public class FTTraceModule extends NativeFTReactNativeTraceSpec {
   private final FTTraceImpl impl = new FTTraceImpl();
 
   public FTTraceModule(ReactApplicationContext reactContext) {
@@ -16,14 +13,15 @@ public class FTTraceModule extends NativeFTTraceSpec{
   }
 
   @Override
-  public String getName() {
-    return NAME;
+  @ReactMethod
+  public void setConfig(ReadableMap context, Promise promise) {
+    impl.setConfig(context, promise);
   }
 
   @Override
   @ReactMethod
-  public void setConfig(ReadableMap context, Promise promise) {
-    impl.setConfig(context, promise);
+  public void getTraceHeader(String key, String url, Promise promise) {
+    //no need to implement
   }
 
   @Override

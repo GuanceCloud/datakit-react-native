@@ -29,8 +29,10 @@ def reactNativeVersion = new groovy.json.JsonSlurper()
 def (reactNativeMajorVersion, reactNativeMinorVersion) = reactNativeVersion.split("\\.").collect { it.isInteger() ? it.toInteger() : it }
 
 def isNewArchitectureEnabled() {
-  //return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
-  return false //TODO code not ready, hide this part
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+if (isNewArchitectureEnabled()) {
+  apply plugin: 'com.facebook.react'
 }
 
 android {

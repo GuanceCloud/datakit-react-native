@@ -1,25 +1,18 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative;
 
-import androidx.annotation.NonNull;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.bridge.ReactMethod;
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-@ReactModule(name = FTRUMModule.NAME)
-public class FTRUMModule extends NativeFTRUMSpec {
-  public static final String NAME = FTRUMImpl.NAME;
+public class FTRUMModule extends NativeFTReactNativeRUMSpec {
+
   private final FTRUMImpl impl = new FTRUMImpl();
 
   public FTRUMModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override
@@ -42,7 +35,7 @@ public class FTRUMModule extends NativeFTRUMSpec {
 
   @Override
   @ReactMethod
-  public void onCreateView(String viewName, Double duration, Promise promise) {
+  public void onCreateView(String viewName, double duration, Promise promise) {
     impl.onCreateView(viewName, duration, promise);
   }
 
@@ -80,5 +73,11 @@ public class FTRUMModule extends NativeFTRUMSpec {
   @ReactMethod
   public void stopResource(String key, ReadableMap map, Promise promise) {
     impl.stopResource(key, map, promise);
+  }
+
+  @Override
+  @ReactMethod
+  public void addResource(String key, ReadableMap resource, @Nullable ReadableMap metrics, Promise promise) {
+    impl.addResource(key, resource, metrics, promise);
   }
 }
