@@ -1,10 +1,20 @@
+# 0.4.0-alpha.2
+* Android compatible with multiple versions of React Native r75 r76 r79 rn80
+* Compatible with Android ft-sdk 1.7.20, ft-session-replay 0.1.2-alpha02, iOS 1.6.2-alpha.1
+* merge the version 0.3.14
+
+---
 # 0.4.0-alpha.1
 * Add Session Replay Features
+* Compatible with Android ft-sdk:1.7.0-alpha05 ft-session-replay:0.1.0-alpha05
+* Base on 0.3.3
+
 ---
 # 0.3.14
 * Support setting error sampling through `FTRUMConfig.sessionErrorSampleRate`. When not sampled by sampleRate, RUM data from 1 minute before the error occurs can be sampled when an error occurs
 * Add `FTMobileConfig.lineDataModifier`, `FTMobileConfig.dataModifier` to support data write replacement and data desensitization
 * Compatible with Android ft-sdk 1.6.11, iOS 1.5.16
+
 ---
 # 0.3.13
 * Android Java 8 compatibility adjustments, remove kotlin library dependency

@@ -7,30 +7,28 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.utils;
 
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
-import android.graphics.drawable.LayerDrawable;
-import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
-public class DrawableUtils {
-    public ReactViewBackgroundDrawable getReactBackgroundFromDrawable(Drawable drawable) {
-        if (drawable instanceof ReactViewBackgroundDrawable) {
-            return (ReactViewBackgroundDrawable) drawable;
-        }
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.Pair;
+import com.ft.sdk.sessionreplay.model.ShapeBorder;
+import com.ft.sdk.sessionreplay.model.ShapeStyle;
 
-        if (drawable instanceof InsetDrawable) {
-            return getReactBackgroundFromDrawable(((InsetDrawable) drawable).getDrawable());
-        }
+public abstract class DrawableUtils {
+    protected final ReflectionUtils reflectionUtils;
 
-        if (drawable instanceof LayerDrawable) {
-            LayerDrawable layerDrawable = (LayerDrawable) drawable;
-            for (int layerNumber = 0; layerNumber < layerDrawable.getNumberOfLayers(); layerNumber++) {
-                Drawable layer = layerDrawable.getDrawable(layerNumber);
-                if (layer instanceof ReactViewBackgroundDrawable) {
-                    return (ReactViewBackgroundDrawable) layer;
-                }
-            }
-        }
-
-        return null;
+    public DrawableUtils() {
+        this(new ReflectionUtils());
     }
-} 
+
+    public DrawableUtils(ReflectionUtils reflectionUtils) {
+        this.reflectionUtils = reflectionUtils;
+    }
+
+    public abstract Pair<ShapeStyle, ShapeBorder> resolveShapeAndBorder(
+            Drawable drawable,
+            float opacity,
+            float pixelDensity
+    );
+
+    public abstract Drawable getReactBackgroundFromDrawable(Drawable drawable);
+
+}
