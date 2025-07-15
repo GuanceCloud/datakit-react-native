@@ -13,6 +13,9 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.ft.sdk.SessionReplay
+import com.ft.sdk.sessionreplay.FTSessionReplayConfig
+import com.ft.sdk.sessionreplay.SessionReplayPrivacy
 import com.reactnativenavigation.NavigationApplication
 import com.reactnativenavigation.react.NavigationReactNativeHost
 class MainApplication : NavigationApplication(), ReactApplication {
@@ -58,7 +61,8 @@ class MainApplication : NavigationApplication(), ReactApplication {
     // ...
     FTSdk.initRUMWithConfig(rumConfig)
     // ...
-    //todo session replay
+
+    FTSdk.initSessionReplayConfig(FTSessionReplayConfig().setPrivacy(SessionReplayPrivacy.MASK_USER_INPUT))
   }
 
 }

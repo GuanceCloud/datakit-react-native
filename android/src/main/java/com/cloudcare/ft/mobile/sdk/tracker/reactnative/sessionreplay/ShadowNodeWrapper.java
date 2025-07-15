@@ -42,6 +42,10 @@ public class ShadowNodeWrapper {
             ReflectionUtils reflectionUtils,
             int viewId
     ) {
+        if (reactContext == null) {
+            return null;
+        }
+
         CountDownLatch countDownLatch = new CountDownLatch(1);
         final ReactShadowNode<?>[] target = new ReactShadowNode[1];
 
@@ -71,7 +75,10 @@ public class ShadowNodeWrapper {
     }
 
     private static ReactShadowNode<?> resolveShadowNode(ReflectionUtils reflectionUtils, UIManagerModule uiManagerModule, int tag) {
+        if (uiManagerModule == null ) {
+            return null;
+        }
         UIImplementation uiManagerImplementation = (UIImplementation) reflectionUtils.getDeclaredField(uiManagerModule, UI_IMPLEMENTATION_FIELD_NAME);
         return uiManagerImplementation != null ? uiManagerImplementation.resolveShadowNode(tag) : null;
     }
-} 
+}
