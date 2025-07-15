@@ -15,7 +15,7 @@
     "react-native": "0.76.9",
     "@cloudcare/react-native-mobile-cli": "file:../cloudcare-react-native-mobile-cli-v1.0.0.tgz",
     "react-native-config": "^1.4.5",
-    "@cloudcare/react-native-mobile": "file:../"
+    "@cloudcare/react-native-mobile": "link:.."
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
