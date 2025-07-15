@@ -61,7 +61,6 @@ public class LegacyTextViewUtils extends TextViewUtils {
     }
     Integer resolvedColor = (Integer) shadowNodeWrapper.getDeclaredShadowNodeField(TextViewUtils.COLOR_FIELD_NAME);
     if (resolvedColor != null) {
-      // 这里假设有 ColorUtils.formatAsRgba 静态方法
       return ColorUtils.formatAsRgba(resolvedColor);
     }
     return null;

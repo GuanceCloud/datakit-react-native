@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 
+import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.extensions.LengthPercentageExt;
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.mappers.Pair;
 import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ColorUtils;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
