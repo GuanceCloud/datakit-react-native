@@ -27,8 +27,8 @@ public class FTMobilePackage extends BaseReactPackage {
         return new FTTraceModule(reactApplicationContext);
       case FTRUMImpl.NAME:
         return new FTRUMModule(reactApplicationContext);
-      case FTSessionReplayImpl.NAME:
-        return new FTSessionReplayModule(reactApplicationContext);
+//       case FTSessionReplayImpl.NAME:
+//         return new FTSessionReplayModule(reactApplicationContext);
       default:
         return null;
     }
@@ -46,7 +46,7 @@ public class FTMobilePackage extends BaseReactPackage {
           FTRUMImpl.NAME,
           FTLogImpl.NAME,
           FTTraceImpl.NAME,
-          FTSessionReplayImpl.NAME,
+//           FTSessionReplayImpl.NAME,
         };
         Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
 
