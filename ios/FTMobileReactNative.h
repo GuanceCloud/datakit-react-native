@@ -7,12 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+
+
+#if RCT_NEW_ARCH_ENABLED
+#import <FTSdkReactNative/FTSdkReactNative.h>
+@interface FTMobileReactNative: NSObject <NativeFTMobileReactNativeSpec>
+#else
+
 #import <React/RCTBridgeModule.h>
-
-NS_ASSUME_NONNULL_BEGIN
-
-@interface FTMobileReactNative : NSObject<RCTBridgeModule>
+@interface FTMobileReactNative : NSObject <RCTBridgeModule>
+#endif
 
 @end
-
-NS_ASSUME_NONNULL_END

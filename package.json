@@ -157,6 +157,14 @@
       ]
     ]
   },
+  "codegenConfig": {
+        "name": "FTSdkReactNative",
+        "type": "modules",
+        "jsSrcsDir": "./src/specs",
+        "android": {
+            "javaPackageName": "com.cloudcare.ft.mobile.sdk.tracker.reactnative"
+        }
+    },
   "dependencies": {
     "@babel/runtime": "^7.16.5"
   },
