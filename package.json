@@ -43,14 +43,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DataFlux-cn/datakit-react-native.git"
+    "url": "git+https://github.com/GuanceCloud/datakit-react-native.git"
   },
   "author": "Brandon <brandonfaustine@gmail.com> (https://github.com/Br4ndonZhang)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/DataFlux-cn/datakit-react-native.git/issues"
+    "url": "https://github.com/GuanceCloud/datakit-react-native.git/issues"
   },
-  "homepage": "https://github.com/DataFlux-cn/datakit-react-native.git#readme",
+  "homepage": "https://github.com/GuanceCloud/datakit-react-native.git#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -157,6 +157,14 @@
       ]
     ]
   },
+  "codegenConfig": {
+        "name": "FTSdkReactNative",
+        "type": "modules",
+        "jsSrcsDir": "./src/specs",
+        "android": {
+            "javaPackageName": "com.ft.sdk.reactnative"
+        }
+    },
   "dependencies": {
     "@babel/runtime": "^7.16.5"
   },

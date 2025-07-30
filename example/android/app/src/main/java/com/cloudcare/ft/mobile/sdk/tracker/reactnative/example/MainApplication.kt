@@ -1,9 +1,9 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example
 
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.FTMobilePackage
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.ReactNativeSessionReplayExtensionSupport
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.sessionreplay.utils.text.TextViewUtils
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
+import com.ft.sdk.reactnative.FTMobilePackage
+import com.ft.sdk.reactnative.sessionreplay.ReactNativeSessionReplayExtensionSupport
+import com.ft.sdk.reactnative.sessionreplay.utils.text.TextViewUtils
+import com.ft.sdk.reactnative.utils.ReactNativeUtils
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
