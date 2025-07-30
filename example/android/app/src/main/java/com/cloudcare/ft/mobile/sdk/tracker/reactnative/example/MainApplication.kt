@@ -1,7 +1,7 @@
 package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example
 
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.FTMobilePackage
-import com.cloudcare.ft.mobile.sdk.tracker.reactnative.utils.ReactNativeUtils
+import com.ft.sdk.reactnative.FTMobilePackage
+import com.ft.sdk.reactnative.utils.ReactNativeUtils
 import com.ft.sdk.FTRUMConfig
 import com.ft.sdk.FTSDKConfig
 import com.ft.sdk.FTSdk
