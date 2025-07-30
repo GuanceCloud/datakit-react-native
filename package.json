@@ -162,7 +162,7 @@
         "type": "modules",
         "jsSrcsDir": "./src/specs",
         "android": {
-            "javaPackageName": "com.cloudcare.ft.mobile.sdk.tracker.reactnative"
+            "javaPackageName": "com.ft.sdk.reactnative"
         }
     },
   "dependencies": {
