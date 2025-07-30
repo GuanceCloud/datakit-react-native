@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
 
@@ -100,6 +101,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  * @param resource_first_byte resource first byte time
  */
  export interface FTRUMResourceMetrics{
+
    duration?:number,
    resource_dns?:number,
    resource_tcp?:number,
@@ -196,8 +198,8 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  }
 
  class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
-   private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
-        .default;
+    private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
+
 
    setConfig(config:FTRUMConfig): Promise<void>{
      console.log('FTRUMConfig');

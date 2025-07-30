@@ -9,15 +9,11 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
-#if RCT_NEW_ARCH_ENABLED
-#import <FTSdkReactNative/FTSdkReactNative.h>
-@interface FTReactNativeRUM: NSObject <NativeFTReactNativeRUMSpec>
-#else
-
-#import <React/RCTBridgeModule.h>
-@interface FTReactNativeRUM : NSObject <RCTBridgeModule>
-#endif
+@interface FTReactNativeRUM : NSObject<RCTBridgeModule>
 
 @end
+
+NS_ASSUME_NONNULL_END
 

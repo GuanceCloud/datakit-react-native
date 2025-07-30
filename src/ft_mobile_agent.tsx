@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 import { version as sdkVersion } from './version'
 
 /**
@@ -120,8 +121,8 @@ type FTMobileReactNativeType = {
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
-   private sdk:FTMobileReactNativeType = require('./specs/NativeFTMobileReactNative')
-        .default;
+   private sdk:FTMobileReactNativeType = NativeModules.FTMobileReactNative;
+
    sdkConfig(config:FTMobileConfig): Promise<void> {
      if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
        config.datakitUrl = config.serverUrl;

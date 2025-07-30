@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 //FTReactNativeTrace
 
 /**
@@ -48,8 +49,8 @@
  };
 
  class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
-   private trace: FTReactNativeTraceType = require('./specs/NativeFTReactNativeTrace')
-        .default;
+   private trace: FTReactNativeTraceType = NativeModules.FTReactNativeTrace;
+
 
    setConfig(config:FTTraceConfig): Promise<void>{
      return this.trace.setConfig(config);
