@@ -1,6 +1,14 @@
+> Related SDK update content
+> * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
+> * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
+
+# 0.4.0-alpha.3
+* Android Fix import missing issues in rn76
+
+---
 # 0.4.0-alpha.2
-* Android compatible with multiple versions of React Native r75 r76 r79 rn80
-* Compatible with Android ft-sdk 1.7.20, ft-session-replay 0.1.2-alpha02, iOS 1.6.2-alpha.1
+* Android compatible with multiple versions of React Native rn75 rn76 rn79 rn80
+* Compatible with Android ft-sdk 1.7.0-alpha20, ft-session-replay 0.1.2-alpha02, iOS 1.6.2-alpha.1
 * merge the version 0.3.14
 
 ---
