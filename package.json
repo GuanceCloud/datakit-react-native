@@ -157,14 +157,6 @@
       ]
     ]
   },
-  "codegenConfig": {
-        "name": "FTSdkReactNative",
-        "type": "modules",
-        "jsSrcsDir": "./src/specs",
-        "android": {
-            "javaPackageName": "com.ft.sdk.reactnative"
-        }
-    },
   "dependencies": {
     "@babel/runtime": "^7.16.5"
   },
