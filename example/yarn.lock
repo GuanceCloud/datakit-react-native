@@ -1146,9 +1146,9 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@cloudcare/react-native-mobile-cli@file:../cloudcare-react-native-mobile-cli-v1.0.0.tgz":
+"@cloudcare/react-native-mobile-cli@file:../ft-react-native-mobile-cli-v1.0.0.tgz":
   version "1.0.0"
-  resolved "file:../cloudcare-react-native-mobile-cli-v1.0.0.tgz#76766596811063a9dc90de22a29757945d7a7cdf"
+  resolved "file:../ft-react-native-mobile-cli-v1.0.0.tgz#76766596811063a9dc90de22a29757945d7a7cdf"
   dependencies:
     axios "^1.7.4"
     chalk "3.0.0"
