@@ -1,8 +1,6 @@
-package com.cloudcare.ft.mobile.sdk.tracker.reactnative.example
+package com.ft.sdk.reactnative.example
 
 import com.ft.sdk.reactnative.FTMobilePackage
-import com.ft.sdk.reactnative.sessionreplay.ReactNativeSessionReplayExtensionSupport
-import com.ft.sdk.reactnative.sessionreplay.utils.text.TextViewUtils
 import com.ft.sdk.reactnative.utils.ReactNativeUtils
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -10,12 +8,14 @@ import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
-import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.facebook.react.defaults.DefaultReactHost
 import com.ft.sdk.FTLoggerConfig
 import com.ft.sdk.FTRUMConfig
 import com.ft.sdk.FTSDKConfig
 import com.ft.sdk.FTSdk
 import com.ft.sdk.SessionReplayManager
+import com.ft.sdk.reactnative.sessionreplay.ReactNativeSessionReplayExtensionSupport
+import com.ft.sdk.reactnative.sessionreplay.utils.text.TextViewUtils
 import com.ft.sdk.sessionreplay.FTSessionReplayConfig
 import com.ft.sdk.sessionreplay.SessionReplayPrivacy
 import com.ft.sdk.sessionreplay.material.MaterialExtensionSupport
@@ -41,7 +41,7 @@ class MainApplication : NavigationApplication(), ReactApplication {
     }
 
   override val reactHost: ReactHost
-    get() = getDefaultReactHost(applicationContext, reactNativeHost)
+    get() = DefaultReactHost.getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     super.onCreate()
