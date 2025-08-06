@@ -5,7 +5,6 @@
   <title>Guance Webview Demo</title>
   <!--local script-->
   <!-- <script src="/static/dataflux-rum.js"></script> -->
-  <!-- <script src="https://zhuyun-static-files-production.oss-cn-hangzhou.aliyuncs.com/browser-sdk/v3/dataflux-rum-test.js" type="text/javascript"></script> -->
   <!--remote script-->
   <script src="https://static.guance.com/browser-sdk/v3/dataflux-rum.js" ></script>
 
@@ -19,7 +18,7 @@
 
 
     header {
-      height: 100px; 
+      height: 100px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -28,15 +27,15 @@
 
     .logo {
 
-      background-size: contain; 
+      background-size: contain;
       background-repeat: no-repeat;
-      width: 130px; 
+      width: 130px;
       height: auto;
     }
 
     label {
-      display: block; 
-      margin-top: 12px; 
+      display: block;
+      margin-top: 12px;
       font-weight: bold;
     }
 
@@ -91,14 +90,14 @@
         //  env: 'production',
         //  version: '1.0.0',
   })
-</script> 
+</script>
 
   <!-- <script>
     window.onerror = function() {
       console.log(arguments, 'web console log')
     }
   </script> -->
-  
+
 </head>
 <body>
   <header>
@@ -120,7 +119,7 @@
       <button delay="500">500ms</button>
       <button delay="1000">1s</button>
     </div>
-    
+
 
     <label id="error-result">Error:</label></br>
     <button id="error-btn">Throw Exception</button></br>
@@ -205,7 +204,7 @@
     } else {
       alert("Missing requestUrl parameter.");
     }
-  } 
+  }
 
   function init() {
     const operationDiv = document.getElementById('operation');

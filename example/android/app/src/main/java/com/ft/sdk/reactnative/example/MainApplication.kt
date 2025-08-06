@@ -55,7 +55,7 @@ class MainApplication : NavigationApplication(), ReactApplication {
     }
   }
 
-  fun guanceSDKInit(){
+  fun SDKInit(){
     val sdkConfig = FTSDKConfig.builder("datakitUrl")
     sdkConfig.isDebug = true
       FTSdk.install(sdkConfig)
