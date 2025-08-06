@@ -27,7 +27,7 @@ class TraceScreen extends React.Component {
     return (
       <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
       <PressableItem title="Network Trace" onPress={() => {
-        this.getHttp("https://console-api.guance.com/not/found/");
+        this.getHttp("https://httpbin.org/status/404");
       }}
       />
       </ScrollView>
