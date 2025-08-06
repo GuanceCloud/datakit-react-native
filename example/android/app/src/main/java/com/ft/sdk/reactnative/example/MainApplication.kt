@@ -53,9 +53,8 @@ class MainApplication : NavigationApplication(), ReactApplication {
     //guanceSDKInit()
   }
 
-  private fun guanceSDKInit() {
-    // base SDK config
-    val sdkConfig = FTSDKConfig.builder(BuildConfig.DATAWAY_URL, BuildConfig.CLIENT_TOKEN)
+  fun SDKInit(){
+    val sdkConfig = FTSDKConfig.builder("datakitUrl")
     sdkConfig.isDebug = true
     FTSdk.install(sdkConfig)
     // rum
