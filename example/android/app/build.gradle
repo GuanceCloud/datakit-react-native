@@ -7,9 +7,9 @@ apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.grad
 apply plugin: 'ft-plugin'
 apply from: "../../node_modules/@cloudcare/react-native-mobile-cli/ft-sourcemaps.gradle"
 
-// FTExt {
-//   showLog = true
-// }
+FTExt {
+  showLog = true
+}
 
 import com.android.build.OutputFile
 
