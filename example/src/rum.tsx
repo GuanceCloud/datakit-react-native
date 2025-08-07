@@ -95,7 +95,7 @@ class RUMScreen extends React.Component {
                                           console.log('Action clicked');
                                           FTReactNativeRUM.startAction('start_actionName', 'actionType');
                                     }
-                              }, 
+                              },
                               {
                                     title: "Add Action",
                                     onPress: () => {
@@ -121,12 +121,12 @@ class RUMScreen extends React.Component {
                               }, {
                                     title: "Resource Normal",
                                     onPress: () => {
-                                          this.getHttp("https://www.baidu.com");
+                                          this.getHttp("https://httpbin.org/status/200");
                                     }
                               }, {
                                     title: "Resource Error",
                                     onPress: () => {
-                                          this.getHttp("https://console-api.guance.com/not/found/");
+                                          this.getHttp("https://httpbin.org/status/404");
                                     }
                               }, {
                                     title: "Add Error",

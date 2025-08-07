@@ -63,11 +63,15 @@
     for (id view in subViews) {
       if ([view isKindOfClass:[RCTRawTextShadowView class]]){
         RCTRawTextShadowView *textView = (RCTRawTextShadowView *)view;
-        result = [result stringByAppendingString:textView.text];
+        if (textView.text) {
+          result = [result stringByAppendingString:textView.text];
+        }
       }
       if ([view isKindOfClass:[RCTVirtualTextShadowView class]]){
         NSString *str = [self extractTextFromSubViews:[view reactSubviews]];
-        result = [result stringByAppendingString:str];
+        if (str) {
+          result = [result stringByAppendingString:str];
+        }
       }
     }
     return result;
