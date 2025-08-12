@@ -1,3 +1,7 @@
+# 0.3.15
+* Compatible with Android ft-sdk 1.6.13, ft-native 1.1.2 
+* Compatible with iOS SDK 1.5.18
+---
 # 0.3.14
 * Support setting error sampling through `FTRUMConfig.sessionErrorSampleRate`. When not sampled by sampleRate, RUM data from 1 minute before the error occurs can be sampled when an error occurs
 * Add `FTMobileConfig.lineDataModifier`, `FTMobileConfig.dataModifier` to support data write replacement and data desensitization
