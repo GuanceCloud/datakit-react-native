@@ -1,7 +1,7 @@
 {
   "name": "@cloudcare/react-native-mobile",
   "version": "0.4.0-alpha.3",
-  "description": "Based on Guance Cloud Android iOS React Native SDK",
+  "description": "Base on Guance Android iOS React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",

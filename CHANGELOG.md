@@ -16,7 +16,10 @@
 * Add Session Replay Features
 * Compatible with Android ft-sdk:1.7.0-alpha05 ft-session-replay:0.1.0-alpha05
 * Base on 0.3.3
-
+---
+# 0.3.15
+* Compatible with Android ft-sdk 1.6.13, ft-native 1.1.2 
+* Compatible with iOS SDK 1.5.18
 ---
 # 0.3.14
 * Support setting error sampling through `FTRUMConfig.sessionErrorSampleRate`. When not sampled by sampleRate, RUM data from 1 minute before the error occurs can be sampled when an error occurs
