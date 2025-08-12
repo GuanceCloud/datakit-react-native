@@ -6,8 +6,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FTSRWireframesBuilder.h"
-#import "RCTUIManager.h"
+#import <FTMobileSDK/FTSRWireframesBuilder.h>
+#import <React/RCTUIManager.h>
 @class FTViewAttributes,FTViewTreeRecorder;
 NS_ASSUME_NONNULL_BEGIN
 

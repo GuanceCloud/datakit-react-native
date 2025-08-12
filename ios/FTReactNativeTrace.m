@@ -7,7 +7,6 @@
 //
 
 #import "FTReactNativeTrace.h"
-#import "FtMobileAgent.h"
 #import <FTMobileSDK/FTMobileAgent.h>
 #import <FTMobileSDK/FTExternalDataManager.h>
 #import <FTMobileSDK/FTResourceMetricsModel.h>

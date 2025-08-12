@@ -6,19 +6,19 @@
 //
 
 #import "FTRCTTextViewRecorder.h"
-#import "RCTUIManagerUtils.h"
-#import "RCTTextView.h"
-#import "RCTShadowView.h"
-#import "RCTRawTextShadowView.h"
-#import "RCTTextShadowView.h"
-#import "RCTVirtualTextShadowView.h"
-#import "FTSRWireframe.h"
-#import "FTViewAttributes.h"
-#import "FTSRUtils.h"
-#import "FTSystemColors.h"
-#import "FTViewTreeRecordingContext.h"
-#import "FTSRUtils.h"
-#import "RCTShadowView+Layout.h"
+#import <React/RCTUIManagerUtils.h>
+#import <React/RCTTextView.h>
+#import <React/RCTShadowView.h>
+#import <React/RCTRawTextShadowView.h>
+#import <React/RCTTextShadowView.h>
+#import <React/RCTVirtualTextShadowView.h>
+#import <FTMobileSDK/FTSRWireframe.h>
+#import <FTMobileSDK/FTViewAttributes.h>
+#import <FTMobileSDK/FTSRUtils.h>
+#import <FTMobileSDK/FTSystemColors.h>
+#import <FTMobileSDK/FTViewTreeRecordingContext.h>
+#import <FTMobileSDK/FTSRUtils.h>
+#import <React/RCTShadowView+Layout.h>
 @interface FTRCTTextViewRecorder ()
 @property (nonatomic, strong) RCTUIManager *uiManager;
 @end
