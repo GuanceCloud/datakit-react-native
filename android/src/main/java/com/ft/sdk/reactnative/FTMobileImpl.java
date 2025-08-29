@@ -8,7 +8,6 @@ import com.ft.sdk.DBCacheDiscard;
 import com.ft.sdk.EnvType;
 import com.ft.sdk.FTSDKConfig;
 import com.ft.sdk.FTSdk;
-import com.ft.sdk.InnerClassProxy;
 import com.ft.sdk.LineDataModifier;
 import com.ft.sdk.garble.bean.UserData;
 import com.ft.sdk.DataModifier;
@@ -37,7 +36,6 @@ public class FTMobileImpl {
         Boolean enableLimitWithDbSize = (Boolean) map.get("enableLimitWithDbSize");
         Long dbCacheLimit = ReactNativeUtils.convertToNativeLong(map.get("dbCacheLimit"));
         Integer dbDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("dbDiscardStrategy"));
-        String sdkPkgInfo = (String)map.get("pkgInfo");
         Map<String, Object> dataModifier = (Map<String, Object>) map.get("dataModifier");
         Map<String, Map<String,Object>> lineDataModifier = (Map<String, Map<String,Object>>) map.get("lineDataModifier");
 
@@ -103,9 +101,6 @@ public class FTMobileImpl {
           sdkConfig.setDbCacheDiscard(dbCacheDiscard);
         }
 
-        if(sdkPkgInfo!=null){
-          InnerClassProxy.addPkgInfo(sdkConfig,"reactnative",sdkPkgInfo);
-        }
       if (dataModifier != null) {
         sdkConfig.setDataModifier(new DataModifier() {
                                     @Override

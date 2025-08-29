@@ -102,8 +102,6 @@ RCT_REMAP_METHOD(sdkConfig,
         }
       };
     }
-    NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
-    [config addPkgInfo:@"reactnative" value:pkgInfo];
     [FTMobileAgent startWithConfigOptions:config];
     resolve(nil);
   }];
@@ -165,7 +163,7 @@ RCT_REMAP_METHOD(trackEventFromExtension,
         }else{
             resolve(nil);
         }
-        
+
     }];
 }
 RCT_REMAP_METHOD(shutDown,

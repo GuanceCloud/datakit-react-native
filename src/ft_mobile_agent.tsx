@@ -2,6 +2,103 @@ import { NativeModules } from 'react-native';
 import { version as sdkVersion } from './version'
 
 /**
+ * Bridge context manager for managing shared properties across RUM and Logger modules
+ * This class provides a centralized way to store and retrieve global properties that will be
+ * automatically merged with local properties when making calls to RUM and Logger functions
+ */
+class BridgeContextManager {
+  private static instance: BridgeContextManager;
+  private properties: Map<string, any> = new Map();
+  private sdk: FTMobileReactNativeType = NativeModules.FTMobileReactNative;
+
+  private constructor() {
+    // Initialize with SDK version information
+    this.initializeSDKInfo();
+  }
+
+  /**
+   * Initialize SDK information properties
+   * @private
+   */
+  private initializeSDKInfo(): void {
+    // Create sdk_bridge_info with version information
+    const sdkBridgeInfo = {
+      'react_native': sdkVersion
+    };
+
+    // Set the sdk_bridge_info property
+    this.properties.set('sdk_bridge_info', JSON.stringify(sdkBridgeInfo));
+  }
+
+  /**
+   * Get singleton instance of BridgeContextManager
+   * @returns BridgeContextManager instance
+   */
+  public static getInstance(): BridgeContextManager {
+    if (!BridgeContextManager.instance) {
+      BridgeContextManager.instance = new BridgeContextManager();
+    }
+    return BridgeContextManager.instance;
+  }
+
+  /**
+   * Add bridge context properties that will be automatically merged with local properties
+   * @param properties Object containing key-value pairs
+   */
+  public async appendBridgeContext(properties: Record<string, any>): Promise<void> {
+    // Store properties locally in JavaScript
+    Object.entries(properties).forEach(([key, value]) => {
+      this.properties.set(key, value);
+    });
+
+    // Also send to native SDK
+    return this.sdk.appendBridgeContext(properties);
+  }
+
+  /**
+   * Synchronous version of appendBridgeContext for backward compatibility
+   * Note: This method stores properties locally and calls native SDK asynchronously
+   * @param properties Object containing key-value pairs
+   */
+  public appendBridgeContextSync(properties: Record<string, any>): void {
+    // Store properties locally in JavaScript
+    Object.entries(properties).forEach(([key, value]) => {
+      this.properties.set(key, value);
+    });
+
+    // Fire and forget - call async method without waiting
+    this.sdk.appendBridgeContext(properties).catch(error => {
+      console.warn('Failed to append bridge context:', error);
+    });
+  }
+
+  /**
+   * Merge bridge context properties with local properties
+   * Bridge context properties take precedence over local properties
+   * @param localProperties Local properties to merge with bridge context properties
+   * @returns Merged properties object
+   */
+  public mergeWithLocalPropertiesSync(localProperties?: object): Record<string, any> {
+    const merged: Record<string, any> = {};
+
+    // First add local properties (if any)
+    if (localProperties) {
+      Object.assign(merged, localProperties);
+    }
+
+    // Then add bridge context properties (these will override local properties with same keys)
+    this.properties.forEach((value, key) => {
+      merged[key] = value;
+    });
+
+    return merged;
+  }
+}
+
+// Internal bridge context manager - not exported
+export const bridgeContextManager = BridgeContextManager.getInstance();
+
+/**
  * Environment.
  */
 export enum EnvType {
@@ -52,7 +149,6 @@ export enum FTDBCacheDiscard { discard, discardOldest };
    enableLimitWithDbSize?:boolean,
    dbCacheLimit?:number,
    dbDiscardStrategy?:FTDBCacheDiscard,
-   pkgInfo?: string,
    dataModifier?:object,
    lineDataModifier?:object
  }
@@ -118,6 +214,11 @@ type FTMobileReactNativeType = {
     * Clear all data that has not yet been uploaded to the server.
     */
    clearAllData():Promise<void>
+   /**
+    * Add bridge context properties that will be automatically merged with local properties
+    * @param properties Object containing key-value pairs
+    */
+   appendBridgeContext(properties: Record<string, any>): Promise<void>;
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
@@ -127,7 +228,6 @@ type FTMobileReactNativeType = {
      if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
        config.datakitUrl = config.serverUrl;
      }
-     config.pkgInfo = sdkVersion;
      return this.sdk.sdkConfig(config);
    }
    bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {
@@ -156,6 +256,10 @@ type FTMobileReactNativeType = {
    }
    clearAllData():Promise<void>{
     return this.sdk.clearAllData();
+   }
+   appendBridgeContext(properties: Record<string, any>): Promise<void> {
+     // Use bridgeContextManager to store properties in JavaScript and send to native SDK
+     return bridgeContextManager.appendBridgeContext(properties);
    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();

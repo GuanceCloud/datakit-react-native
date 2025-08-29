@@ -35,7 +35,7 @@ reactNativeInitSDK();
 //  //Native development, some pages or business processes use React Native implementation
 //  //Initialize SDK in native project, no need to initialize configuration on React Native side
 //  //Enable configuration as needed
-// hybridConfig(); 
+// hybridConfig();
 
 function hybridConfig(){
   //Enable automatic collection of react-native control clicks
@@ -77,6 +77,7 @@ async function reactNativeInitSDK() {
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
+  await FTMobileReactNative.appendBridgeContext({"wgt_id":"widget_id"});
 
   // rum settings
   let rumConfig: FTRUMConfig = {

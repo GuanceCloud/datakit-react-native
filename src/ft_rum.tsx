@@ -1,6 +1,7 @@
 import { NativeModules } from 'react-native';
 import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
+import { bridgeContextManager } from './ft_mobile_agent';
 
 /**
  * Error monitoring type.
@@ -212,31 +213,47 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
      return this.rum.setConfig(config);
    }
    startAction(actionName:string,actionType:string,property?:object): Promise<void>{
-     return this.rum.startAction(actionName,actionType,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.startAction(actionName,actionType,mergedProperties);
    }
    addAction(actionName: string, actionType: string, property?: object): Promise<void> {
-    return this.rum.addAction(actionName,actionType,property);
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addAction(actionName,actionType,mergedProperties);
    }
    onCreateView(viewName:string,loadTime:number): Promise<void>{
      return this.rum.onCreateView(viewName,loadTime);
    }
    startView(viewName: string, property?:object): Promise<void>{
-     return this.rum.startView(viewName,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.startView(viewName,mergedProperties);
    }
    stopView(property?:object): Promise<void>{
-     return this.rum.stopView(property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.stopView(mergedProperties);
    }
    addError(stack: string, message: string,property?:object): Promise<void>{
-     return this.rum.addError(stack,message,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.addError(stack,message,mergedProperties);
    }
    addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>{
-    return this.rum.addErrorWithType(type,stack,message,property);
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addErrorWithType(type,stack,message,mergedProperties);
   }
    startResource(key: string,property?:object): Promise<void>{
-     return this.rum.startResource(key,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.startResource(key,mergedProperties);
    }
    stopResource(key: string,property?:object): Promise<void>{
-     return this.rum.stopResource(key,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.stopResource(key,mergedProperties);
    }
    addResource(key:string, resource:FTRUMResource,metrics:FTRUMResourceMetrics={}):Promise<void>{
      return this.rum.addResource(key,resource,metrics);
