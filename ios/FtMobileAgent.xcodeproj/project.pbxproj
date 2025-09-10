@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		17E2407F2CA93E2600E8014B /* FTReactNativeSessionReplay.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */; };
 		17C492802D43B4F900487920 /* FTReactNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C4927F2D43B4F900487920 /* FTReactNativeUtils.m */; };
+		17E2407F2CA93E2600E8014B /* FTReactNativeSessionReplay.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +25,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFtMobileAgent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFtMobileAgent.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17A8D6132E6FF23800A990A2 /* FTRCTTextViewRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTRCTTextViewRecorder.h; sourceTree = "<group>"; };
+		17A8D6142E6FF23800A990A2 /* FTRCTTextViewRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTRCTTextViewRecorder.m; sourceTree = "<group>"; };
 		17C4927E2D43B4F900487920 /* FTReactNativeUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeUtils.h; sourceTree = "<group>"; };
 		17C4927F2D43B4F900487920 /* FTReactNativeUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTReactNativeUtils.m; sourceTree = "<group>"; };
 		17E2407D2CA93E2600E8014B /* FTReactNativeSessionReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeSessionReplay.h; sourceTree = "<group>"; };
@@ -61,6 +63,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				17A8D6132E6FF23800A990A2 /* FTRCTTextViewRecorder.h */,
+				17A8D6142E6FF23800A990A2 /* FTRCTTextViewRecorder.m */,
 				17E2407D2CA93E2600E8014B /* FTReactNativeSessionReplay.h */,
 				17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */,
 				7C3C28AB27684D36009DB8E2 /* FTReactNativeLog.h */,
