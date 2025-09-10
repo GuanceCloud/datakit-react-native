@@ -102,7 +102,7 @@
   FTSRTextPosition *textPosition = [[FTSRTextPosition alloc]init];
   textPosition.alignment = [[FTAlignment alloc]initWithTextAlignment:self.textAlignment vertical:@"top"];
   CGRect textFrame = [self textFrame];
-  textPosition.padding = [[FTPadding alloc]initWithLeft:CGRectGetMinX(frame)-CGRectGetMinX(textFrame) top:CGRectGetMinY(frame)-CGRectGetMinY(textFrame) right:CGRectGetMaxX(frame)-CGRectGetMaxX(textFrame) bottom:CGRectGetMaxY(frame)-CGRectGetMaxY(textFrame)];
+  textPosition.padding = [[FTPadding alloc]initWithLeft:CGRectGetMinX(textFrame)-CGRectGetMinX(frame) top:CGRectGetMinY(textFrame)-CGRectGetMinY(frame) right:CGRectGetMaxX(frame)-CGRectGetMaxX(textFrame) bottom:CGRectGetMaxY(frame)-CGRectGetMaxY(textFrame)];
   wireframe.textPosition = textPosition;
   wireframe.clip = [[FTSRContentClip alloc] initWithFrame:self.wireframeRect clip:self.attributes.clip];;
   return @[wireframe];
