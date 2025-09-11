@@ -2,6 +2,10 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# 0.4.0-alpha.5
+* iOS Fix the memory access crash caused by incorrect use of NSNumber modifiers in Session Replay
+* Compatible with iOS SDK 1.6.2-alpha.6
+
 # 0.4.0-alpha.4
 * iOS Fix crash issue caused by nil string in Session Replay
 * Compatible with iOS SDK 1.6.2-alpha.3
