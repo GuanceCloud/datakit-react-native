@@ -79,7 +79,7 @@ async function reactNativeInitSDK() {
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
-  await FTMobileReactNative.appendBridgeContext({"wgt_id":"widget_id"});
+  FTMobileReactNative.appendBridgeContext({"wgt_id":"widget_id"});
 
   // rum settings
   let rumConfig: FTRUMConfig = {

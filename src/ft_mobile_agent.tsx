@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import { version as sdkVersion } from './version'
+import { version as sdkVersion } from './version';
 
 /**
  * Bridge context manager for managing shared properties across RUM and Logger modules
@@ -9,7 +9,6 @@ import { version as sdkVersion } from './version'
 class BridgeContextManager {
   private static instance: BridgeContextManager;
   private properties: Map<string, any> = new Map();
-  private sdk: FTMobileReactNativeType = NativeModules.FTMobileReactNative;
 
   private constructor() {
     // Initialize with SDK version information
@@ -23,7 +22,7 @@ class BridgeContextManager {
   private initializeSDKInfo(): void {
     // Create sdk_bridge_info with version information
     const sdkBridgeInfo = {
-      'react_native': sdkVersion
+      react_native: sdkVersion,
     };
 
     // Set the sdk_bridge_info property
@@ -45,31 +44,16 @@ class BridgeContextManager {
    * Add bridge context properties that will be automatically merged with local properties
    * @param properties Object containing key-value pairs
    */
-  public async appendBridgeContext(properties: Record<string, any>): Promise<void> {
+  public appendBridgeContext(properties: Record<string, any>): void {
     // Store properties locally in JavaScript
-    Object.entries(properties).forEach(([key, value]) => {
-      this.properties.set(key, value);
-    });
-
-    // Also send to native SDK
-    return this.sdk.appendBridgeContext(properties);
-  }
-
-  /**
-   * Synchronous version of appendBridgeContext for backward compatibility
-   * Note: This method stores properties locally and calls native SDK asynchronously
-   * @param properties Object containing key-value pairs
-   */
-  public appendBridgeContextSync(properties: Record<string, any>): void {
-    // Store properties locally in JavaScript
-    Object.entries(properties).forEach(([key, value]) => {
-      this.properties.set(key, value);
-    });
-
-    // Fire and forget - call async method without waiting
-    this.sdk.appendBridgeContext(properties).catch(error => {
+    try {
+      // Store properties locally in JavaScript
+      Object.entries(properties).forEach(([key, value]) => {
+        this.properties.set(key, value);
+      });
+    } catch (error) {
       console.warn('Failed to append bridge context:', error);
-    });
+    }
   }
 
   /**
@@ -79,19 +63,28 @@ class BridgeContextManager {
    * @returns Merged properties object
    */
   public mergeWithLocalPropertiesSync(localProperties?: object): Record<string, any> {
-    const merged: Record<string, any> = {};
+    try {
+      const merged: Record<string, any> = {};
 
-    // First add local properties (if any)
-    if (localProperties) {
-      Object.assign(merged, localProperties);
+      // First add local properties (if any)
+      if (localProperties) {
+        Object.assign(merged, localProperties);
+      }
+
+      // Then add bridge context properties (these will override local properties with same keys)
+      this.properties.forEach((value, key) => {
+        merged[key] = value;
+      });
+
+      return merged;
+    } catch (error) {
+      console.warn(
+        'Failed to merge bridge context with local properties:',
+        error
+      );
+      // Return empty object or only local properties on error
+      return localProperties ? { ...localProperties } : {};
     }
-
-    // Then add bridge context properties (these will override local properties with same keys)
-    this.properties.forEach((value, key) => {
-      merged[key] = value;
-    });
-
-    return merged;
   }
 }
 
@@ -222,7 +215,7 @@ type FTMobileReactNativeType = {
     * Add bridge context properties that will be automatically merged with local properties
     * @param properties Object containing key-value pairs
     */
-   appendBridgeContext(properties: Record<string, any>): Promise<void>;
+   appendBridgeContext(properties: Record<string, any>): void;
    /**
     * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
     */
@@ -272,9 +265,9 @@ type FTMobileReactNativeType = {
    clearAllData():Promise<void>{
     return this.sdk.clearAllData();
    }
-   appendBridgeContext(properties: Record<string, any>): Promise<void> {
+   appendBridgeContext(properties: Record<string, any>): void {
      // Use bridgeContextManager to store properties in JavaScript and send to native SDK
-     return bridgeContextManager.appendBridgeContext(properties);
+    bridgeContextManager.appendBridgeContext(properties);
   }
    updateRemoteConfig():Promise<void>{
     return this.sdk.updateRemoteConfig();
