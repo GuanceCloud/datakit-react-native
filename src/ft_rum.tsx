@@ -27,7 +27,41 @@ import { bridgeContextManager } from './ft_mobile_agent';
   */
  export enum DetectFrequency { normal, frequent, rare }
 
- export enum FTRUMCacheDiscard { discard, discardOldest };
+export enum FTRUMCacheDiscard {
+  discard,
+  discardOldest,
+}
+
+export enum IOSCrashMonitoringType {
+  /** Monitor Mach kernel exceptions. */
+  machException = 0x01,
+
+  /** Monitor fatal signals. */
+  signal = 0x02,
+
+  /** Monitor uncaught C++ exceptions. */
+  cppException = 0x04,
+
+  /** Monitor uncaught Objective-C NSExceptions. */
+  nsException = 0x08,
+
+  /** Track and inject system information. */
+  system = 0x40,
+
+  /** Track and inject application state information. */
+  applicationState = 0x80,
+
+  /** All crash monitor types. */
+  all = machException |
+    signal |
+    cppException |
+    nsException |
+    applicationState |
+    system,
+
+  /** High compatibility crash monitor types (excludes Mach exceptions). */
+  highCompatibility = all & ~machException,
+}
 
 /**
  * Set RUM tracking conditions.
@@ -51,6 +85,9 @@ import { bridgeContextManager } from './ft_mobile_agent';
  * @param globalContext custom global parameters
  * @param rumCacheLimitCount RUM max cache size, default 100_000
  * @param rumDiscardStrategy RUM data discard strategy
+ * @param enableTraceWebView Set whether to enable WebView data collection, default true
+ * @param allowWebViewHost Set specific hosts or domains allowed to collect WebView data, nil means collect all
+ * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information. 
  */
  export interface FTRUMConfig{
    androidAppId:string,
@@ -73,6 +110,9 @@ import { bridgeContextManager } from './ft_mobile_agent';
    globalContext?:object,
    rumCacheLimitCount?:number,
    rumDiscardStrategy?:FTRUMCacheDiscard,
+   enableTraceWebView?: boolean,
+   allowWebViewHost?: Array<string>,
+   iosCrashMonitoringType?: IOSCrashMonitoringType,
  }
 /**
  * RUM Resource data.

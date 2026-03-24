@@ -126,7 +126,9 @@ export enum FTDBCacheDiscard { discard, discardOldest };
  * @param dbDiscardStrategy db data discard strategy
  * @param dataModifier data modifier, modify individual fields {key:value}, after setting, the SDK will replace the original value with the set value according to the key
  * @param lineDataModifier data modifier, modify single data {"measurement":measurement,"data":{key:value}}, after setting, the SDK will replace the original value with the set value according to the key
- */
+ * @param remoteConfiguration Set whether to enable remote dynamic configuration
+ * @param remoteConfigMiniUpdateInterval Set remote dynamic configuration minimum update interval, unit seconds, default 12*60*60
+*/
  export interface FTMobileConfig {
    /**
     * @deprecated "serverUrl" parameter renamed to "datakitUrl"
@@ -150,7 +152,9 @@ export enum FTDBCacheDiscard { discard, discardOldest };
    dbCacheLimit?:number,
    dbDiscardStrategy?:FTDBCacheDiscard,
    dataModifier?:object,
-   lineDataModifier?:object
+   lineDataModifier?:object,
+   remoteConfiguration?:boolean,
+   remoteConfigMiniUpdateInterval?:number,
  }
 
 
@@ -219,6 +223,17 @@ type FTMobileReactNativeType = {
     * @param properties Object containing key-value pairs
     */
    appendBridgeContext(properties: Record<string, any>): Promise<void>;
+   /**
+    * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
+    */
+   updateRemoteConfig():Promise<void>
+   /**
+    * Update remote configuration with minimum update interval, after enabling remote configuration, you can call this method to update the configuration in real time.
+    * This method is used to set the minimum update interval for remote configuration updates. 
+    * If the time since the last update is less than the specified interval, the update will not be performed.
+    * @param interval minimum update interval, unit seconds
+   */
+   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<void>
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
@@ -260,7 +275,13 @@ type FTMobileReactNativeType = {
    appendBridgeContext(properties: Record<string, any>): Promise<void> {
      // Use bridgeContextManager to store properties in JavaScript and send to native SDK
      return bridgeContextManager.appendBridgeContext(properties);
+  }
+   updateRemoteConfig():Promise<void>{
+    return this.sdk.updateRemoteConfig();
    }
+   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<void>{
+      return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval);
+    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();
 

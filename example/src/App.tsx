@@ -77,6 +77,10 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         }}
         />
         <View style={styles.space} />
+        <Button title='Update Remote Config' onPress={() => FTMobileReactNative.updateRemoteConfig()} />
+        <View style={styles.space} />
+        <Button title='Update Remote Config With Mini Update Interval' onPress={() => FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0)} />
+        <View style={styles.space} />
       </View>
     );
   }

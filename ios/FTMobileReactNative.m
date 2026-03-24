@@ -102,6 +102,16 @@ RCT_REMAP_METHOD(sdkConfig,
         }
       };
     }
+    if ([context.allKeys containsObject:@"remoteConfiguration"]){
+      config.remoteConfiguration = [RCTConvert BOOL:context[@"remoteConfiguration"]];
+    }
+    if ([context.allKeys containsObject:@"remoteConfigMiniUpdateInterval"]){
+      config.remoteConfigMiniUpdateInterval = [RCTConvert int:context[@"remoteConfigMiniUpdateInterval"]];
+    }
+    NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
+    if (pkgInfo) {
+      [config addPkgInfo:@"reactnative" value:pkgInfo];
+    }
     [FTMobileAgent startWithConfigOptions:config];
     resolve(nil);
   }];
@@ -178,4 +188,17 @@ RCT_REMAP_METHOD(clearAllData,
     [FTMobileAgent clearAllData];
     resolve(nil);
 }
+RCT_REMAP_METHOD(updateRemoteConfig,
+                 updateRemoteConfig_findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+    [FTMobileAgent updateRemoteConfig];
+    resolve(nil);
+}
+RCT_REMAP_METHOD(updateRemoteConfigWithMiniUpdateInterval,
+                 interval:(int)interval
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+  [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:(NSInteger)interval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {return nil;}];
+}
+
 @end

@@ -38,6 +38,8 @@ public class FTMobileImpl {
         Integer dbDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("dbDiscardStrategy"));
         Map<String, Object> dataModifier = (Map<String, Object>) map.get("dataModifier");
         Map<String, Map<String,Object>> lineDataModifier = (Map<String, Map<String,Object>>) map.get("lineDataModifier");
+        Boolean remoteConfiguration = (Boolean) map.get("remoteConfiguration");
+        Integer remoteConfigMiniUpdateInterval = ReactNativeUtils.convertToNativeInt(map.get("remoteConfigMiniUpdateInterval"));
 
         FTSDKConfig sdkConfig = (datakitUrl != null)
             ? FTSDKConfig.builder(datakitUrl)
@@ -123,6 +125,12 @@ public class FTMobileImpl {
                                       }
         );
       }
+      if (remoteConfiguration != null) {
+        sdkConfig.setRemoteConfiguration(remoteConfiguration);
+      }
+      if (remoteConfigMiniUpdateInterval != null) {
+        sdkConfig.setRemoteConfigMiniUpdateInterval(remoteConfigMiniUpdateInterval);
+      }
         FTSdk.install(sdkConfig);
 //        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));
         promise.resolve(null);
@@ -188,6 +196,16 @@ public class FTMobileImpl {
 
     public void clearAllData(Promise promise) {
         FTSdk.clearAllData();
+        promise.resolve(null);
+    }
+
+    public void updateRemoteConfig(Promise promise) {
+        FTSdk.updateRemoteConfig();
+        promise.resolve(null);
+    }
+
+    public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
+        FTSdk.updateRemoteConfig(interval,null);
         promise.resolve(null);
     }
 }

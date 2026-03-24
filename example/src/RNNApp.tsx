@@ -83,6 +83,8 @@ const HomeScreen = (props) => {
           })
         }}
         />
+      <Button title='Update Remote Config' onPress={() => FTMobileReactNative.updateRemoteConfig()} />
+      <Button title='Update Remote Config With Mini Update Interval' onPress={() => FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0)} />
     </View>
   );
 };

@@ -61,6 +61,16 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
     impl.clearAllData(promise);
   }
 
+  @ReactMethod
+  public void updateRemoteConfig(Promise promise) {
+    impl.updateRemoteConfig(promise);
+  }
+
+  @ReactMethod
+  public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
+    impl.updateRemoteConfigWithMiniUpdateInterval(interval, promise);  
+  }
+
   @NonNull
   @Override
   public String getName() {
