@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -98,20 +99,23 @@ public class FTMobileImpl {
 
     private RemoteConfigOverrideResult applyRemoteConfigOverrideRules(RemoteConfigBean configBean,
                                                                       @Nullable String jsonConfig) {
-        if (configBean == null || jsonConfig == null || remoteConfigOverrideRules == null || remoteConfigOverrideRules.size() == 0) {
+        return applyRemoteConfigOverrideRules(configBean, jsonConfig, this.remoteConfigOverrideRules);
+    }
+
+    private RemoteConfigOverrideResult applyRemoteConfigOverrideRules(RemoteConfigBean configBean,
+                                                                      @Nullable String jsonConfig,
+                                                                      @Nullable ReadableArray rules) {
+        if (configBean == null || jsonConfig == null || rules == null || rules.size() == 0) {
             return new RemoteConfigOverrideResult(configBean, new ArrayList<>());
         }
         List<String> appliedRuleIds = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(jsonConfig);
-            for (int i = 0; i < remoteConfigOverrideRules.size(); i++) {
-                if (remoteConfigOverrideRules.getType(i) != ReadableType.Map) {
+            for (int i = 0; i < rules.size(); i++) {
+                if (rules.getType(i) != ReadableType.Map) {
                     continue;
                 }
-                ReadableMap rule = remoteConfigOverrideRules.getMap(i);
-                if (rule == null) {
-                    continue;
-                }
+                ReadableMap rule = rules.getMap(i);
                 boolean enabled = !rule.hasKey("enabled") || rule.isNull("enabled") || rule.getBoolean("enabled");
                 if (!enabled) {
                     continue;
@@ -128,9 +132,10 @@ public class FTMobileImpl {
                 }
                 boolean matches = true;
                 for (Map.Entry<String, Object> entry : keyMap.entrySet()) {
-                    String actualValue = jsonObject.optString(entry.getKey(), null);
-                    String expectedValue = entry.getValue() == null ? null : entry.getValue().toString();
-                    if (actualValue == null || expectedValue == null || !actualValue.equals(expectedValue)) {
+                    Object expectedValue = entry.getValue();
+                    Object actualValue = getJsonValue(jsonObject, entry.getKey());
+
+                    if (!isEqualValue(actualValue, expectedValue)) {
                         matches = false;
                         break;
                     }
@@ -142,21 +147,167 @@ public class FTMobileImpl {
                 if (override == null) {
                     continue;
                 }
+
+                // Basic configuration properties
+                if (override.hasKey("env") && !override.isNull("env")) {
+                    configBean.setEnv(override.getString("env"));
+                }
+                if (override.hasKey("serviceName") && !override.isNull("serviceName")) {
+                    configBean.setServiceName(override.getString("serviceName"));
+                }
+                if (override.hasKey("autoSync") && !override.isNull("autoSync")) {
+                    configBean.setAutoSync(override.getBoolean("autoSync"));
+                }
+                if (override.hasKey("compressIntakeRequests") && !override.isNull("compressIntakeRequests")) {
+                    configBean.setCompressIntakeRequests(override.getBoolean("compressIntakeRequests"));
+                }
+                if (override.hasKey("syncPageSize") && !override.isNull("syncPageSize")) {
+                    configBean.setSyncPageSize(override.getInt("syncPageSize"));
+                }
+                if (override.hasKey("syncSleepTime") && !override.isNull("syncSleepTime")) {
+                    configBean.setSyncSleepTime(override.getInt("syncSleepTime"));
+                }
+
+                // Log configuration properties
                 if (override.hasKey("logSampleRate") && !override.isNull("logSampleRate")) {
                     configBean.setLogSampleRate((float) override.getDouble("logSampleRate"));
                 }
+                if (override.hasKey("logLevelFilters") && !override.isNull("logLevelFilters")) {
+                    ReadableArray filtersArray = override.getArray("logLevelFilters");
+                    String[] filters = new String[filtersArray.size()];
+                    for (int j = 0; j < filtersArray.size(); j++) {
+                        filters[j] = filtersArray.getString(j);
+                    }
+                    configBean.setLogLevelFilters(filters);
+                }
+                if (override.hasKey("logEnableCustomLog") && !override.isNull("logEnableCustomLog")) {
+                    configBean.setLogEnableCustomLog(override.getBoolean("logEnableCustomLog"));
+                }
+                if (override.hasKey("logEnableConsoleLog") && !override.isNull("logEnableConsoleLog")) {
+                configBean.setLogEnableCustomLog(override.getBoolean("logEnableConsoleLog"));
+                }
+
+                // RUM configuration properties
                 if (override.hasKey("rumSampleRate") && !override.isNull("rumSampleRate")) {
                     configBean.setRumSampleRate((float) override.getDouble("rumSampleRate"));
                 }
+                if (override.hasKey("rumSessionOnErrorSampleRate") && !override.isNull("rumSessionOnErrorSampleRate")) {
+                    configBean.setRumSessionOnErrorSampleRate((float) override.getDouble("rumSessionOnErrorSampleRate"));
+                }
+                if (override.hasKey("rumEnableTraceUserAction") && !override.isNull("rumEnableTraceUserAction")) {
+                    configBean.setRumEnableTraceUserAction(override.getBoolean("rumEnableTraceUserAction"));
+                }
+                if (override.hasKey("rumEnableTraceUserView") && !override.isNull("rumEnableTraceUserView")) {
+                    configBean.setRumEnableTraceUserView(override.getBoolean("rumEnableTraceUserView"));
+                }
+                if (override.hasKey("rumEnableTraceUserResource") && !override.isNull("rumEnableTraceUserResource")) {
+                    configBean.setRumEnableTraceUserResource(override.getBoolean("rumEnableTraceUserResource"));
+                }
+                if (override.hasKey("rumEnableResourceHostIP") && !override.isNull("rumEnableResourceHostIP")) {
+                    configBean.setRumEnableResourceHostIP(override.getBoolean("rumEnableResourceHostIP"));
+                }
+                if (override.hasKey("rumEnableTrackAppUIBlock") && !override.isNull("rumEnableTrackAppUIBlock")) {
+                    configBean.setRumEnableTrackAppUIBlock(override.getBoolean("rumEnableTrackAppUIBlock"));
+                }
+                if (override.hasKey("rumBlockDurationMs") && !override.isNull("rumBlockDurationMs")) {
+                    configBean.setRumBlockDurationMs((long) override.getInt("rumBlockDurationMs"));
+                }
+                if (override.hasKey("rumEnableTrackAppCrash") && !override.isNull("rumEnableTrackAppCrash")) {
+                    configBean.setRumEnableTrackAppCrash(override.getBoolean("rumEnableTrackAppCrash"));
+                }
+                if (override.hasKey("rumEnableTrackAppANR") && !override.isNull("rumEnableTrackAppANR")) {
+                    configBean.setRumEnableTrackAppANR(override.getBoolean("rumEnableTrackAppANR"));
+                }
+                if (override.hasKey("rumEnableTraceWebView") && !override.isNull("rumEnableTraceWebView")) {
+                    configBean.setRumEnableTraceWebView(override.getBoolean("rumEnableTraceWebView"));
+                }
+                if (override.hasKey("rumAllowWebViewHost") && !override.isNull("rumAllowWebViewHost")) {
+                    ReadableArray hostsArray = override.getArray("rumAllowWebViewHost");
+                    String[] hosts = new String[hostsArray.size()];
+                    for (int j = 0; j < hostsArray.size(); j++) {
+                        hosts[j] = hostsArray.getString(j);
+                    }
+                    configBean.setRumAllowWebViewHost(hosts);
+                }
+
+                // Trace configuration properties
                 if (override.hasKey("traceSampleRate") && !override.isNull("traceSampleRate")) {
                     configBean.setTraceSampleRate((float) override.getDouble("traceSampleRate"));
                 }
+                if (override.hasKey("traceEnableAutoTrace") && !override.isNull("traceEnableAutoTrace")) {
+                    configBean.setTraceEnableAutoTrace(override.getBoolean("traceEnableAutoTrace"));
+                }
+                if (override.hasKey("traceType") && !override.isNull("traceType")) {
+                    configBean.setTraceType(override.getString("traceType"));
+                }
+
                 String ruleId = rule.hasKey("id") && !rule.isNull("id") ? rule.getString("id") : null;
                 appliedRuleIds.add(ruleId != null ? ruleId : "rule_" + i);
             }
         } catch (JSONException ignored) {
         }
         return new RemoteConfigOverrideResult(configBean, appliedRuleIds);
+    }
+
+    private Object getJsonValue(JSONObject jsonObject, String key) {
+        if (!jsonObject.has(key)) {
+            return null;
+        }
+        try {
+            Object value = jsonObject.get(key);
+            if (value == JSONObject.NULL) {
+                return null;
+            }
+            return value;
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    private boolean isEqualValue(Object actual, Object expected) {
+        if (actual == null && expected == null) {
+            return true;
+        }
+        if (actual == null || expected == null) {
+            return false;
+        }
+
+        // Handle number comparison
+        if (actual instanceof Number && expected instanceof Number) {
+            return ((Number) actual).doubleValue() == ((Number) expected).doubleValue();
+        }
+
+        // Handle string comparison
+        if (actual instanceof String && expected instanceof String) {
+            return actual.equals(expected);
+        }
+
+        // Handle boolean comparison (JSON booleans are represented as Boolean in Java)
+        if (actual instanceof Boolean && expected instanceof Boolean) {
+            return actual.equals(expected);
+        }
+
+        // Handle array comparison
+        if (actual instanceof JSONArray actualArray && expected instanceof List<?> expectedList) {
+          if (actualArray.length() != expectedList.size()) {
+                return false;
+            }
+            try {
+                for (int i = 0; i < actualArray.length(); i++) {
+                    Object actualElement = actualArray.get(i);
+                    Object expectedElement = expectedList.get(i);
+                    if (!isEqualValue(actualElement, expectedElement)) {
+                        return false;
+                    }
+                }
+                return true;
+            } catch (JSONException e) {
+                return false;
+            }
+        }
+
+        // Fallback to string comparison
+        return actual.toString().equals(expected.toString());
     }
 
     public void sdkConfig(ReadableMap context, Promise promise) {
@@ -398,7 +549,7 @@ public class FTMobileImpl {
         });
     }
 
-    public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
+    public void updateRemoteConfigWithMiniUpdateInterval(int interval, @Nullable ReadableArray rules, Promise promise) {
         if (!remoteConfigurationEnabled) {
             promise.reject("E_REMOTE_CONFIG_DISABLED", "Remote configuration is not enabled.");
             return;
@@ -410,7 +561,8 @@ public class FTMobileImpl {
             @Override
             public RemoteConfigBean onConfigSuccessFetched(RemoteConfigBean configBean, String jsonConfig) {
                 rawJson = jsonConfig;
-                RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig);
+                ReadableArray rulesToApply = rules != null && rules.size() > 0 ? rules : remoteConfigOverrideRules;
+                RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig, rulesToApply);
                 appliedRuleIds = result.appliedRuleIds;
                 promise.resolve(createRemoteConfigPayload("manual", true, jsonConfig, appliedRuleIds, null, null));
                 return result.configBean;

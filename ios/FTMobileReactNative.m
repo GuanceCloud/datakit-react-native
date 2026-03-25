@@ -12,6 +12,7 @@
 #import <React/RCTConvert.h>
 #import <FTMobileSDK/FTThreadDispatchManager.h>
 #import <FTMobileSDK/FTConstants.h>
+#import <FTMobileSDK/FTRemoteConfigModel+Private.h>
 
 static NSString *const FTRemoteConfigCallbackEvent = @"ft_remote_config_callback";
 
@@ -41,11 +42,20 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSDictionary *)remoteConfigResultWithSuccess:(BOOL)success
-                                        content:(NSDictionary<NSString *, id> *_Nullable)content
-                                          error:(NSError *_Nullable)error
-                               appliedRuleIds:(NSArray<NSString *> *_Nullable)appliedRuleIds
-                                    triggerType:(NSString *)triggerType
+                                         content:(NSDictionary<NSString *, id> *_Nullable)content
+                                           error:(NSError *_Nullable)error
+                                     triggerType:(NSString *)triggerType
+                                           model:(FTRemoteConfigModel *_Nullable)model
+                                           rules:(NSArray<NSDictionary *> *_Nullable)rules
 {
+  // Use local rules if provided, otherwise use global rules
+  NSArray<NSDictionary *> *rulesToApply = rules ?: _remoteConfigOverrideRules;
+  NSArray<NSString *> *appliedRuleIds = @[];
+  
+  if (model && content && rulesToApply.count > 0) {
+    appliedRuleIds = [self applyRemoteConfigOverrideRulesWithModel:model content:content rules:rulesToApply];
+  }
+  
   NSMutableDictionary *payload = [NSMutableDictionary dictionary];
   payload[@"triggerType"] = triggerType;
   payload[@"success"] = @(success);
@@ -56,6 +66,7 @@ RCT_EXPORT_MODULE()
   }
   if (appliedRuleIds.count > 0) {
     payload[@"appliedOverrideRuleIds"] = appliedRuleIds;
+    payload[@"content"] = [model toDictionary];
   }
   if (error) {
     payload[@"errorCode"] = @(error.code);
@@ -65,9 +76,9 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)emitAutoRemoteConfigEventWithSuccess:(BOOL)success
-                                     content:(NSDictionary<NSString *, id> *_Nullable)content
-                              appliedRuleIds:(NSArray<NSString *> *_Nullable)appliedRuleIds
-                                       error:(NSError *_Nullable)error
+                                      content:(NSDictionary<NSString *, id> *_Nullable)content
+                                        error:(NSError *_Nullable)error
+                                        model:(FTRemoteConfigModel *_Nullable)model
 {
   if (!_hasListeners) {
     return;
@@ -75,33 +86,91 @@ RCT_EXPORT_MODULE()
   [self sendEventWithName:FTRemoteConfigCallbackEvent
                      body:[self remoteConfigResultWithSuccess:success
                                                      content:content
-                                               appliedRuleIds:appliedRuleIds
                                                        error:error
-                                                 triggerType:@"auto"]];
+                                                 triggerType:@"auto"
+                                                       model:model
+                                                       rules:nil]];
+}
+
+- (BOOL)isEqualValue:(id)value1 toValue:(id)value2 {
+  if (value1 == nil && value2 == nil) {
+    return YES;
+  }
+  if (value1 == nil || value2 == nil) {
+    return NO;
+  }
+  
+  // Handle NSNumber comparison
+  if ([value1 isKindOfClass:[NSNumber class]] && [value2 isKindOfClass:[NSNumber class]]) {
+    return [value1 isEqualToNumber:value2];
+  }
+  
+  // Handle NSString comparison
+  if ([value1 isKindOfClass:[NSString class]] && [value2 isKindOfClass:[NSString class]]) {
+    return [value1 isEqualToString:value2];
+  }
+  
+  // Handle NSArray comparison
+  if ([value1 isKindOfClass:[NSArray class]] && [value2 isKindOfClass:[NSArray class]]) {
+    NSArray *array1 = (NSArray *)value1;
+    NSArray *array2 = (NSArray *)value2;
+    if (array1.count != array2.count) {
+      return NO;
+    }
+    for (NSUInteger i = 0; i < array1.count; i++) {
+      if (![self isEqualValue:array1[i] toValue:array2[i]]) {
+        return NO;
+      }
+    }
+    return YES;
+  }
+  
+  // Handle NSDictionary comparison
+  if ([value1 isKindOfClass:[NSDictionary class]] && [value2 isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *dict1 = (NSDictionary *)value1;
+    NSDictionary *dict2 = (NSDictionary *)value2;
+    if (dict1.count != dict2.count) {
+      return NO;
+    }
+    __block BOOL isEqual = YES;
+    [dict1 enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+      id value2Obj = dict2[key];
+      if (value2Obj == nil || ![self isEqualValue:obj toValue:value2Obj]) {
+        isEqual = NO;
+        *stop = YES;
+      }
+    }];
+    return isEqual;
+  }
+  
+  // For other types, use description comparison as fallback
+  return [[value1 description] isEqualToString:[value2 description]];
 }
 
 - (NSArray<NSString *> *)applyRemoteConfigOverrideRulesWithModel:(FTRemoteConfigModel *_Nullable)model
-                                                         content:(NSDictionary<NSString *, id> *_Nullable)content
+                                                          content:(NSDictionary<NSString *, id> *_Nullable)content
+                                                            rules:(NSArray<NSDictionary *> *)rules
 {
-  if (!model || !content || _remoteConfigOverrideRules.count == 0) {
+  if (!model || !content || rules.count == 0) {
     return @[];
   }
   NSMutableArray<NSString *> *appliedRuleIds = [NSMutableArray array];
-  [_remoteConfigOverrideRules enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull rule, NSUInteger idx, BOOL * _Nonnull stop) {
+  [rules enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull rule, NSUInteger idx, BOOL * _Nonnull stop) {
     BOOL enabled = ![rule.allKeys containsObject:@"enabled"] || [RCTConvert BOOL:rule[@"enabled"]];
     if (!enabled) {
       return;
     }
     NSDictionary *match = [RCTConvert NSDictionary:rule[@"match"]];
     NSDictionary *customKeys = [RCTConvert NSDictionary:match[@"customKeys"]];
-    if (customKeys.count == 0) {
+    NSDictionary *override = [RCTConvert NSDictionary:rule[@"override"]];
+
+    if (customKeys.count == 0 || override.count == 0) {
       return;
     }
     __block BOOL matches = YES;
     [customKeys enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stopKeys) {
-      NSString *expectedValue = [obj description];
-      NSString *actualValue = [[content valueForKey:[key description]] description];
-      if (actualValue.length == 0 || ![actualValue isEqualToString:expectedValue]) {
+      id actualValue = [content valueForKey:[key description]];
+      if (![self isEqualValue:obj toValue:actualValue]) {
         matches = NO;
         *stopKeys = YES;
       }
@@ -109,16 +178,87 @@ RCT_EXPORT_MODULE()
     if (!matches) {
       return;
     }
-    NSDictionary *override = [RCTConvert NSDictionary:rule[@"override"]];
-    if ([override.allKeys containsObject:@"logSampleRate"]) {
-      model.logSampleRate = @([RCTConvert double:override[@"logSampleRate"]]);
+    
+    // Basic configuration properties
+    if ([override.allKeys containsObject:@"env"]) {
+      model.env = [RCTConvert NSString:override[@"env"]];
     }
+    if ([override.allKeys containsObject:@"serviceName"]) {
+      model.serviceName = [RCTConvert NSString:override[@"serviceName"]];
+    }
+    if ([override.allKeys containsObject:@"autoSync"]) {
+      model.autoSync = @([RCTConvert double:override[@"autoSync"]]);
+    }
+    if ([override.allKeys containsObject:@"compressIntakeRequests"]) {
+      model.compressIntakeRequests = @([RCTConvert double:override[@"compressIntakeRequests"]]);
+    }
+    if ([override.allKeys containsObject:@"syncPageSize"]) {
+      model.syncPageSize = @([RCTConvert double:override[@"syncPageSize"]]);
+    }
+    if ([override.allKeys containsObject:@"syncSleepTime"]) {
+      model.syncSleepTime = @([RCTConvert double:override[@"syncSleepTime"]]);
+    }
+    
+    // RUM configuration properties
     if ([override.allKeys containsObject:@"rumSampleRate"]) {
       model.rumSampleRate = @([RCTConvert double:override[@"rumSampleRate"]]);
     }
+    if ([override.allKeys containsObject:@"rumSessionOnErrorSampleRate"]) {
+      model.rumSessionOnErrorSampleRate = @([RCTConvert double:override[@"rumSessionOnErrorSampleRate"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTraceUserAction"]) {
+      model.rumEnableTraceUserAction = @([RCTConvert double:override[@"rumEnableTraceUserAction"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTraceUserView"]) {
+      model.rumEnableTraceUserView = @([RCTConvert double:override[@"rumEnableTraceUserView"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTraceUserResource"]) {
+      model.rumEnableTraceUserResource = @([RCTConvert double:override[@"rumEnableTraceUserResource"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableResourceHostIP"]) {
+      model.rumEnableResourceHostIP = @([RCTConvert double:override[@"rumEnableResourceHostIP"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTrackAppUIBlock"]) {
+      model.rumEnableTrackAppUIBlock = @([RCTConvert double:override[@"rumEnableTrackAppUIBlock"]]);
+    }
+    if ([override.allKeys containsObject:@"rumBlockDurationMs"]) {
+      model.rumBlockDurationMs = @([RCTConvert double:override[@"rumBlockDurationMs"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTrackAppCrash"]) {
+      model.rumEnableTrackAppCrash = @([RCTConvert double:override[@"rumEnableTrackAppCrash"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTrackAppANR"]) {
+      model.rumEnableTrackAppANR = @([RCTConvert double:override[@"rumEnableTrackAppANR"]]);
+    }
+    if ([override.allKeys containsObject:@"rumEnableTraceWebView"]) {
+      model.rumEnableTraceWebView = @([RCTConvert double:override[@"rumEnableTraceWebView"]]);
+    }
+    if ([override.allKeys containsObject:@"rumAllowWebViewHost"]) {
+      model.rumAllowWebViewHost = [RCTConvert NSArray:override[@"rumAllowWebViewHost"]];
+    }
+    
+    // Trace configuration properties
     if ([override.allKeys containsObject:@"traceSampleRate"]) {
       model.traceSampleRate = @([RCTConvert double:override[@"traceSampleRate"]]);
     }
+    if ([override.allKeys containsObject:@"traceEnableAutoTrace"]) {
+      model.traceEnableAutoTrace = @([RCTConvert double:override[@"traceEnableAutoTrace"]]);
+    }
+    if ([override.allKeys containsObject:@"traceType"]) {
+      model.traceType = [RCTConvert NSString:override[@"traceType"]];
+    }
+    
+    // Log configuration properties
+    if ([override.allKeys containsObject:@"logSampleRate"]) {
+      model.logSampleRate = @([RCTConvert double:override[@"logSampleRate"]]);
+    }
+    if ([override.allKeys containsObject:@"logLevelFilters"]) {
+      model.logLevelFilters = [RCTConvert NSArray:override[@"logLevelFilters"]];
+    }
+    if ([override.allKeys containsObject:@"logEnableCustomLog"]) {
+      model.logEnableCustomLog = @([RCTConvert double:override[@"logEnableCustomLog"]]);
+    }
+    
     NSString *ruleId = [RCTConvert NSString:rule[@"id"]];
     [appliedRuleIds addObject:ruleId.length > 0 ? ruleId : [NSString stringWithFormat:@"rule_%lu", (unsigned long)idx]];
   }];
@@ -225,17 +365,17 @@ RCT_REMAP_METHOD(sdkConfig,
     if (config.remoteConfiguration) {
       __weak typeof(self) weakSelf = self;
       config.remoteConfigFetchCompletionBlock = ^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
-        NSArray<NSString *> *appliedRuleIds = [weakSelf applyRemoteConfigOverrideRulesWithModel:model content:content];
-        [weakSelf emitAutoRemoteConfigEventWithSuccess:success content:content appliedRuleIds:appliedRuleIds error:error];
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return nil;
+        }
+        NSArray<NSString *> *appliedRuleIds = [strongSelf applyRemoteConfigOverrideRulesWithModel:model content:content rules:strongSelf->_remoteConfigOverrideRules];
+        [strongSelf emitAutoRemoteConfigEventWithSuccess:success content:content error:error model:model];
         if (appliedRuleIds.count > 0) {
           return model;
         }
         return nil;
       };
-    }
-    NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
-    if (pkgInfo) {
-      [config addPkgInfo:@"reactnative" value:pkgInfo];
     }
     [FTMobileAgent startWithConfigOptions:config];
     resolve(nil);
@@ -321,14 +461,14 @@ RCT_REMAP_METHOD(updateRemoteConfig,
       return;
     }
     [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:_remoteConfigMiniUpdateInterval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
-      NSArray<NSString *> *appliedRuleIds = [self applyRemoteConfigOverrideRulesWithModel:model content:content];
-      NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content appliedRuleIds:appliedRuleIds error:error triggerType:@"manual"];
+      NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content error:error triggerType:@"manual" model:model rules:nil];
       if (success) {
         resolve(result);
       } else {
         NSString *message = error.localizedDescription ?: @"Remote config update failed.";
         reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
       }
+      NSArray<NSString *> *appliedRuleIds = result[@"appliedOverrideRuleIds"];
       if (appliedRuleIds.count > 0) {
         return model;
       }
@@ -336,22 +476,35 @@ RCT_REMAP_METHOD(updateRemoteConfig,
     }];
 }
 RCT_REMAP_METHOD(updateRemoteConfigWithMiniUpdateInterval,
-                 interval:(int)interval
-                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject){
+                  interval:(int)interval
+                  rules:(NSArray *)rules
+                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject){
   if (!_remoteConfigurationEnabled) {
     reject(@"E_REMOTE_CONFIG_DISABLED", @"Remote configuration is not enabled.", nil);
     return;
   }
+  __weak typeof(self) weakSelf = self;
   [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:(NSInteger)interval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
-    NSArray<NSString *> *appliedRuleIds = [self applyRemoteConfigOverrideRulesWithModel:model content:content];
-    NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content appliedRuleIds:appliedRuleIds error:error triggerType:@"manual"];
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return nil;
+    }
+    NSArray<NSDictionary *> *rulesToApply = nil;
+    if (rules != nil && ![rules isKindOfClass:[NSNull class]]) {
+      rulesToApply = [RCTConvert NSArray:rules];
+    }
+    if (rulesToApply == nil || rulesToApply.count == 0) {
+      rulesToApply = strongSelf->_remoteConfigOverrideRules;
+    }
+    NSDictionary *result = [strongSelf remoteConfigResultWithSuccess:success content:content error:error triggerType:@"manual" model:model rules:rulesToApply];
     if (success) {
       resolve(result);
     } else {
       NSString *message = error.localizedDescription ?: @"Remote config update failed.";
       reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
     }
+    NSArray<NSString *> *appliedRuleIds = result[@"appliedOverrideRuleIds"];
     if (appliedRuleIds.count > 0) {
       return model;
     }

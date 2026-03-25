@@ -58,9 +58,37 @@ async function reactNativeInitSDK() {
     remoteConfiguration:true,
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
+    remoteConfigOverrideRules: [
+      {
+        id: 'auto_rule1',
+        enabled: true,
+        match: {
+          customKeys: {
+            env: 'test'
+          }
+        },
+        override: {
+          rumSampleRate: 1.0,
+          traceSampleRate: 1.0,
+          logSampleRate: 1.0,
+          logEnableCustomLog: true,
+          rumEnableTraceWebView: true,
+          rumEnableTraceUserAction: true,
+          rumEnableTraceUserView: true,
+          rumEnableTraceUserResource: true,
+          rumEnableResourceHostIP: true,
+          rumEnableTrackAppUIBlock: true,
+        }
+      }
+    ]
   };
   console.log('remote config override rules configured', config.remoteConfigOverrideRules);
   await FTMobileReactNative.sdkConfig(config);
+  FTMobileReactNative.addRemoteConfigListener(
+    (result) => {
+      console.log('addRemoteConfigListener auto remote config callback', result);
+    }
+  );
 
   // log settings
   let logConfig: FTLogConfig = {

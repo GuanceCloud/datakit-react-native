@@ -74,8 +74,8 @@ public class FTMobileModule extends NativeFTMobileSpec {
   }
 
   @ReactMethod
-  public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
-   impl.updateRemoteConfigWithMiniUpdateInterval(interval, promise);
+  public void updateRemoteConfigWithMiniUpdateInterval(int interval, @Nullable ReadableArray rules, Promise promise) {
+    impl.updateRemoteConfigWithMiniUpdateInterval(interval, rules, promise);
   }
 
   @ReactMethod

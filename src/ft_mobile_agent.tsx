@@ -100,14 +100,36 @@ export enum EnvType {
 export enum FTDBCacheDiscard { discard, discardOldest };
 
 export type FTRemoteConfigOverrideMatch = {
-  customKeys?: Record<string, string | number | boolean>,
-}
+  customKeys?: Record<string, string | number | boolean | Array<any>>;
+};
 
 export type FTRemoteConfigOverrideValues = {
-  logSampleRate?: number,
-  rumSampleRate?: number,
-  traceSampleRate?: number,
-}
+  env?: string;
+  serviceName?: string;
+  autoSync?: boolean;
+  compressIntakeRequests?: boolean;
+  syncPageSize?: number;
+  syncSleepTime?: number;
+  rumSampleRate?: number;
+  rumSessionOnErrorSampleRate?: number;
+  rumEnableTraceUserAction?: boolean;
+  rumEnableTraceUserView?: boolean;
+  rumEnableTraceUserResource?: boolean;
+  rumEnableResourceHostIP?: boolean;
+  rumEnableTrackAppUIBlock?: boolean;
+  rumBlockDurationMs?: number;
+  rumEnableTrackAppCrash?: boolean;
+  rumEnableTrackAppANR?: boolean;
+  rumEnableTraceWebView?: boolean;
+  rumAllowWebViewHost?: Array<string>;
+  traceSampleRate?: number;
+  traceEnableAutoTrace?: boolean;
+  traceType?: string;
+  logSampleRate?: number;
+  logLevelFilters?: Array<string>;
+  logEnableCustomLog?: boolean;
+  logEnableConsoleLog?: boolean;
+};
 
 export type FTRemoteConfigOverrideRule = {
   id?: string,
@@ -256,8 +278,9 @@ type FTMobileReactNativeType = {
     * This method is used to set the minimum update interval for remote configuration updates. 
     * If the time since the last update is less than the specified interval, the update will not be performed.
     * @param interval minimum update interval, unit seconds
+    * @param rules Set remote configuration override rules executed natively before the config is applied, optional when interval is set, if not set, the original rules set in sdkConfig will be used
    */
-   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<FTRemoteConfigResult>
+   updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>
    /**
     * Listen for auto remote configuration updates triggered by the native SDK.
     * Manual updates are returned through the update Promise instead of this event.
@@ -309,8 +332,8 @@ type FTMobileReactNativeType = {
    updateRemoteConfig():Promise<FTRemoteConfigResult>{
     return this.sdk.updateRemoteConfig();
    }
-   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<FTRemoteConfigResult>{
-      return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval);
+   updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>{
+      return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval,rules);
    }
    addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription {
      return this.emitter.addListener('ft_remote_config_callback', listener);

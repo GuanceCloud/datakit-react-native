@@ -32,25 +32,7 @@ function Home() {
 }
 
 class HomeScreen extends React.Component<{ navigation: any }> {
-  componentDidMount() {
-    // FTMobileReactNative.bindRUMUserData('reactUser');
-    console.log(Config.IOS_APP_ID);
-    FTReactNativeLog.logging("react-navigation HomeScreen start", FTLogStatus.info);
-    this.remoteConfigSubscription = FTMobileReactNative.addRemoteConfigListener(
-      (result: FTRemoteConfigResult) => {
-        console.log('auto remote config callback', result);
-      }
-    );
-  }
-
-  componentWillUnmount() {
-    if (this.remoteConfigSubscription) {
-      this.remoteConfigSubscription.remove();
-      this.remoteConfigSubscription = undefined;
-    }
-  }
-
-  private remoteConfigSubscription?: { remove: () => void };
+ 
 
   private onUpdateRemoteConfig = async () => {
     try {

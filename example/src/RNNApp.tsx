@@ -49,17 +49,7 @@ function registerScreens() {
 
 }
 const HomeScreen = (props) => {
-  React.useEffect(() => {
-    FTReactNativeLog.logging('react-native-navigation HomeScreen start', FTLogStatus.info);
-    console.log("HomeScreen");
-    const subscription = FTMobileReactNative.addRemoteConfigListener(
-      (result: FTRemoteConfigResult) => {
-        console.log('auto remote config callback', result);
-      }
-    );
-    return () => subscription.remove();
-  }, []);
-
+ 
   const onUpdateRemoteConfig = async () => {
     try {
       const result = await FTMobileReactNative.updateRemoteConfig();
@@ -68,13 +58,51 @@ const HomeScreen = (props) => {
       console.log('manual remote config error', error);
     }
   };
-
+  /// MOCK userId for testing remote config rules with custom keys. 
+  const current_user_id = 'test_user';
   const onUpdateRemoteConfigWithMiniInterval = async () => {
     try {
-      const result = await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0);
-      console.log('manual remote config with interval result', result);
+      const result = await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0,[
+        {
+        id:'test_manual_rule',
+        match:{
+          customKeys:{
+            userid:current_user_id
+          }
+        },
+        override:{
+          env:"test",
+          serviceName:"test_service",
+          autoSync:true,
+          compressIntakeRequests:true,
+          syncPageSize:5,
+          syncSleepTime:10,
+          rumSampleRate:1,
+          rumSessionOnErrorSampleRate:1,
+          rumEnableTraceUserAction:true,
+          rumEnableTraceUserView:true,
+          rumEnableTraceUserResource:true,
+          rumEnableResourceHostIP:true,
+          rumEnableTrackAppUIBlock:true,
+          rumBlockDurationMs:500,
+          rumEnableTrackAppCrash:true,
+          rumEnableTrackAppANR:true,
+          rumEnableTraceWebView:true,
+          rumAllowWebViewHost:["www.example.com"],
+          traceSampleRate:0.5,
+          traceEnableAutoTrace:true,
+          traceType:"all",
+          logSampleRate:1,
+          logLevelFilters:["info","warn"],
+          logEnableCustomLog:true,
+          logEnableConsoleLog:true,
+        }
+        }
+      ]
+      );
+      console.log('manual remote config with interval and custom rules result ', result);
     } catch (error) {
-      console.log('manual remote config with interval error', error);
+      console.log('manual remote config with interval and custom rules error', error);
     }
   };
 

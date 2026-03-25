@@ -1,11 +1,13 @@
 package com.ft.sdk.reactnative;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 public class FTMobileModule extends ReactContextBaseJavaModule {
@@ -67,8 +69,8 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
-    impl.updateRemoteConfigWithMiniUpdateInterval(interval, promise);  
+  public void updateRemoteConfigWithMiniUpdateInterval(int interval, @Nullable ReadableArray rules, Promise promise) {
+    impl.updateRemoteConfigWithMiniUpdateInterval(interval, rules, promise);
   }
 
   @ReactMethod
