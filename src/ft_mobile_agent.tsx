@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { EmitterSubscription, NativeEventEmitter, NativeModules } from 'react-native';
 import { version as sdkVersion } from './version';
 
 /**
@@ -98,6 +98,23 @@ export enum EnvType {
   prod, gray, pre, common, local
 };
 export enum FTDBCacheDiscard { discard, discardOldest };
+
+export type FTRemoteConfigOverrideMatch = {
+  customKeys?: Record<string, string | number | boolean>,
+}
+
+export type FTRemoteConfigOverrideValues = {
+  logSampleRate?: number,
+  rumSampleRate?: number,
+  traceSampleRate?: number,
+}
+
+export type FTRemoteConfigOverrideRule = {
+  id?: string,
+  enabled?: boolean,
+  match: FTRemoteConfigOverrideMatch,
+  override: FTRemoteConfigOverrideValues,
+}
 /**
  * Configure SDK startup parameters.
  * @param serverUrl data reporting address, deprecated, use [datakitUrl] instead
@@ -121,6 +138,7 @@ export enum FTDBCacheDiscard { discard, discardOldest };
  * @param lineDataModifier data modifier, modify single data {"measurement":measurement,"data":{key:value}}, after setting, the SDK will replace the original value with the set value according to the key
  * @param remoteConfiguration Set whether to enable remote dynamic configuration
  * @param remoteConfigMiniUpdateInterval Set remote dynamic configuration minimum update interval, unit seconds, default 12*60*60
+ * @param remoteConfigOverrideRules Set remote configuration override rules executed natively before the config is applied
 */
  export interface FTMobileConfig {
    /**
@@ -148,6 +166,19 @@ export enum FTDBCacheDiscard { discard, discardOldest };
    lineDataModifier?:object,
    remoteConfiguration?:boolean,
    remoteConfigMiniUpdateInterval?:number,
+   remoteConfigOverrideRules?:Array<FTRemoteConfigOverrideRule>,
+ }
+
+ export type FTRemoteConfigResult = {
+   triggerType: 'auto' | 'manual',
+   success: boolean,
+   platform: 'ios' | 'android',
+   timestamp: number,
+   content?: object,
+   rawJson?: string,
+   errorCode?: string | number,
+   errorMessage?: string,
+   appliedOverrideRuleIds?: string[],
  }
 
 
@@ -217,20 +248,26 @@ type FTMobileReactNativeType = {
     */
    appendBridgeContext(properties: Record<string, any>): void;
    /**
-    * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
+   * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
     */
-   updateRemoteConfig():Promise<void>
+   updateRemoteConfig():Promise<FTRemoteConfigResult>
    /**
     * Update remote configuration with minimum update interval, after enabling remote configuration, you can call this method to update the configuration in real time.
     * This method is used to set the minimum update interval for remote configuration updates. 
     * If the time since the last update is less than the specified interval, the update will not be performed.
     * @param interval minimum update interval, unit seconds
    */
-   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<void>
+   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<FTRemoteConfigResult>
+   /**
+    * Listen for auto remote configuration updates triggered by the native SDK.
+    * Manual updates are returned through the update Promise instead of this event.
+    */
+   addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
    private sdk:FTMobileReactNativeType = NativeModules.FTMobileReactNative;
+   private emitter = new NativeEventEmitter(NativeModules.FTMobileReactNative);
 
    sdkConfig(config:FTMobileConfig): Promise<void> {
      if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
@@ -269,12 +306,14 @@ type FTMobileReactNativeType = {
      // Use bridgeContextManager to store properties in JavaScript and send to native SDK
     bridgeContextManager.appendBridgeContext(properties);
   }
-   updateRemoteConfig():Promise<void>{
+   updateRemoteConfig():Promise<FTRemoteConfigResult>{
     return this.sdk.updateRemoteConfig();
    }
-   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<void>{
+   updateRemoteConfigWithMiniUpdateInterval(interval:number):Promise<FTRemoteConfigResult>{
       return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval);
-    }
+   }
+   addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription {
+     return this.emitter.addListener('ft_remote_config_callback', listener);
+   }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();
-

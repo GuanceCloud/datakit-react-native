@@ -2,22 +2,162 @@ package com.ft.sdk.reactnative;
 
 import static com.ft.sdk.garble.utils.Constants.FT_LOG_DEFAULT_MEASUREMENT;
 
+import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.ft.sdk.DBCacheDiscard;
 import com.ft.sdk.EnvType;
+import com.ft.sdk.FTRemoteConfigManager;
 import com.ft.sdk.FTSDKConfig;
 import com.ft.sdk.FTSdk;
 import com.ft.sdk.LineDataModifier;
+import com.ft.sdk.garble.bean.RemoteConfigBean;
 import com.ft.sdk.garble.bean.UserData;
 import com.ft.sdk.DataModifier;
 import com.ft.sdk.reactnative.utils.ReactNativeUtils;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FTMobileImpl {
     public static final String NAME = "FTMobileReactNative";
+    private static final String REMOTE_CONFIG_EVENT = "ft_remote_config_callback";
+    private final ReactApplicationContext reactContext;
+    private boolean remoteConfigurationEnabled = false;
+    private int remoteConfigMiniUpdateInterval = 12 * 60 * 60;
+    @Nullable
+    private ReadableArray remoteConfigOverrideRules;
+
+    public FTMobileImpl(ReactApplicationContext reactContext) {
+        this.reactContext = reactContext;
+    }
+
+    private static class RemoteConfigOverrideResult {
+        final RemoteConfigBean configBean;
+        final List<String> appliedRuleIds;
+
+        RemoteConfigOverrideResult(RemoteConfigBean configBean, List<String> appliedRuleIds) {
+            this.configBean = configBean;
+            this.appliedRuleIds = appliedRuleIds;
+        }
+    }
+
+    private WritableMap createRemoteConfigPayload(String triggerType,
+                                                  boolean success,
+                                                  @Nullable String rawJson,
+                                                  @Nullable List<String> appliedRuleIds,
+                                                  @Nullable String errorCode,
+                                                  @Nullable String errorMessage) {
+        WritableMap payload = Arguments.createMap();
+        payload.putString("triggerType", triggerType);
+        payload.putBoolean("success", success);
+        payload.putString("platform", "android");
+        payload.putDouble("timestamp", System.currentTimeMillis());
+        if (rawJson != null) {
+            payload.putString("rawJson", rawJson);
+        }
+        if (appliedRuleIds != null && !appliedRuleIds.isEmpty()) {
+            WritableArray ids = Arguments.createArray();
+            for (String ruleId : appliedRuleIds) {
+                ids.pushString(ruleId);
+            }
+            payload.putArray("appliedOverrideRuleIds", ids);
+        }
+        if (errorCode != null) {
+            payload.putString("errorCode", errorCode);
+        }
+        if (errorMessage != null) {
+            payload.putString("errorMessage", errorMessage);
+        }
+        return payload;
+    }
+
+    private void emitRemoteConfigEvent(boolean success, @Nullable String rawJson,
+                                       @Nullable List<String> appliedRuleIds,
+                                       @Nullable String errorCode, @Nullable String errorMessage) {
+        if (!reactContext.hasActiveCatalystInstance()) {
+            return;
+        }
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(REMOTE_CONFIG_EVENT, createRemoteConfigPayload("auto", success, rawJson, appliedRuleIds, errorCode, errorMessage));
+    }
+
+    private RemoteConfigOverrideResult applyRemoteConfigOverrideRules(RemoteConfigBean configBean,
+                                                                      @Nullable String jsonConfig) {
+        if (configBean == null || jsonConfig == null || remoteConfigOverrideRules == null || remoteConfigOverrideRules.size() == 0) {
+            return new RemoteConfigOverrideResult(configBean, new ArrayList<>());
+        }
+        List<String> appliedRuleIds = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonConfig);
+            for (int i = 0; i < remoteConfigOverrideRules.size(); i++) {
+                if (remoteConfigOverrideRules.getType(i) != ReadableType.Map) {
+                    continue;
+                }
+                ReadableMap rule = remoteConfigOverrideRules.getMap(i);
+                if (rule == null) {
+                    continue;
+                }
+                boolean enabled = !rule.hasKey("enabled") || rule.isNull("enabled") || rule.getBoolean("enabled");
+                if (!enabled) {
+                    continue;
+                }
+                ReadableMap match = rule.hasKey("match") && !rule.isNull("match") ? rule.getMap("match") : null;
+                ReadableMap customKeys = match != null && match.hasKey("customKeys") && !match.isNull("customKeys")
+                    ? match.getMap("customKeys") : null;
+                if (customKeys == null) {
+                    continue;
+                }
+                HashMap<String, Object> keyMap = customKeys.toHashMap();
+                if (keyMap.isEmpty()) {
+                    continue;
+                }
+                boolean matches = true;
+                for (Map.Entry<String, Object> entry : keyMap.entrySet()) {
+                    String actualValue = jsonObject.optString(entry.getKey(), null);
+                    String expectedValue = entry.getValue() == null ? null : entry.getValue().toString();
+                    if (actualValue == null || expectedValue == null || !actualValue.equals(expectedValue)) {
+                        matches = false;
+                        break;
+                    }
+                }
+                if (!matches) {
+                    continue;
+                }
+                ReadableMap override = rule.hasKey("override") && !rule.isNull("override") ? rule.getMap("override") : null;
+                if (override == null) {
+                    continue;
+                }
+                if (override.hasKey("logSampleRate") && !override.isNull("logSampleRate")) {
+                    configBean.setLogSampleRate((float) override.getDouble("logSampleRate"));
+                }
+                if (override.hasKey("rumSampleRate") && !override.isNull("rumSampleRate")) {
+                    configBean.setRumSampleRate((float) override.getDouble("rumSampleRate"));
+                }
+                if (override.hasKey("traceSampleRate") && !override.isNull("traceSampleRate")) {
+                    configBean.setTraceSampleRate((float) override.getDouble("traceSampleRate"));
+                }
+                String ruleId = rule.hasKey("id") && !rule.isNull("id") ? rule.getString("id") : null;
+                appliedRuleIds.add(ruleId != null ? ruleId : "rule_" + i);
+            }
+        } catch (JSONException ignored) {
+        }
+        return new RemoteConfigOverrideResult(configBean, appliedRuleIds);
+    }
 
     public void sdkConfig(ReadableMap context, Promise promise) {
         Map<String, Object> map = context.toHashMap();
@@ -40,6 +180,8 @@ public class FTMobileImpl {
         Map<String, Map<String,Object>> lineDataModifier = (Map<String, Map<String,Object>>) map.get("lineDataModifier");
         Boolean remoteConfiguration = (Boolean) map.get("remoteConfiguration");
         Integer remoteConfigMiniUpdateInterval = ReactNativeUtils.convertToNativeInt(map.get("remoteConfigMiniUpdateInterval"));
+        this.remoteConfigOverrideRules = context.hasKey("remoteConfigOverrideRules")
+            ? context.getArray("remoteConfigOverrideRules") : null;
 
         FTSDKConfig sdkConfig = (datakitUrl != null)
             ? FTSDKConfig.builder(datakitUrl)
@@ -128,8 +270,36 @@ public class FTMobileImpl {
       if (remoteConfiguration != null) {
         sdkConfig.setRemoteConfiguration(remoteConfiguration);
       }
+      remoteConfigurationEnabled = sdkConfig.isRemoteConfiguration();
       if (remoteConfigMiniUpdateInterval != null) {
         sdkConfig.setRemoteConfigMiniUpdateInterval(remoteConfigMiniUpdateInterval);
+        this.remoteConfigMiniUpdateInterval = remoteConfigMiniUpdateInterval;
+      } else {
+        this.remoteConfigMiniUpdateInterval = sdkConfig.getRemoteConfigMiniUpdateInterval();
+      }
+      if (remoteConfigurationEnabled) {
+        sdkConfig.setRemoteConfigurationCallBack(new FTRemoteConfigManager.FetchResult() {
+          private String rawJson;
+          private List<String> appliedRuleIds = new ArrayList<>();
+
+          @Override
+          public RemoteConfigBean onConfigSuccessFetched(RemoteConfigBean configBean, String jsonConfig) {
+            rawJson = jsonConfig;
+            RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig);
+            appliedRuleIds = result.appliedRuleIds;
+            emitRemoteConfigEvent(true, jsonConfig, appliedRuleIds, null, null);
+            return result.configBean;
+          }
+
+          @Override
+          public void onResult(boolean success) {
+            if (!success) {
+              emitRemoteConfigEvent(false, rawJson, appliedRuleIds, "FETCH_FAILED", "Remote config update failed");
+            }
+            rawJson = null;
+            appliedRuleIds = new ArrayList<>();
+          }
+        });
       }
         FTSdk.install(sdkConfig);
 //        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));
@@ -200,12 +370,68 @@ public class FTMobileImpl {
     }
 
     public void updateRemoteConfig(Promise promise) {
-        FTSdk.updateRemoteConfig();
-        promise.resolve(null);
+        if (!remoteConfigurationEnabled) {
+            promise.reject("E_REMOTE_CONFIG_DISABLED", "Remote configuration is not enabled.");
+            return;
+        }
+        FTSdk.updateRemoteConfig(remoteConfigMiniUpdateInterval, new FTRemoteConfigManager.FetchResult() {
+            private String rawJson;
+            private List<String> appliedRuleIds = new ArrayList<>();
+
+            @Override
+            public RemoteConfigBean onConfigSuccessFetched(RemoteConfigBean configBean, String jsonConfig) {
+                rawJson = jsonConfig;
+                RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig);
+                appliedRuleIds = result.appliedRuleIds;
+                promise.resolve(createRemoteConfigPayload("manual", true, jsonConfig, appliedRuleIds, null, null));
+                return result.configBean;
+            }
+
+            @Override
+            public void onResult(boolean success) {
+                if (!success) {
+                    promise.reject("E_REMOTE_CONFIG_UPDATE_FAILED", "Remote config update failed");
+                } else if (rawJson == null) {
+                    promise.resolve(createRemoteConfigPayload("manual", true, null, appliedRuleIds, null, null));
+                }
+            }
+        });
     }
 
     public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
-        FTSdk.updateRemoteConfig(interval,null);
-        promise.resolve(null);
+        if (!remoteConfigurationEnabled) {
+            promise.reject("E_REMOTE_CONFIG_DISABLED", "Remote configuration is not enabled.");
+            return;
+        }
+        FTSdk.updateRemoteConfig(interval, new FTRemoteConfigManager.FetchResult() {
+            private String rawJson;
+            private List<String> appliedRuleIds = new ArrayList<>();
+
+            @Override
+            public RemoteConfigBean onConfigSuccessFetched(RemoteConfigBean configBean, String jsonConfig) {
+                rawJson = jsonConfig;
+                RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig);
+                appliedRuleIds = result.appliedRuleIds;
+                promise.resolve(createRemoteConfigPayload("manual", true, jsonConfig, appliedRuleIds, null, null));
+                return result.configBean;
+            }
+
+            @Override
+            public void onResult(boolean success) {
+                if (!success) {
+                    promise.reject("E_REMOTE_CONFIG_UPDATE_FAILED", "Remote config update failed");
+                } else if (rawJson == null) {
+                    promise.resolve(createRemoteConfigPayload("manual", true, null, appliedRuleIds, null, null));
+                }
+            }
+        });
+    }
+
+    public void addListener(String eventName) {
+        // Required for NativeEventEmitter. No-op because native does not need listener bookkeeping.
+    }
+
+    public void removeListeners(double count) {
+        // Required for NativeEventEmitter. No-op because native does not need listener bookkeeping.
     }
 }

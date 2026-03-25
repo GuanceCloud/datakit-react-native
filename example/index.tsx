@@ -59,6 +59,7 @@ async function reactNativeInitSDK() {
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
   };
+  console.log('remote config override rules configured', config.remoteConfigOverrideRules);
   await FTMobileReactNative.sdkConfig(config);
 
   // log settings

@@ -9,12 +9,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
 public class FTMobileModule extends ReactContextBaseJavaModule {
+  private final FTMobileImpl impl;
 
   public FTMobileModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    impl = new FTMobileImpl(reactContext);
   }
-
-  private final FTMobileImpl impl = new FTMobileImpl();
 
   @ReactMethod
   public void sdkConfig(ReadableMap context, Promise promise) {
@@ -69,6 +69,16 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
     impl.updateRemoteConfigWithMiniUpdateInterval(interval, promise);  
+  }
+
+  @ReactMethod
+  public void addListener(String eventName) {
+    impl.addListener(eventName);
+  }
+
+  @ReactMethod
+  public void removeListeners(double count) {
+    impl.removeListeners(count);
   }
 
   @NonNull

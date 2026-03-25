@@ -12,8 +12,119 @@
 #import <React/RCTConvert.h>
 #import <FTMobileSDK/FTThreadDispatchManager.h>
 #import <FTMobileSDK/FTConstants.h>
+
+static NSString *const FTRemoteConfigCallbackEvent = @"ft_remote_config_callback";
+
 @implementation FTMobileReactNative
+{
+  BOOL _hasListeners;
+  BOOL _remoteConfigurationEnabled;
+  int _remoteConfigMiniUpdateInterval;
+  NSArray<NSDictionary *> *_remoteConfigOverrideRules;
+}
+
 RCT_EXPORT_MODULE()
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[FTRemoteConfigCallbackEvent];
+}
+
+- (void)startObserving
+{
+  _hasListeners = YES;
+}
+
+- (void)stopObserving
+{
+  _hasListeners = NO;
+}
+
+- (NSDictionary *)remoteConfigResultWithSuccess:(BOOL)success
+                                        content:(NSDictionary<NSString *, id> *_Nullable)content
+                                          error:(NSError *_Nullable)error
+                               appliedRuleIds:(NSArray<NSString *> *_Nullable)appliedRuleIds
+                                    triggerType:(NSString *)triggerType
+{
+  NSMutableDictionary *payload = [NSMutableDictionary dictionary];
+  payload[@"triggerType"] = triggerType;
+  payload[@"success"] = @(success);
+  payload[@"platform"] = @"ios";
+  payload[@"timestamp"] = @((long long)([[NSDate date] timeIntervalSince1970] * 1000));
+  if (content) {
+    payload[@"content"] = content;
+  }
+  if (appliedRuleIds.count > 0) {
+    payload[@"appliedOverrideRuleIds"] = appliedRuleIds;
+  }
+  if (error) {
+    payload[@"errorCode"] = @(error.code);
+    payload[@"errorMessage"] = error.localizedDescription ?: @"";
+  }
+  return payload;
+}
+
+- (void)emitAutoRemoteConfigEventWithSuccess:(BOOL)success
+                                     content:(NSDictionary<NSString *, id> *_Nullable)content
+                              appliedRuleIds:(NSArray<NSString *> *_Nullable)appliedRuleIds
+                                       error:(NSError *_Nullable)error
+{
+  if (!_hasListeners) {
+    return;
+  }
+  [self sendEventWithName:FTRemoteConfigCallbackEvent
+                     body:[self remoteConfigResultWithSuccess:success
+                                                     content:content
+                                               appliedRuleIds:appliedRuleIds
+                                                       error:error
+                                                 triggerType:@"auto"]];
+}
+
+- (NSArray<NSString *> *)applyRemoteConfigOverrideRulesWithModel:(FTRemoteConfigModel *_Nullable)model
+                                                         content:(NSDictionary<NSString *, id> *_Nullable)content
+{
+  if (!model || !content || _remoteConfigOverrideRules.count == 0) {
+    return @[];
+  }
+  NSMutableArray<NSString *> *appliedRuleIds = [NSMutableArray array];
+  [_remoteConfigOverrideRules enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull rule, NSUInteger idx, BOOL * _Nonnull stop) {
+    BOOL enabled = ![rule.allKeys containsObject:@"enabled"] || [RCTConvert BOOL:rule[@"enabled"]];
+    if (!enabled) {
+      return;
+    }
+    NSDictionary *match = [RCTConvert NSDictionary:rule[@"match"]];
+    NSDictionary *customKeys = [RCTConvert NSDictionary:match[@"customKeys"]];
+    if (customKeys.count == 0) {
+      return;
+    }
+    __block BOOL matches = YES;
+    [customKeys enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stopKeys) {
+      NSString *expectedValue = [obj description];
+      NSString *actualValue = [[content valueForKey:[key description]] description];
+      if (actualValue.length == 0 || ![actualValue isEqualToString:expectedValue]) {
+        matches = NO;
+        *stopKeys = YES;
+      }
+    }];
+    if (!matches) {
+      return;
+    }
+    NSDictionary *override = [RCTConvert NSDictionary:rule[@"override"]];
+    if ([override.allKeys containsObject:@"logSampleRate"]) {
+      model.logSampleRate = @([RCTConvert double:override[@"logSampleRate"]]);
+    }
+    if ([override.allKeys containsObject:@"rumSampleRate"]) {
+      model.rumSampleRate = @([RCTConvert double:override[@"rumSampleRate"]]);
+    }
+    if ([override.allKeys containsObject:@"traceSampleRate"]) {
+      model.traceSampleRate = @([RCTConvert double:override[@"traceSampleRate"]]);
+    }
+    NSString *ruleId = [RCTConvert NSString:rule[@"id"]];
+    [appliedRuleIds addObject:ruleId.length > 0 ? ruleId : [NSString stringWithFormat:@"rule_%lu", (unsigned long)idx]];
+  }];
+  return appliedRuleIds;
+}
+
 RCT_REMAP_METHOD(sdkConfig,
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
@@ -108,6 +219,20 @@ RCT_REMAP_METHOD(sdkConfig,
     if ([context.allKeys containsObject:@"remoteConfigMiniUpdateInterval"]){
       config.remoteConfigMiniUpdateInterval = [RCTConvert int:context[@"remoteConfigMiniUpdateInterval"]];
     }
+    _remoteConfigOverrideRules = [RCTConvert NSArray:context[@"remoteConfigOverrideRules"]];
+    _remoteConfigurationEnabled = config.remoteConfiguration;
+    _remoteConfigMiniUpdateInterval = config.remoteConfigMiniUpdateInterval;
+    if (config.remoteConfiguration) {
+      __weak typeof(self) weakSelf = self;
+      config.remoteConfigFetchCompletionBlock = ^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
+        NSArray<NSString *> *appliedRuleIds = [weakSelf applyRemoteConfigOverrideRulesWithModel:model content:content];
+        [weakSelf emitAutoRemoteConfigEventWithSuccess:success content:content appliedRuleIds:appliedRuleIds error:error];
+        if (appliedRuleIds.count > 0) {
+          return model;
+        }
+        return nil;
+      };
+    }
     NSString *pkgInfo = [RCTConvert NSString:context[@"pkgInfo"]];
     if (pkgInfo) {
       [config addPkgInfo:@"reactnative" value:pkgInfo];
@@ -191,14 +316,47 @@ RCT_REMAP_METHOD(clearAllData,
 RCT_REMAP_METHOD(updateRemoteConfig,
                  updateRemoteConfig_findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-    [FTMobileAgent updateRemoteConfig];
-    resolve(nil);
+    if (!_remoteConfigurationEnabled) {
+      reject(@"E_REMOTE_CONFIG_DISABLED", @"Remote configuration is not enabled.", nil);
+      return;
+    }
+    [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:_remoteConfigMiniUpdateInterval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
+      NSArray<NSString *> *appliedRuleIds = [self applyRemoteConfigOverrideRulesWithModel:model content:content];
+      NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content appliedRuleIds:appliedRuleIds error:error triggerType:@"manual"];
+      if (success) {
+        resolve(result);
+      } else {
+        NSString *message = error.localizedDescription ?: @"Remote config update failed.";
+        reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
+      }
+      if (appliedRuleIds.count > 0) {
+        return model;
+      }
+      return nil;
+    }];
 }
 RCT_REMAP_METHOD(updateRemoteConfigWithMiniUpdateInterval,
                  interval:(int)interval
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
-  [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:(NSInteger)interval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {return nil;}];
+  if (!_remoteConfigurationEnabled) {
+    reject(@"E_REMOTE_CONFIG_DISABLED", @"Remote configuration is not enabled.", nil);
+    return;
+  }
+  [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:(NSInteger)interval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
+    NSArray<NSString *> *appliedRuleIds = [self applyRemoteConfigOverrideRulesWithModel:model content:content];
+    NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content appliedRuleIds:appliedRuleIds error:error triggerType:@"manual"];
+    if (success) {
+      resolve(result);
+    } else {
+      NSString *message = error.localizedDescription ?: @"Remote config update failed.";
+      reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
+    }
+    if (appliedRuleIds.count > 0) {
+      return model;
+    }
+    return nil;
+  }];
 }
 
 @end

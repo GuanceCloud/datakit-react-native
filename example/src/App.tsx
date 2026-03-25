@@ -4,7 +4,12 @@ import { View, Button, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/react-native-mobile';
+import {
+  FTMobileReactNative,
+  FTReactNativeLog,
+  FTLogStatus,
+  FTRemoteConfigResult,
+} from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';
@@ -31,7 +36,39 @@ class HomeScreen extends React.Component<{ navigation: any }> {
     // FTMobileReactNative.bindRUMUserData('reactUser');
     console.log(Config.IOS_APP_ID);
     FTReactNativeLog.logging("react-navigation HomeScreen start", FTLogStatus.info);
+    this.remoteConfigSubscription = FTMobileReactNative.addRemoteConfigListener(
+      (result: FTRemoteConfigResult) => {
+        console.log('auto remote config callback', result);
+      }
+    );
   }
+
+  componentWillUnmount() {
+    if (this.remoteConfigSubscription) {
+      this.remoteConfigSubscription.remove();
+      this.remoteConfigSubscription = undefined;
+    }
+  }
+
+  private remoteConfigSubscription?: { remove: () => void };
+
+  private onUpdateRemoteConfig = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfig();
+      console.log('manual remote config result', result);
+    } catch (error) {
+      console.log('manual remote config error', error);
+    }
+  };
+
+  private onUpdateRemoteConfigWithMiniInterval = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0);
+      console.log('manual remote config with interval result', result);
+    } catch (error) {
+      console.log('manual remote config with interval error', error);
+    }
+  };
 
   render() {
     let { navigation } = this.props;
@@ -77,10 +114,9 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         }}
         />
         <View style={styles.space} />
-        <Button title='Update Remote Config' onPress={() => FTMobileReactNative.updateRemoteConfig()} />
+        <Button title='Update Remote Config' onPress={this.onUpdateRemoteConfig} />
         <View style={styles.space} />
-        <Button title='Update Remote Config With Mini Update Interval' onPress={() => FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0)} />
-        <View style={styles.space} />
+        <Button title='Update Remote Config With Mini Update Interval' onPress={this.onUpdateRemoteConfigWithMiniInterval} />
       </View>
     );
   }

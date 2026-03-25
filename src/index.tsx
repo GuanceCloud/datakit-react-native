@@ -1,4 +1,4 @@
-import {FTMobileConfig,FTMobileReactNative,EnvType,FTDBCacheDiscard} from './ft_mobile_agent'
+import {FTMobileConfig,FTMobileReactNative,EnvType,FTDBCacheDiscard,FTRemoteConfigResult} from './ft_mobile_agent'
 import {FTLogConfig,FTReactNativeLog,FTLogStatus,FTLogCacheDiscard} from './ft_logger'
 import {FTRUMConfig,FTRUMResource,FTReactNativeRUM,ErrorMonitorType,DeviceMetricsMonitorType,DetectFrequency,FTRUMResourceMetrics,FTRUMCacheDiscard,IOSCrashMonitoringType} from './ft_rum'
 import {FTTraceConfig,FTReactNativeTrace,TraceType} from './ft_tracing'
@@ -7,11 +7,10 @@ import {FTRumErrorTracking} from './rum/FTRumErrorTracking'
 
  
  export {
-   FTMobileReactNative,FTMobileConfig,EnvType,FTDBCacheDiscard,
+   FTMobileReactNative,FTMobileConfig,EnvType,FTDBCacheDiscard,FTRemoteConfigResult,
    FTLogConfig, FTReactNativeLog,FTLogStatus,FTLogCacheDiscard,
    FTRUMConfig,FTReactNativeRUM,FTRUMResource,ErrorMonitorType,DeviceMetricsMonitorType,DetectFrequency,FTRUMResourceMetrics,FTRUMCacheDiscard,IOSCrashMonitoringType,
    FTTraceConfig,FTReactNativeTrace,TraceType,
    FTRumActionTracking,
    FTRumErrorTracking
  };
-

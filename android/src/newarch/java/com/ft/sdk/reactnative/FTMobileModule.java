@@ -11,10 +11,11 @@ import com.facebook.react.bridge.ReadableMap;
 @ReactModule(name = FTMobileModule.NAME)
 public class FTMobileModule extends NativeFTMobileSpec {
   public static final String NAME = FTMobileImpl.NAME;
-  private final FTMobileImpl impl = new FTMobileImpl();
+  private final FTMobileImpl impl;
 
   public FTMobileModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    impl = new FTMobileImpl(reactContext);
   }
 
   @Override
@@ -75,6 +76,16 @@ public class FTMobileModule extends NativeFTMobileSpec {
   @ReactMethod
   public void updateRemoteConfigWithMiniUpdateInterval(int interval, Promise promise) {
    impl.updateRemoteConfigWithMiniUpdateInterval(interval, promise);
+  }
+
+  @ReactMethod
+  public void addListener(String eventName) {
+    impl.addListener(eventName);
+  }
+
+  @ReactMethod
+  public void removeListeners(double count) {
+    impl.removeListeners(count);
   }
 
 }

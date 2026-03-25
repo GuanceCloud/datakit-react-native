@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Button } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/react-native-mobile';
+import {
+  FTMobileReactNative,
+  FTReactNativeLog,
+  FTLogStatus,
+  FTRemoteConfigResult,
+} from '@cloudcare/react-native-mobile';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
@@ -43,11 +48,35 @@ function registerScreens() {
   console.log("registerScreens end");
 
 }
-
-
 const HomeScreen = (props) => {
-  FTReactNativeLog.logging('react-native-navigation HomeScreen start', FTLogStatus.info);
-  console.log("HomeScreen");
+  React.useEffect(() => {
+    FTReactNativeLog.logging('react-native-navigation HomeScreen start', FTLogStatus.info);
+    console.log("HomeScreen");
+    const subscription = FTMobileReactNative.addRemoteConfigListener(
+      (result: FTRemoteConfigResult) => {
+        console.log('auto remote config callback', result);
+      }
+    );
+    return () => subscription.remove();
+  }, []);
+
+  const onUpdateRemoteConfig = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfig();
+      console.log('manual remote config result', result);
+    } catch (error) {
+      console.log('manual remote config error', error);
+    }
+  };
+
+  const onUpdateRemoteConfigWithMiniInterval = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0);
+      console.log('manual remote config with interval result', result);
+    } catch (error) {
+      console.log('manual remote config with interval error', error);
+    }
+  };
 
   return (
     <View style={{
@@ -83,8 +112,8 @@ const HomeScreen = (props) => {
           })
         }}
         />
-      <Button title='Update Remote Config' onPress={() => FTMobileReactNative.updateRemoteConfig()} />
-      <Button title='Update Remote Config With Mini Update Interval' onPress={() => FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0)} />
+      <Button title='Update Remote Config' onPress={onUpdateRemoteConfig} />
+      <Button title='Update Remote Config With Mini Update Interval' onPress={onUpdateRemoteConfigWithMiniInterval} />
     </View>
   );
 };
