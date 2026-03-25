@@ -184,7 +184,7 @@ public class FTMobileImpl {
                     configBean.setLogEnableCustomLog(override.getBoolean("logEnableCustomLog"));
                 }
                 if (override.hasKey("logEnableConsoleLog") && !override.isNull("logEnableConsoleLog")) {
-                configBean.setLogEnableCustomLog(override.getBoolean("logEnableConsoleLog"));
+                configBean.setLogEnableConsoleLog(override.getBoolean("logEnableConsoleLog"));
                 }
 
                 // RUM configuration properties
