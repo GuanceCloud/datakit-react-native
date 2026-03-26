@@ -103,8 +103,12 @@ export enum FTDBCacheDiscard { discard, discardOldest };
  * Matching rules for remote config override
  * Defines matching conditions using customKeys
  */
+export type FTRemoteConfigCustomKeyContainsMatch = {
+  contains: string | number | boolean;
+};
+
 export type FTRemoteConfigOverrideMatch = {
-  customKeys?: Record<string, string | number | boolean | Array<any>>;
+  customKeys?: Record<string, string | number | boolean | FTRemoteConfigCustomKeyContainsMatch>;
 };
 
 /**

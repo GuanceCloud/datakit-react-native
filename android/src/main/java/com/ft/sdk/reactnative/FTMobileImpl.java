@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -272,6 +271,13 @@ public class FTMobileImpl {
             return false;
         }
 
+        if (actual instanceof String actualString) {
+            Object normalizedActual = parseJsonStringIfNeeded(actualString);
+            if (normalizedActual != actual) {
+                return isEqualValue(normalizedActual, expected);
+            }
+        }
+
         // Handle number comparison
         if (actual instanceof Number && expected instanceof Number) {
             return ((Number) actual).doubleValue() == ((Number) expected).doubleValue();
@@ -287,27 +293,49 @@ public class FTMobileImpl {
             return actual.equals(expected);
         }
 
-        // Handle array comparison
-        if (actual instanceof JSONArray actualArray && expected instanceof List<?> expectedList) {
-          if (actualArray.length() != expectedList.size()) {
-                return false;
-            }
+        // Fallback to string comparison
+        return actual.toString().equals(expected.toString());
+    }
+
+    private boolean matchesCustomKey(Object actual, Object expected) {
+        if (expected instanceof Map<?, ?> expectedMap && expectedMap.containsKey("contains")) {
+            return containsValue(actual, expectedMap.get("contains"));
+        }
+        return isEqualValue(actual, expected);
+    }
+
+    private boolean containsValue(Object actual, Object expectedValue) {
+        Object normalizedActual = actual instanceof String actualString
+            ? parseJsonStringIfNeeded(actualString)
+            : actual;
+
+        if (normalizedActual instanceof JSONArray actualArray) {
             try {
                 for (int i = 0; i < actualArray.length(); i++) {
-                    Object actualElement = actualArray.get(i);
-                    Object expectedElement = expectedList.get(i);
-                    if (!isEqualValue(actualElement, expectedElement)) {
-                        return false;
+                    if (isEqualValue(actualArray.get(i), expectedValue)) {
+                        return true;
                     }
                 }
-                return true;
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
                 return false;
             }
         }
+        return isEqualValue(normalizedActual, expectedValue);
+    }
 
-        // Fallback to string comparison
-        return actual.toString().equals(expected.toString());
+    private Object parseJsonStringIfNeeded(String value) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.length() < 2) {
+            return value;
+        }
+        try {
+            if (trimmedValue.startsWith("[") && trimmedValue.endsWith("]")) {
+                return new JSONArray(trimmedValue);
+            }
+        } catch (JSONException ignored) {
+            return value;
+        }
+        return value;
     }
 
     public void sdkConfig(ReadableMap context, Promise promise) {

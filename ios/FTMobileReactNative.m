@@ -102,6 +102,13 @@ RCT_EXPORT_MODULE()
   if (value1 == nil || value2 == nil) {
     return NO;
   }
+
+  if ([value1 isKindOfClass:[NSString class]]) {
+    id normalizedValue1 = [self parsedJSONArrayIfNeeded:value1];
+    if (normalizedValue1 != value1) {
+      return [self isEqualValue:normalizedValue1 toValue:value2];
+    }
+  }
   
   // Handle NSNumber comparison
   if ([value1 isKindOfClass:[NSNumber class]] && [value2 isKindOfClass:[NSNumber class]]) {
@@ -150,6 +157,49 @@ RCT_EXPORT_MODULE()
   return [[value1 description] isEqualToString:[value2 description]];
 }
 
+- (BOOL)matchesCustomKeyActual:(id)actualValue expected:(id)expectedValue {
+  if ([expectedValue isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *rule = (NSDictionary *)expectedValue;
+    id containsValue = rule[@"contains"];
+    if (containsValue != nil) {
+      return [self containsValueInActual:actualValue expected:containsValue];
+    }
+  }
+  return [self isEqualValue:actualValue toValue:expectedValue];
+}
+
+- (BOOL)containsValueInActual:(id)actualValue expected:(id)expectedValue {
+  id normalizedActual = [actualValue isKindOfClass:[NSString class]]
+    ? [self parsedJSONArrayIfNeeded:actualValue]
+    : actualValue;
+  if (![normalizedActual isKindOfClass:[NSArray class]]) {
+    return [self isEqualValue:normalizedActual toValue:expectedValue];
+  }
+  for (id item in (NSArray *)normalizedActual) {
+    if ([self isEqualValue:item toValue:expectedValue]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+- (id)parsedJSONArrayIfNeeded:(NSString *)value {
+  NSString *trimmedValue = [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  if (trimmedValue.length < 2 || ![trimmedValue hasPrefix:@"["] || ![trimmedValue hasSuffix:@"]"]) {
+    return value;
+  }
+  NSData *jsonData = [trimmedValue dataUsingEncoding:NSUTF8StringEncoding];
+  if (jsonData == nil) {
+    return value;
+  }
+  NSError *error = nil;
+  id parsedObject = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+  if (error || ![parsedObject isKindOfClass:[NSArray class]]) {
+    return value;
+  }
+  return parsedObject;
+}
+
 - (NSArray<NSString *> *)applyRemoteConfigOverrideRulesWithModel:(FTRemoteConfigModel *_Nullable)model
                                                           content:(NSDictionary<NSString *, id> *_Nullable)content
                                                             rules:(NSArray<NSDictionary *> *)rules
@@ -173,7 +223,7 @@ RCT_EXPORT_MODULE()
     __block BOOL matches = YES;
     [customKeys enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stopKeys) {
       id actualValue = [content valueForKey:[key description]];
-      if (![self isEqualValue:obj toValue:actualValue]) {
+      if (![self matchesCustomKeyActual:actualValue expected:obj]) {
         matches = NO;
         *stopKeys = YES;
       }
