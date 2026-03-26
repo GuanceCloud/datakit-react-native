@@ -1,3 +1,10 @@
+# 0.3.16
+* Compatible with Android ft-sdk 1.6.17, iOS SDK 1.5.20
+* Add `FTRUMConfig.enableTraceWebView`, `FTRUMConfig.allowWebViewHost` to support webView collection rules configuration
+* Add `remoteConfiguration`, `remoteConfigMiniUpdateInterval`, and `remoteConfigOverrideRules` to `FTMobileConfig` to support remote configuration, update interval control, and config override rules
+* Add `FTRUMConfig.iosCrashMonitoringType` to support iOS crash monitoring type configuration
+* Add `FTMobileReactNative.appendBridgeContext` method to add bridge context for distinguishing data source or marking specific scenarios
+---
 # 0.3.16-alpha.1
 * Compatible with Android ft-sdk 1.6.15, iOS SDK 1.5.20
 * Add `FTRUMConfig.enableTraceWebView`, `FTRUMConfig.allowWebViewHost` to support webView collection rules configuration
