@@ -12,6 +12,7 @@
 #import <React/RCTConvert.h>
 #import <FTMobileSDK/FTThreadDispatchManager.h>
 #import <FTMobileSDK/FTConstants.h>
+#import <FTMobileSDK/FTJSONUtil.h>
 #import <FTMobileSDK/FTRemoteConfigModel+Private.h>
 
 static NSString *const FTRemoteConfigCallbackEvent = @"ft_remote_config_callback";
@@ -61,12 +62,14 @@ RCT_EXPORT_MODULE()
   payload[@"success"] = @(success);
   payload[@"platform"] = @"ios";
   payload[@"timestamp"] = @((long long)([[NSDate date] timeIntervalSince1970] * 1000));
-  if (content) {
-    payload[@"content"] = content;
-  }
-  if (appliedRuleIds.count > 0) {
+  
+  // Overridden content after applying rules
+  if (model && appliedRuleIds.count > 0) {
+    NSDictionary *overriddenContent = [model toDictionary];
+    payload[@"rawJson"] = [FTJSONUtil convertToJsonData:overriddenContent];
     payload[@"appliedOverrideRuleIds"] = appliedRuleIds;
-    payload[@"content"] = [model toDictionary];
+  } else if (content) {
+    payload[@"rawJson"] = [FTJSONUtil convertToJsonData:content];
   }
   if (error) {
     payload[@"errorCode"] = @(error.code);

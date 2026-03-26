@@ -184,7 +184,7 @@ public class FTMobileImpl {
                     configBean.setLogEnableCustomLog(override.getBoolean("logEnableCustomLog"));
                 }
                 if (override.hasKey("logEnableConsoleLog") && !override.isNull("logEnableConsoleLog")) {
-                configBean.setLogEnableCustomLog(override.getBoolean("logEnableConsoleLog"));
+                    configBean.setLogEnableConsoleLog(override.getBoolean("logEnableConsoleLog"));
                 }
 
                 // RUM configuration properties
@@ -438,7 +438,7 @@ public class FTMobileImpl {
             rawJson = jsonConfig;
             RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig);
             appliedRuleIds = result.appliedRuleIds;
-            emitRemoteConfigEvent(true, jsonConfig, appliedRuleIds, null, null);
+            emitRemoteConfigEvent(true, configBean.toJsonString(), appliedRuleIds, null, null);
             return result.configBean;
           }
 
@@ -534,7 +534,7 @@ public class FTMobileImpl {
                 rawJson = jsonConfig;
                 RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig);
                 appliedRuleIds = result.appliedRuleIds;
-                promise.resolve(createRemoteConfigPayload("manual", true, jsonConfig, appliedRuleIds, null, null));
+                promise.resolve(createRemoteConfigPayload("manual", true, configBean.toJsonString(), appliedRuleIds, null, null));
                 return result.configBean;
             }
 
@@ -564,7 +564,7 @@ public class FTMobileImpl {
                 ReadableArray rulesToApply = rules != null && rules.size() > 0 ? rules : remoteConfigOverrideRules;
                 RemoteConfigOverrideResult result = applyRemoteConfigOverrideRules(configBean, jsonConfig, rulesToApply);
                 appliedRuleIds = result.appliedRuleIds;
-                promise.resolve(createRemoteConfigPayload("manual", true, jsonConfig, appliedRuleIds, null, null));
+                promise.resolve(createRemoteConfigPayload("manual", true, configBean.toJsonString(), appliedRuleIds, null, null));
                 return result.configBean;
             }
 

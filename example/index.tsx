@@ -71,13 +71,6 @@ async function reactNativeInitSDK() {
           rumSampleRate: 1.0,
           traceSampleRate: 1.0,
           logSampleRate: 1.0,
-          logEnableCustomLog: true,
-          rumEnableTraceWebView: true,
-          rumEnableTraceUserAction: true,
-          rumEnableTraceUserView: true,
-          rumEnableTraceUserResource: true,
-          rumEnableResourceHostIP: true,
-          rumEnableTrackAppUIBlock: true,
         }
       }
     ]

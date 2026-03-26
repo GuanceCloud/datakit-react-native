@@ -99,10 +99,18 @@ export enum EnvType {
 };
 export enum FTDBCacheDiscard { discard, discardOldest };
 
+/**
+ * Matching rules for remote config override
+ * Defines matching conditions using customKeys
+ */
 export type FTRemoteConfigOverrideMatch = {
   customKeys?: Record<string, string | number | boolean | Array<any>>;
 };
 
+/**
+ * Values that can be modified by remote config override rules.
+ * These values will adjust the fetched remote configuration before it is applied.
+*/
 export type FTRemoteConfigOverrideValues = {
   env?: string;
   serviceName?: string;
@@ -131,12 +139,37 @@ export type FTRemoteConfigOverrideValues = {
   logEnableConsoleLog?: boolean;
 };
 
+/**
+ * Remote config override rules .
+ * Adjust the fetched remote configuration before application.
+*/
 export type FTRemoteConfigOverrideRule = {
   id?: string,
   enabled?: boolean,
   match: FTRemoteConfigOverrideMatch,
   override: FTRemoteConfigOverrideValues,
 }
+/**
+ * Final result of the remote config update
+ * @param triggerType the type of remote config update trigger, auto or manual
+ * @param success whether the remote config update was successful
+ * @param platform the platform of the device, ios or android
+ * @param timestamp the timestamp when the remote config update was triggered
+ * @param rawJson the final remote config update result, in JSON string format
+ * @param errorCode the error code if the remote config update failed, may be null if the update was successful
+ * @param errorMessage the error message if the remote config update failed, may be null if the update was successful
+ * @param appliedOverrideRuleIds the list of override rule IDs applied in this remote config update, may be null if no rules were applied
+ */
+export type FTRemoteConfigResult = {
+  triggerType: 'auto' | 'manual';
+  success: boolean;
+  platform: 'ios' | 'android';
+  timestamp: number;
+  rawJson?: string;
+  errorCode?: string | number;
+  errorMessage?: string;
+  appliedOverrideRuleIds?: string[];
+};
 /**
  * Configure SDK startup parameters.
  * @param serverUrl data reporting address, deprecated, use [datakitUrl] instead
@@ -160,7 +193,7 @@ export type FTRemoteConfigOverrideRule = {
  * @param lineDataModifier data modifier, modify single data {"measurement":measurement,"data":{key:value}}, after setting, the SDK will replace the original value with the set value according to the key
  * @param remoteConfiguration Set whether to enable remote dynamic configuration
  * @param remoteConfigMiniUpdateInterval Set remote dynamic configuration minimum update interval, unit seconds, default 12*60*60
- * @param remoteConfigOverrideRules Set remote configuration override rules executed natively before the config is applied
+ * @param remoteConfigOverrideRules Remote config override rules .Adjust the fetched remote configuration before application.
 */
  export interface FTMobileConfig {
    /**
@@ -190,19 +223,6 @@ export type FTRemoteConfigOverrideRule = {
    remoteConfigMiniUpdateInterval?:number,
    remoteConfigOverrideRules?:Array<FTRemoteConfigOverrideRule>,
  }
-
- export type FTRemoteConfigResult = {
-   triggerType: 'auto' | 'manual',
-   success: boolean,
-   platform: 'ios' | 'android',
-   timestamp: number,
-   content?: object,
-   rawJson?: string,
-   errorCode?: string | number,
-   errorMessage?: string,
-   appliedOverrideRuleIds?: string[],
- }
-
 
 type FTMobileReactNativeType = {
 
@@ -275,10 +295,10 @@ type FTMobileReactNativeType = {
    updateRemoteConfig():Promise<FTRemoteConfigResult>
    /**
     * Update remote configuration with minimum update interval, after enabling remote configuration, you can call this method to update the configuration in real time.
-    * This method is used to set the minimum update interval for remote configuration updates. 
-    * If the time since the last update is less than the specified interval, the update will not be performed.
+    * This method is used to set the minimum update interval for remote configuration updates. If the time since the last update is less than the specified interval, the update will not be performed.
     * @param interval minimum update interval, unit seconds
-    * @param rules Set remote configuration override rules executed natively before the config is applied, optional when interval is set, if not set, the original rules set in sdkConfig will be used
+    * @param rules Remote config override rules .Adjust the fetched remote configuration before application. 
+    * @returns the result of the remote config update
    */
    updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>
    /**
