@@ -391,10 +391,14 @@ RCT_REMAP_METHOD(sdkConfig,
         if (!strongSelf) {
           return nil;
         }
-        NSArray<NSString *> *appliedRuleIds = [strongSelf applyRemoteConfigOverrideRulesWithModel:model content:content rules:strongSelf->_remoteConfigOverrideRules];
-        [strongSelf emitAutoRemoteConfigEventWithSuccess:success content:content error:error model:model];
-        if (appliedRuleIds.count > 0) {
-          return model;
+        @try {
+          NSArray<NSString *> *appliedRuleIds = [strongSelf applyRemoteConfigOverrideRulesWithModel:model content:content rules:strongSelf->_remoteConfigOverrideRules];
+          [strongSelf emitAutoRemoteConfigEventWithSuccess:success content:content error:error model:model];
+          if (appliedRuleIds.count > 0) {
+            return model;
+          }
+        } @catch (NSException *exception) {
+          [strongSelf emitAutoRemoteConfigEventWithSuccess:NO content:nil error:nil model:nil];
         }
         return nil;
       };
@@ -483,16 +487,21 @@ RCT_REMAP_METHOD(updateRemoteConfig,
       return;
     }
     [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:_remoteConfigMiniUpdateInterval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
-      NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content error:error triggerType:@"manual" model:model rules:nil];
-      if (success) {
-        resolve(result);
-      } else {
-        NSString *message = error.localizedDescription ?: @"Remote config update failed.";
-        reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
-      }
-      NSArray<NSString *> *appliedRuleIds = result[@"appliedOverrideRuleIds"];
-      if (appliedRuleIds.count > 0) {
-        return model;
+      @try {
+        NSDictionary *result = [self remoteConfigResultWithSuccess:success content:content error:error triggerType:@"manual" model:model rules:nil];
+        if (success) {
+          resolve(result);
+        } else {
+          NSString *message = error.localizedDescription ?: @"Remote config update failed.";
+          reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
+        }
+        NSArray<NSString *> *appliedRuleIds = result[@"appliedOverrideRuleIds"];
+        if (appliedRuleIds.count > 0) {
+          return model;
+        }
+      } @catch (NSException *exception) {
+        NSString *message = [NSString stringWithFormat:@"Exception occurred: %@", exception];
+        reject(@"E_REMOTE_CONFIG_EXCEPTION", message, nil);
       }
       return nil;
     }];
@@ -512,23 +521,28 @@ RCT_REMAP_METHOD(updateRemoteConfigWithMiniUpdateInterval,
     if (!strongSelf) {
       return nil;
     }
-    NSArray<NSDictionary *> *rulesToApply = nil;
-    if (rules != nil && ![rules isKindOfClass:[NSNull class]]) {
-      rulesToApply = [RCTConvert NSArray:rules];
-    }
-    if (rulesToApply == nil || rulesToApply.count == 0) {
-      rulesToApply = strongSelf->_remoteConfigOverrideRules;
-    }
-    NSDictionary *result = [strongSelf remoteConfigResultWithSuccess:success content:content error:error triggerType:@"manual" model:model rules:rulesToApply];
-    if (success) {
-      resolve(result);
-    } else {
-      NSString *message = error.localizedDescription ?: @"Remote config update failed.";
-      reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
-    }
-    NSArray<NSString *> *appliedRuleIds = result[@"appliedOverrideRuleIds"];
-    if (appliedRuleIds.count > 0) {
-      return model;
+    @try {
+      NSArray<NSDictionary *> *rulesToApply = nil;
+      if (rules != nil && ![rules isKindOfClass:[NSNull class]]) {
+        rulesToApply = [RCTConvert NSArray:rules];
+      }
+      if (rulesToApply == nil || rulesToApply.count == 0) {
+        rulesToApply = strongSelf->_remoteConfigOverrideRules;
+      }
+      NSDictionary *result = [strongSelf remoteConfigResultWithSuccess:success content:content error:error triggerType:@"manual" model:model rules:rulesToApply];
+      if (success) {
+        resolve(result);
+      } else {
+        NSString *message = error.localizedDescription ?: @"Remote config update failed.";
+        reject(@"E_REMOTE_CONFIG_UPDATE_FAILED", message, error);
+      }
+      NSArray<NSString *> *appliedRuleIds = result[@"appliedOverrideRuleIds"];
+      if (appliedRuleIds.count > 0) {
+        return model;
+      }
+    } @catch (NSException *exception) {
+      NSString *message = [NSString stringWithFormat:@"Exception occurred: %@", exception];
+      reject(@"E_REMOTE_CONFIG_EXCEPTION", message, nil);
     }
     return nil;
   }];
