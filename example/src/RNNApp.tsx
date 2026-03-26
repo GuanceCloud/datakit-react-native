@@ -67,7 +67,7 @@ const HomeScreen = (props) => {
         id:'test_manual_rule',
         match:{
           customKeys:{
-            userid:current_user_id
+            userid:{ contains : current_user_id }
           }
         },
         override:{

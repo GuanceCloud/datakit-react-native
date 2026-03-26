@@ -100,13 +100,18 @@ export enum EnvType {
 export enum FTDBCacheDiscard { discard, discardOldest };
 
 /**
- * Matching rules for remote config override
- * Defines matching conditions using customKeys
- */
+ * Remote config override rule matching condition for custom keys. Supports exact match and contains match.
+ * For exact match, set the value directly, for example: "userid": "test_user", which means the rule will be applied when the custom key "userid" is exactly "test_user".
+ * For contains match, set the value as an object with a "contains" field, for example: "userid": { "contains": "test_user" }, which means the rule will be applied when the custom key "userid" contains the object "test_user".
+*/
 export type FTRemoteConfigCustomKeyContainsMatch = {
   contains: string | number | boolean;
 };
 
+/**
+ * Matching rules for remote config override
+ * Defines matching conditions using customKeys
+ */
 export type FTRemoteConfigOverrideMatch = {
   customKeys?: Record<string, string | number | boolean | FTRemoteConfigCustomKeyContainsMatch>;
 };

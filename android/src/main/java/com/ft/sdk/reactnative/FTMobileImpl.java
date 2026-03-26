@@ -134,7 +134,7 @@ public class FTMobileImpl {
                     Object expectedValue = entry.getValue();
                     Object actualValue = getJsonValue(jsonObject, entry.getKey());
 
-                    if (!isEqualValue(actualValue, expectedValue)) {
+                    if (!matchesCustomKey(actualValue, expectedValue)) {
                         matches = false;
                         break;
                     }

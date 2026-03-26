@@ -122,35 +122,12 @@ RCT_EXPORT_MODULE()
   
   // Handle NSArray comparison
   if ([value1 isKindOfClass:[NSArray class]] && [value2 isKindOfClass:[NSArray class]]) {
-    NSArray *array1 = (NSArray *)value1;
-    NSArray *array2 = (NSArray *)value2;
-    if (array1.count != array2.count) {
-      return NO;
-    }
-    for (NSUInteger i = 0; i < array1.count; i++) {
-      if (![self isEqualValue:array1[i] toValue:array2[i]]) {
-        return NO;
-      }
-    }
-    return YES;
+    return [value1 isEqualToArray:value2];
   }
   
   // Handle NSDictionary comparison
   if ([value1 isKindOfClass:[NSDictionary class]] && [value2 isKindOfClass:[NSDictionary class]]) {
-    NSDictionary *dict1 = (NSDictionary *)value1;
-    NSDictionary *dict2 = (NSDictionary *)value2;
-    if (dict1.count != dict2.count) {
-      return NO;
-    }
-    __block BOOL isEqual = YES;
-    [dict1 enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-      id value2Obj = dict2[key];
-      if (value2Obj == nil || ![self isEqualValue:obj toValue:value2Obj]) {
-        isEqual = NO;
-        *stop = YES;
-      }
-    }];
-    return isEqual;
+    return [value1 isEqualToDictionary:value2];
   }
   
   // For other types, use description comparison as fallback
@@ -175,29 +152,21 @@ RCT_EXPORT_MODULE()
   if (![normalizedActual isKindOfClass:[NSArray class]]) {
     return [self isEqualValue:normalizedActual toValue:expectedValue];
   }
-  for (id item in (NSArray *)normalizedActual) {
-    if ([self isEqualValue:item toValue:expectedValue]) {
-      return YES;
-    }
-  }
-  return NO;
+  NSArray *array = (NSArray *)normalizedActual;
+  return [array containsObject:expectedValue];
 }
 
 - (id)parsedJSONArrayIfNeeded:(NSString *)value {
-  NSString *trimmedValue = [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-  if (trimmedValue.length < 2 || ![trimmedValue hasPrefix:@"["] || ![trimmedValue hasSuffix:@"]"]) {
+    if (!value) return nil;
+
+    NSData *data = [value dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    id object = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    
+    if (!error && [object isKindOfClass:[NSArray class]]) {
+        return object;
+    }
     return value;
-  }
-  NSData *jsonData = [trimmedValue dataUsingEncoding:NSUTF8StringEncoding];
-  if (jsonData == nil) {
-    return value;
-  }
-  NSError *error = nil;
-  id parsedObject = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
-  if (error || ![parsedObject isKindOfClass:[NSArray class]]) {
-    return value;
-  }
-  return parsedObject;
 }
 
 - (NSArray<NSString *> *)applyRemoteConfigOverrideRulesWithModel:(FTRemoteConfigModel *_Nullable)model
