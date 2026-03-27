@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Button } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/react-native-mobile';
+import {
+  FTMobileReactNative,
+  FTReactNativeLog,
+  FTLogStatus,
+  FTRemoteConfigResult,
+} from '@cloudcare/react-native-mobile';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
@@ -13,9 +18,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 function startReactNativeNavigation() {
   console.log("startReactNativeNavigation");
   // react-native-navigation 
-  // 开启 RUM View 采集
-  // 将 example 中 FTRumReactNavigationTracking.tsx 文件拖入您的工程；
-  // 调用 FTRumReactNativeNavigationTracking.startTracking() 方法，开启采集，如下所示：
+  // Enable RUM View collection
+  // Drag the FTRumReactNavigationTracking.tsx file from example into your project;
+  // Call the FTRumReactNativeNavigationTracking.startTracking() method to enable collection, as shown below:
   FTRumReactNativeNavigationTracking.startTracking();
   registerScreens();
   Navigation.events().registerAppLaunchedListener( async () => {
@@ -43,11 +48,63 @@ function registerScreens() {
   console.log("registerScreens end");
 
 }
-
-
 const HomeScreen = (props) => {
-  FTReactNativeLog.logging('react-native-navigation HomeScreen start', FTLogStatus.info);
-  console.log("HomeScreen");
+ 
+  const onUpdateRemoteConfig = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfig();
+      console.log('manual remote config result', result);
+    } catch (error) {
+      console.log('manual remote config error', error);
+    }
+  };
+  /// MOCK userId for testing remote config rules with custom keys. 
+  const current_user_id = 'test_user';
+  const onUpdateRemoteConfigWithMiniInterval = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0,[
+        {
+        id:'test_manual_rule',
+        match:{
+          customKeys:{
+            userid:{ contains : current_user_id }
+          }
+        },
+        override:{
+          env:"test",
+          serviceName:"test_service",
+          autoSync:true,
+          compressIntakeRequests:true,
+          syncPageSize:5,
+          syncSleepTime:10,
+          rumSampleRate:1,
+          rumSessionOnErrorSampleRate:1,
+          rumEnableTraceUserAction:true,
+          rumEnableTraceUserView:true,
+          rumEnableTraceUserResource:true,
+          rumEnableResourceHostIP:true,
+          rumEnableTrackAppUIBlock:true,
+          rumBlockDurationMs:500,
+          rumEnableTrackAppCrash:true,
+          rumEnableTrackAppANR:true,
+          rumEnableTraceWebView:true,
+          rumAllowWebViewHost:["www.example.com"],
+          traceSampleRate:0.5,
+          traceEnableAutoTrace:true,
+          traceType:"all",
+          logSampleRate:1,
+          logLevelFilters:["info","warn"],
+          logEnableCustomLog:true,
+          logEnableConsoleLog:true,
+        }
+        }
+      ]
+      );
+      console.log('manual remote config with interval and custom rules result ', result);
+    } catch (error) {
+      console.log('manual remote config with interval and custom rules error', error);
+    }
+  };
 
   return (
     <View style={{
@@ -56,33 +113,35 @@ const HomeScreen = (props) => {
       backgroundColor: 'whitesmoke',
       padding: 20,
     }}>
-      <Button title='绑定用户' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
-      <Button title='解绑用户' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
-      <Button title='日志输出' onPress={() => Navigation.push(props.componentId, { component: { name: 'Logger' } })} />
-      <Button title='网络链路追踪' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
-      <Button title='RUM数据采集' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
-      <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
+      <Button title='Bind User' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
+      <Button title='Unbind User' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
+      <Button title='Log Output' onPress={() => Navigation.push(props.componentId, { component: { name: 'Logger' } })} />
+      <Button title='Network Trace' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
+      <Button title='RUM Data Collection' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
+      <Button title='Active Data Sync' onPress={() => FTMobileReactNative.flushSyncData()} />
       <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
       <Button title='Local WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
-      <Button title='关闭 SDK' onPress={() => FTMobileReactNative.shutDown()} />
-      <Button title='清理 SDK 缓存数据' onPress={() => {
+      <Button title='Shutdown SDK' onPress={() => FTMobileReactNative.shutDown()} />
+      <Button title='Clear SDK Cache Data' onPress={() => {
          FTMobileReactNative.clearAllData();
       }} />
-      <Button title='GlobalContext 属性动态设置' onPress={() => {
+      <Button title='Dynamic GlobalContext Property Setting' onPress={() => {
          FTMobileReactNative.appendGlobalContext({'global_key':'global_value'});
          FTMobileReactNative.appendLogGlobalContext({'log_key':'log_value'});
          FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
       }} />
-      <Button title="运行时读写文件方式设置 GlobalContext " onPress={() => {
+      <Button title="Runtime File Read/Write GlobalContext Setting" onPress={() => {
           AsyncStorage.setItem("track_id", "dynamic_id", (error: any) => {
             if (error) {
-              console.log('存储失败' + error);
+              console.log('Storage failed: ' + error);
             } else {
-              console.log('存储成功');
+              console.log('Storage successful');
             }
           })
         }}
         />
+      <Button title='Update Remote Config' onPress={onUpdateRemoteConfig} />
+      <Button title='Update Remote Config With Mini Update Interval' onPress={onUpdateRemoteConfigWithMiniInterval} />
     </View>
   );
 };

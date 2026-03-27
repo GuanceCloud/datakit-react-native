@@ -8,6 +8,7 @@ import {
   DetectFrequency,
   DeviceMetricsMonitorType,
   EnvType,
+  IOSCrashMonitoringType,
   ErrorMonitorType,
   FTLogConfig,
   FTLogStatus,
@@ -29,24 +30,24 @@ import Config from 'react-native-config';
 
 console.log('navigationLib library: ' + navigationLib);
 
-  //React Native 开发
+  //React Native development
 reactNativeInitSDK();
 
-//  //原生开发，部分页面或业务流程使用 React Native 实现
-//  //在原生工程进行 SDK 的初始化，React Native 侧无需再进行初始化配置
-//  //按需开启配置
-// hybridConfig(); 
+//  //Native development, some pages or business processes use React Native implementation
+//  //Initialize SDK in native project, no need to initialize configuration on React Native side
+//  //Enable configuration as needed
+// hybridConfig();
 
 function hybridConfig(){
-  //开启自动采集 react-native 控件点击
+  //Enable automatic collection of react-native control clicks
   FTRumActionTracking.startTracking();
-  //开启自动采集 react-native Error
+  //Enable automatic collection of react-native Error
   FTRumErrorTracking.startTracking();
 }
 
-// SDK 初始化
+// SDK initialization
 async function reactNativeInitSDK() {
-  //基础配置
+  //Basic configuration
   let config: FTMobileConfig = {
     datakitUrl:Config.SERVER_URL,
     debug: true,
@@ -54,12 +55,35 @@ async function reactNativeInitSDK() {
     enableLimitWithDbSize:true,
     dbCacheLimit:50*1024*1024,
     dbDiscardStrategy:FTDBCacheDiscard.discard,
+    remoteConfiguration:true,
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },
+    remoteConfigOverrideRules: [
+      {
+        id: 'auto_rule1',
+        enabled: true,
+        match: {
+          customKeys: {
+            env: 'test'
+          }
+        },
+        override: {
+          rumSampleRate: 1.0,
+          traceSampleRate: 1.0,
+          logSampleRate: 1.0,
+        }
+      }
+    ]
   };
+  console.log('remote config override rules configured', config.remoteConfigOverrideRules);
   await FTMobileReactNative.sdkConfig(config);
+  FTMobileReactNative.addRemoteConfigListener(
+    (result) => {
+      console.log('addRemoteConfigListener auto remote config callback', result);
+    }
+  );
 
-  // log 设置
+  // log settings
   let logConfig: FTLogConfig = {
     enableCustomLog: true,
     enableLinkRumData: true,
@@ -69,7 +93,7 @@ async function reactNativeInitSDK() {
   };
   await FTReactNativeLog.logConfig(logConfig);
 
-  // trace 设置
+  // trace settings
   let traceConfig: FTTraceConfig = {
     enableLinkRUMData: true,
     enableNativeAutoTrace: true,
@@ -77,8 +101,9 @@ async function reactNativeInitSDK() {
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
+  FTMobileReactNative.appendBridgeContext({"wgt_id":"widget_id"});
 
-  // rum 设置
+  // rum settings
   let rumConfig: FTRUMConfig = {
     androidAppId: Config.ANDROID_APP_ID,
     iOSAppId:Config.IOS_APP_ID,
@@ -86,7 +111,9 @@ async function reactNativeInitSDK() {
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
-    sampleRate:1.0,
+    sampleRate:1,
+    enableTraceWebView: true,
+    iosCrashMonitoringType: IOSCrashMonitoringType.all,
     enableNativeUserResource: true,
     enableResourceHostIP:true,
     enableTrackNativeAppANR:true,
@@ -98,17 +125,17 @@ async function reactNativeInitSDK() {
     rumCacheLimitCount:1000,
     rumDiscardStrategy:FTRUMCacheDiscard.discardOldest,
   };
-  // 静态设置 globalContext
-  //.env.dubug、.env.release 等配置的环境文件中设置
+  // Static globalContext setting
+  //Set in environment files like .env.debug, .env.release, etc.
   rumConfig.globalContext = { 'track_id': Config.TRACK_ID };
   await FTReactNativeRUM.setConfig(rumConfig);
-  /** 动态设置 globalContext
+  /** Dynamic globalContext setting
    new Promise(function(resolve) {
        AsyncStorage.getItem("track_id",(error,result)=>{
         if (result === null){
-          console.log('获取失败' + error);
+          console.log('Get failed: ' + error);
         }else {
-          console.log('获取成功' + result);
+          console.log('Get successful: ' + result);
           if( result != undefined){
             rumConfig.globalContext = {"track_id":result};
           }
@@ -122,8 +149,8 @@ async function reactNativeInitSDK() {
 }
 
 
-// 根据 app.json 中设置的 navigationLib 初始化对应导航组件，启动 APP
-// 导航组件使用 react-navigation
+// Initialize corresponding navigation component based on navigationLib set in app.json, start APP
+// Navigation component uses react-navigation
 if (navigationLib == 'react-navigation') {
   AppRegistry.registerComponent(appName, () => App);
   Navigation.events().registerAppLaunchedListener(() => {
@@ -147,6 +174,6 @@ if (navigationLib == 'react-navigation') {
     });
   });
 } else if (navigationLib == 'react-native-navigation') {
-  // 导航组件使用 react-native-navigation
+  // Navigation component uses react-native-navigation
   startReactNativeNavigation();
 }

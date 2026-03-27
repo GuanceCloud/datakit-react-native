@@ -1,9 +1,10 @@
 import { NativeModules } from 'react-native';
 import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
 import { FTRumActionTracking} from './rum/FTRumActionTracking';
+import { bridgeContextManager } from './ft_mobile_agent';
 
 /**
- * 错误监控类型。
+ * Error monitoring type.
  */
  export enum ErrorMonitorType {
    all=0xFFFFFFFF,
@@ -12,7 +13,7 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    cpu=1 << 3,
  }
   /**
-  * 页面监控补充类型
+  * Page monitoring supplement type
   */
  export enum DeviceMetricsMonitorType {
     all=0xFFFFFFFF,
@@ -22,38 +23,77 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
     fps=1 << 4
  }
  /**
-  * 设备信息监控周期。
+  * Device information monitoring cycle.
   */
  export enum DetectFrequency { normal, frequent, rare }
 
- export enum FTRUMCacheDiscard { discard, discardOldest };
+export enum FTRUMCacheDiscard {
+  discard,
+  discardOldest,
+}
+
+export enum IOSCrashMonitoringType {
+  /** Monitor Mach kernel exceptions. */
+  machException = 0x01,
+
+  /** Monitor fatal signals. */
+  signal = 0x02,
+
+  /** Monitor uncaught C++ exceptions. */
+  cppException = 0x04,
+
+  /** Monitor uncaught Objective-C NSExceptions. */
+  nsException = 0x08,
+
+  /** Track and inject system information. */
+  system = 0x40,
+
+  /** Track and inject application state information. */
+  applicationState = 0x80,
+
+  /** All crash monitor types. */
+  all = machException |
+    signal |
+    cppException |
+    nsException |
+    applicationState |
+    system,
+
+  /** High compatibility crash monitor types (excludes Mach exceptions). */
+  highCompatibility = all & ~machException,
+}
 
 /**
- * 设置 RUM 追踪条件。
- * @param androidAppId appId，监测中申请
- * @param iOSAppId appId，监测中申请
- * @param sampleRate 采样率
- * @param enableAutoTrackUserAction 是否自动采集 react-native 控件点击事件，开启后可配合 accessibilityLabel 设置actionName
- * @param enableTrackError  是否自动采集 react-native Error
- * @param enableTrackNativeCrash 是否采集 Native Error
- * @param enableTrackNativeAppANR 是否采集 Native ANR
- * @param enableTrackNativeFreeze 是否采集 Native Freeze
- * @param nativeFreezeDurationMs 设置采集 Native Freeze 卡顿的阈值，取值范围 [100,)，单位毫秒。iOS 默认 250ms，Android 默认 1000ms
- * @param enableNativeUserAction 是否开始 Native Action 追踪，Button 点击事件，纯 react-native 应用建议关闭
- * @param enableNativeUserView 是否开始 Native View 自动追踪，纯 react-native 应用建议关闭
- * @param enableNativeUserResource 是否自动采集 react-native Resource
- * @param enableResourceHostIP 是否采集网络请求 Host IP (仅作用于native http，iOS 13及以上)
- * @param errorMonitorType 错误监控补充类型
- * @param deviceMonitorType 页面监控补充类型
- * @param detectFrequency 监控频率
- * @param globalContext 自定义全局参数
- * @param rumCacheLimitCount RUM 最大缓存量,  默认 100_000
- * @param rumDiscardStrategy RUM 数据废弃策略
+ * Set RUM tracking conditions.
+ * @param androidAppId appId, apply during monitoring
+ * @param iOSAppId appId, apply during monitoring
+ * @param sampleRate sampling rate
+ * @param sessionOnErrorSampleRate error session sampling rate. For sessions not sampled, if ERROR is hit, collect data 1 minute before the error occurs
+ * @param enableAutoTrackUserAction whether to automatically collect react-native control click events, can set actionName with accessibilityLabel when enabled
+ * @param enableTrackError whether to automatically collect react-native Error
+ * @param enableTrackNativeCrash whether to collect Native Error
+ * @param enableTrackNativeAppANR whether to collect Native ANR
+ * @param enableTrackNativeFreeze whether to collect Native Freeze
+ * @param nativeFreezeDurationMs set the threshold for collecting Native Freeze, value range [100,), unit ms. iOS default 250ms, Android default 1000ms
+ * @param enableNativeUserAction whether to start Native Action tracking, Button click events, recommended to disable for pure react-native apps
+ * @param enableNativeUserView whether to start Native View auto tracking, recommended to disable for pure react-native apps
+ * @param enableNativeUserResource whether to automatically collect react-native Resource
+ * @param enableResourceHostIP whether to collect network request Host IP (only for native http, iOS 13 and above)
+ * @param errorMonitorType error monitoring supplement type
+ * @param deviceMonitorType page monitoring supplement type
+ * @param detectFrequency monitoring frequency
+ * @param globalContext custom global parameters
+ * @param rumCacheLimitCount RUM max cache size, default 100_000
+ * @param rumDiscardStrategy RUM data discard strategy
+ * @param enableTraceWebView Set whether to enable WebView data collection, default true
+ * @param allowWebViewHost Set specific hosts or domains allowed to collect WebView data, nil means collect all
+ * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information. 
  */
  export interface FTRUMConfig{
    androidAppId:string,
    iOSAppId:string,
    sampleRate?:number,
+   sessionOnErrorSampleRate?:number,
    enableAutoTrackUserAction?:boolean,
    enableAutoTrackError?:boolean,
    enableTrackNativeCrash?:boolean,
@@ -70,15 +110,18 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    globalContext?:object,
    rumCacheLimitCount?:number,
    rumDiscardStrategy?:FTRUMCacheDiscard,
+   enableTraceWebView?: boolean,
+   allowWebViewHost?: Array<string>,
+   iosCrashMonitoringType?: IOSCrashMonitoringType,
  }
 /**
- * RUM Resource 资源数据。
- * @param url 请求地址
- * @param httpMethod 请求方法
- * @param requestHeader 请求头参数
- * @param responseHeader 返回头参数
- * @param responseBody 返回内容
- * @param resourceStatus 返回状态码
+ * RUM Resource data.
+ * @param url request URL
+ * @param httpMethod request method
+ * @param requestHeader request header parameters
+ * @param responseHeader response header parameters
+ * @param responseBody response content
+ * @param resourceStatus response status code
  */
  export interface FTRUMResource{
    url:string,
@@ -89,16 +132,17 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
    resourceStatus?:number
  };
 /**
- * RUM Resource 性能指标。
- * @param duration 资源加载时间
- * @param resource_dns 资源加载DNS解析时间
- * @param resource_tcp 资源加载TCP连接时间
- * @param resource_ssl 资源加载SSL连接时间
- * @param resource_ttfb 资源加载请求响应时间
- * @param resource_trans 资源加载内容传输时间
- * @param resource_first_byte 资源加载首包时间
+ * RUM Resource performance metrics.
+ * @param duration resource load time
+ * @param resource_dns resource DNS resolution time
+ * @param resource_tcp resource TCP connection time
+ * @param resource_ssl resource SSL connection time
+ * @param resource_ttfb resource request response time
+ * @param resource_trans resource content transfer time
+ * @param resource_first_byte resource first byte time
  */
  export interface FTRUMResourceMetrics{
+
    duration?:number,
    resource_dns?:number,
    resource_tcp?:number,
@@ -109,93 +153,95 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
  };
  type FTReactNativeRUMType = {
   /**
-   * 设置 RUM 追踪条件 开启 RUM 采集。
-   * @param config rum 配置参数。
+   * Set RUM tracking conditions and enable RUM collection.
+   * @param config rum configuration parameters.
    * @returns a Promise.
    */
    setConfig(config:FTRUMConfig): Promise<void>;
   /**
-   * 启动 RUM Action。
-   * RUM 会绑定该 Action 可能触发的 Resource、Error、LongTask 事件。
-   * 避免在 0.1 s 内多次添加，同一个 View 在同一时间只会关联一个 Action，在上一个 Action 未结束时，新增的 Action 会被丢弃。
-   * 与 `addAction` 方法添加 Action 互不影响.。
-   * @param actionName action 名称
-   * @param actionType action 类型
-   * @param property 事件上下文(可选)
+   * Start RUM Action.
+   * RUM will bind Resource, Error, LongTask events that may be triggered by this Action.
+   * Avoid adding multiple times within 0.1s, only one Action will be associated with the same View at the same time, and new Actions will be discarded if the previous one has not ended.
+   * Adding Action with `addAction` method does not affect each other.
+   * @param actionName action name
+   * @param actionType action type
+   * @param property event context (optional)
    * @returns a Promise.
    */
    startAction(actionName:string,actionType:string,property?:object): Promise<void>;
    /**
-   * 添加 Action 事件。此类数据无法关联 Error，Resource，LongTask 数据，无丢弃逻辑。
-   * @param actionName action 名称
-   * @param actionType action 类型
-   * @param property 事件上下文(可选)
+   * Add Action event. This type of data cannot be associated with Error, Resource, LongTask data, and has no discard logic.
+   * @param actionName action name
+   * @param actionType action type
+   * @param property event context (optional)
    * @returns a Promise.
    */
    addAction(actionName:string,actionType:string,property?:object): Promise<void>;
   /**
-   * view加载时长。
-   * @param viewName view 名称
-   * @param loadTime view 加载时长
+   * view load duration.
+   * @param viewName view name
+   * @param loadTime view load duration
    * @returns a Promise.
    */
    onCreateView(viewName:string,loadTime:number): Promise<void>;
   /**
-   * view 开始。
-   * @param viewName 界面名称
-   * @param property 事件上下文(可选)
+   * view start.
+   * @param viewName page name
+   * @param property event context (optional)
    * @returns a Promise.
    */
    startView(viewName: string, property?: object): Promise<void>;
   /**
-   * view 结束。
-   * @param property 事件上下文(可选)
+   * view end.
+   * @param property event context (optional)
    * @returns a Promise.
    */
    stopView(property?:object): Promise<void>;
   /**
-   * 异常捕获与日志收集。
-   * @param stack 堆栈日志
-   * @param message 错误信息
-   * @param property 事件上下文(可选)
+   * Exception capture and log collection.
+   * @param stack stack log
+   * @param message error message
+   * @param property event context (optional)
    * @returns a Promise.
    */
    addError(stack: string, message: string,property?:object): Promise<void>;
   /**
-   * 异常捕获与日志收集。
-   * @param type 错误类型
-   * @param stack 堆栈日志
-   * @param message 错误信息
-   * @param property 事件上下文(可选)
+   * Exception capture and log collection.
+   * @param type error type
+   * @param stack stack log
+   * @param message error message
+   * @param property event context (optional)
    * @returns a Promise.
    */
    addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>;
   /**
-   * 开始资源请求。
-   * @param key 唯一 id
-   * @param property 事件上下文(可选)
+   * Start resource request.
+   * @param key unique id
+   * @param property event context (optional)
    * @returns a Promise.
    */
    startResource(key: string,property?:object): Promise<void>;
   /**
-   * 结束资源请求。
-   * @param key 唯一 id
-   * @param property 事件上下文(可选)
+   * End resource request.
+   * @param key unique id
+   * @param property event context (optional)
    * @returns a Promise.
    */
    stopResource(key: string,property?:object): Promise<void>;
   /**
-   * 发送资源数据指标。
-   * @param key 唯一 id
-   * @param resource 资源数据
-   * @param metrics  资源性能数据
+   * Send resource data metrics.
+   * @param key unique id
+   * @param resource resource data
+   * @param metrics resource performance data
    * @returns a Promise.
    */
    addResource(key:string, resource:FTRUMResource,metrics?:FTRUMResourceMetrics):Promise<void>;
  }
 
  class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
-   private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
+    private rum: FTReactNativeRUMType = NativeModules.FTReactNativeRUM;
+
+
    setConfig(config:FTRUMConfig): Promise<void>{
      console.log('FTRUMConfig');
      if(config.enableAutoTrackError){
@@ -207,31 +253,47 @@ import { FTRumActionTracking} from './rum/FTRumActionTracking';
      return this.rum.setConfig(config);
    }
    startAction(actionName:string,actionType:string,property?:object): Promise<void>{
-     return this.rum.startAction(actionName,actionType,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.startAction(actionName,actionType,mergedProperties);
    }
    addAction(actionName: string, actionType: string, property?: object): Promise<void> {
-    return this.rum.addAction(actionName,actionType,property);
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addAction(actionName,actionType,mergedProperties);
    }
    onCreateView(viewName:string,loadTime:number): Promise<void>{
      return this.rum.onCreateView(viewName,loadTime);
    }
    startView(viewName: string, property?:object): Promise<void>{
-     return this.rum.startView(viewName,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.startView(viewName,mergedProperties);
    }
    stopView(property?:object): Promise<void>{
-     return this.rum.stopView(property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.stopView(mergedProperties);
    }
    addError(stack: string, message: string,property?:object): Promise<void>{
-     return this.rum.addError(stack,message,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.addError(stack,message,mergedProperties);
    }
    addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>{
-    return this.rum.addErrorWithType(type,stack,message,property);
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addErrorWithType(type,stack,message,mergedProperties);
   }
    startResource(key: string,property?:object): Promise<void>{
-     return this.rum.startResource(key,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.startResource(key,mergedProperties);
    }
    stopResource(key: string,property?:object): Promise<void>{
-     return this.rum.stopResource(key,property);
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     return this.rum.stopResource(key,mergedProperties);
    }
    addResource(key:string, resource:FTRUMResource,metrics:FTRUMResourceMetrics={}):Promise<void>{
      return this.rum.addResource(key,resource,metrics);

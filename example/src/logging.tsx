@@ -19,7 +19,7 @@ class LogScreen extends React.Component {
     return {
       topBar: {
         title: {
-          text: "日志输出"
+          text: "Log Output"
         }
       }
     };

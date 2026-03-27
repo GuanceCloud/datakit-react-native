@@ -7,28 +7,28 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-//  //混合开发 SDK 初始化示例
-//  [self guanceSDKInit];
-  
+//  //Hybrid development SDK initialization example
+//  [self SDKInit];
+
   self.moduleName = @"FtMobileAgentExample";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
-  
+
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   [ReactNativeNavigation bootstrapWithBridge:bridge];
   return YES;
 }
 
-- (void)guanceSDKInit{
+- (void)SDKInit{
   FTMobileConfig *config = [[FTMobileConfig alloc]initWithDatakitUrl:@"datakitUrl"];
   config.enableSDKDebugLog = YES;
   [FTMobileAgent startWithConfigOptions:config];
-  
+
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:@"rumAppId"];
   rumConfig.enableTraceUserResource = YES;
   #if DEBUG
-    // 需要过滤掉仅在开发环境中发生的 React Native 符号化调用请求和 Expo日志调用请求
+    // Need to filter out React Native symbolication requests and Expo log requests that only occur in development environment
     rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
       return [FTReactNativeUtils filterBlackResource:url];
     };

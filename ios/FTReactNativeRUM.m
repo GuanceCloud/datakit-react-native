@@ -2,7 +2,7 @@
 //  FTReactNativeRUM.m
 //  FtMobileAgent
 //
-//  Created by 胡蕾蕾 on 2021/12/14.
+//  Created by Hu Leilei on 2021/12/14.
 //  Copyright © 2021 Facebook. All rights reserved.
 //
 
@@ -24,6 +24,9 @@ RCT_REMAP_METHOD(setConfig,
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
   if ([context.allKeys containsObject:@"sampleRate"]) {
     rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
+  }
+  if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
+    rumConfig.sessionOnErrorSampleRate  = [RCTConvert double:context[@"sessionOnErrorSampleRate"]]*100;
   }
   if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
     rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
@@ -66,6 +69,15 @@ RCT_REMAP_METHOD(setConfig,
   }
   if ([context.allKeys containsObject:@"rumCacheLimitCount"]) {
     rumConfig.rumCacheLimitCount = [RCTConvert int:context[@"rumCacheLimitCount"]];
+  }
+  if ([context.allKeys containsObject:@"enableTraceWebView"]) {
+    rumConfig.enableTraceWebView = [RCTConvert BOOL:context[@"enableTraceWebView"]];
+  }
+  if ([context.allKeys containsObject:@"allowWebViewHost"]) {
+    rumConfig.allowWebViewHost = [RCTConvert NSArray:context[@"allowWebViewHost"]];
+  }
+  if ([context.allKeys containsObject:@"iosCrashMonitoringType"]) {
+    rumConfig.crashMonitoring = (FTCrashMonitorType)[RCTConvert int:context[@"iosCrashMonitoringType"]];
   }
 #if DEBUG
   rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {

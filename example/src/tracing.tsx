@@ -14,11 +14,11 @@ function PressableItem(props: any) {
   );
 }
 class TraceScreen extends React.Component {
-  static options(props) {
+  static options() {
     return {
       topBar: {
         title: {
-          text: "网络链路追踪"
+          text: "Network Trace"
         }
       }
     };
@@ -26,8 +26,8 @@ class TraceScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container} contentOffset={{x:0,y:50}}>
-      <PressableItem title="网络链路追踪" onPress={() => {
-        this.getHttp("https://console-api.guance.com/not/found/");
+      <PressableItem title="Network Trace" onPress={() => {
+        this.getHttp("https://httpbin.org/status/404");
       }}
       />
       </ScrollView>
@@ -36,7 +36,7 @@ class TraceScreen extends React.Component {
 
 
   async getHttp(url:string){
-    // 未开启自动采集时，可以手动获取 trace 功能所需的请求头
+    // When auto collection is not enabled, you can manually get the request headers needed for trace functionality
     var traceHeader = await FTReactNativeTrace.getTraceHeaderFields(url);
     const fetchOptions = {
       method: 'GET',

@@ -8,10 +8,10 @@ export class FTRumErrorTracking {
 
   private static isInDefaultErrorHandler = false;
 
-  // 原有的 error 处理方法
+  // Original error handler method
   private static defaultErrorHandler: ErrorHandlerCallback = (_error: any, _isFatal?: boolean) => { }
 
-  // 原有的 console error 处理方法
+  // Original console error handler method
   private static defaultConsoleError = (..._params: unknown[]) => { }
 
   static startTracking(): void {
@@ -35,7 +35,7 @@ export class FTRumErrorTracking {
       ).then(() => {
         try {
           FTRumErrorTracking.isInDefaultErrorHandler = true;
-          //调用原有的 error 处理方法
+          //Call the original error handler method
           FTRumErrorTracking.defaultErrorHandler(error, isFatal);
         } finally {
           FTRumErrorTracking.isInDefaultErrorHandler = false;

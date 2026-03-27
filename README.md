@@ -1,6 +1,6 @@
 # react-native-mobile
 
-基于观测云 Android iOS React Native SDK
+Base On Guance Android iOS React Native SDK
 
 ## Installation
 

@@ -4,7 +4,12 @@ import { View, Button, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { FTMobileReactNative, FTReactNativeLog, FTLogStatus } from '@cloudcare/react-native-mobile';
+import {
+  FTMobileReactNative,
+  FTReactNativeLog,
+  FTLogStatus,
+  FTRemoteConfigResult,
+} from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';
@@ -27,11 +32,25 @@ function Home() {
 }
 
 class HomeScreen extends React.Component<{ navigation: any }> {
-  componentDidMount() {
-    // FTMobileReactNative.bindRUMUserData('reactUser');
-    console.log(Config.IOS_APP_ID);
-    FTReactNativeLog.logging("react-navigation HomeScreen start", FTLogStatus.info);
-  }
+ 
+
+  private onUpdateRemoteConfig = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfig();
+      console.log('manual remote config result', result);
+    } catch (error) {
+      console.log('manual remote config error', error);
+    }
+  };
+
+  private onUpdateRemoteConfigWithMiniInterval = async () => {
+    try {
+      const result = await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0);
+      console.log('manual remote config with interval result', result);
+    } catch (error) {
+      console.log('manual remote config with interval error', error);
+    }
+  };
 
   render() {
     let { navigation } = this.props;
@@ -39,44 +58,47 @@ class HomeScreen extends React.Component<{ navigation: any }> {
 
     return (
       <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
-        <Button title='绑定用户' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
+        <Button title='Bind User' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
         <View style={styles.space} />
-        <Button title='解绑用户' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
+        <Button title='Unbind User' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
         <View style={styles.space} />
-        <Button title='日志输出' onPress={() => navigation.navigate('Log')} />
+        <Button title='Log Output' onPress={() => navigation.navigate('Log')} />
         <View style={styles.space} />
-        <Button title='网络链路追踪' onPress={() => navigation.navigate('Trace')} />
+        <Button title='Network Trace' onPress={() => navigation.navigate('Trace')} />
         <View style={styles.space} />
-        <Button title='RUM数据采集' onPress={() => navigation.navigate('RUM')} />
+        <Button title='RUM Data Collection' onPress={() => navigation.navigate('RUM')} />
         <View style={styles.space} />
-        <Button title='主动数据同步' onPress={() => FTMobileReactNative.flushSyncData()} />
+        <Button title='Active Data Sync' onPress={() => FTMobileReactNative.flushSyncData()} />
         <View style={styles.space} />
         <Button title='WebView' onPress={() => navigation.navigate('WebView')} />
         <View style={styles.space} />
         <Button title='Local WebView' onPress={() => navigation.navigate('LocalWebView')} />
         <View style={styles.space} />
         <View style={styles.space} />
-        <Button title='关闭 SDK' onPress={() => FTMobileReactNative.shutDown()} />
+        <Button title='Shutdown SDK' onPress={() => FTMobileReactNative.shutDown()} />
         <View style={styles.space} />
-        <Button title='清理 SDK 缓存数据' onPress={() => FTMobileReactNative.clearAllData()} />
+        <Button title='Clear SDK Cache Data' onPress={() => FTMobileReactNative.clearAllData()} />
         <View style={styles.space} />
-        <Button title='GlobalContext 属性动态设置' onPress={() => {
+        <Button title='Dynamic GlobalContext Property Setting' onPress={() => {
           FTMobileReactNative.appendGlobalContext({ 'global_key': 'global_value' });
           FTMobileReactNative.appendLogGlobalContext({ 'log_key': 'log_value' });
           FTMobileReactNative.appendRUMGlobalContext({ 'rum_key': 'rum_value' });
         }} />
         <View style={styles.space} />
-        <Button title="运行时读写文件方式设置 GlobalContext " onPress={() => {
+        <Button title="Runtime File Read/Write GlobalContext Setting" onPress={() => {
           AsyncStorage.setItem("track_id", "dynamic_id", (error: any) => {
             if (error) {
-              console.log('存储失败' + error);
+              console.log('Storage failed: ' + error);
             } else {
-              console.log('存储成功');
+              console.log('Storage successful');
             }
           })
         }}
         />
         <View style={styles.space} />
+        <Button title='Update Remote Config' onPress={this.onUpdateRemoteConfig} />
+        <View style={styles.space} />
+        <Button title='Update Remote Config With Mini Update Interval' onPress={this.onUpdateRemoteConfigWithMiniInterval} />
       </View>
     );
   }
@@ -124,23 +146,23 @@ const navigationRef: React.RefObject<NavigationContainerRef<ReactNavigation.Root
 function App() {
   return (
     // react-navigation
-    // 开启 RUM View 采集
-    // 将 example 中 FTRumReactNavigationTracking.tsx 文件拖入您的工程；
+    // Enable RUM View collection
+    // Drag the FTRumReactNavigationTracking.tsx file from example into your project;
 
-    // 方法一：如果有使用 createNativeStackNavigator(); 创建原生导航堆栈，建议采用 <Stack.Navigator screenListeners={FTRumReactNavigationTracking.StackListener} nitialRouteName='Home'>开启采集，
-    //        这样可以统计到页面的加载时长
-    // 方法二：如果没有使用 createNativeStackNavigator(); 要在 NavigationContainer 组件中进行开启采集，如下
+    // Method 1: If you use createNativeStackNavigator(); to create native navigation stack, it's recommended to use <Stack.Navigator screenListeners={FTRumReactNavigationTracking.StackListener} initialRouteName='Home'> to enable collection,
+    //         this way you can get page load duration statistics
+    // Method 2: If you don't use createNativeStackNavigator(); you need to enable collection in the NavigationContainer component, as shown below
 
     <NavigationContainer ref={navigationRef} onReady={() => {
-      // 方法二：
+      // Method 2:
       // FTRumReactNavigationTracking.startTrackingViews(navigationRef.current);
     }}>
-      {/*方法一：*/}
+      {/*Method 1:*/}
       <Stack.Navigator screenListeners={FTRumReactNavigationTracking.StackListener} initialRouteName='Home'>
         <Stack.Screen name='Home' component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name='Trace' component={TraceScreen} options={{ title: '网络链路追踪' }} />
-        <Stack.Screen name='Log' component={LogScreen} options={{ title: '日志输出' }} />
-        <Stack.Screen name='RUM' component={RUMScreen} options={({ title: 'RUM 数据采集' })} />
+        <Stack.Screen name='Trace' component={TraceScreen} options={{ title: 'Network Trace' }} />
+        <Stack.Screen name='Log' component={LogScreen} options={{ title: 'Log Output' }} />
+        <Stack.Screen name='RUM' component={RUMScreen} options={({ title: 'RUM Data Collection' })} />
         <Stack.Screen name='Detail' component={MessagesDetail} options={{ title: 'Detail' }} />
         <Stack.Screen name="Messages" component={Messages} options={{ title: 'Message' }} />
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }} />

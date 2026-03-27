@@ -13,7 +13,7 @@ class RUMScreen extends React.Component {
             return {
                   topBar: {
                         title: {
-                              text: "RUM 数据采集"
+                              text: "RUM Data Collection"
                         }
                   }
             };
@@ -34,7 +34,7 @@ class RUMScreen extends React.Component {
                   var type = info.item.custom
                   switch (type) {
                         case ActionCustomType.actionName:
-                              // 自定义某一控件点击事件的 `actionName`
+                              // Customize the `actionName` for a specific control click event
                               return <View style={styles.list}>
                                     <Pressable
                                           accessibilityLabel='custom_action_name'
@@ -46,7 +46,7 @@ class RUMScreen extends React.Component {
                                           )}
                                     </Pressable></View>
                         case ActionCustomType.enableTrack:
-                              // 设置不采集某一控件的点击事件
+                              // Set not to collect click events for a specific control
                               return <View style={styles.list}>
                                     <Pressable
                                           ft-enable-track="false"
@@ -58,7 +58,7 @@ class RUMScreen extends React.Component {
                                           )}
                                     </Pressable></View>
                         case ActionCustomType.extraProperty:
-                              // 对某一控件的点击事件添加额外属性
+                              // Add extra properties to a specific control's click event
                               return <View style={styles.list}>
                                     <Pressable
                                           ft-extra-property='{"e_name": "John Doe", "e_age": 30, "e_city": "New York"}'
@@ -87,19 +87,19 @@ class RUMScreen extends React.Component {
             var sections = [
                   {
                         key: "A",
-                        title: "未开启自动采集时，可以通过 api 手动采集",
+                        title: "When auto collection is not enabled, you can manually collect via API",
                         data: [
                               {
                                     title: "Start Action",
                                     onPress: () => {
-                                          console.log('Action 点击');
+                                          console.log('Action clicked');
                                           FTReactNativeRUM.startAction('start_actionName', 'actionType');
                                     }
-                              }, 
+                              },
                               {
                                     title: "Add Action",
                                     onPress: () => {
-                                          console.log('Action 点击');
+                                          console.log('Action clicked');
                                           FTReactNativeRUM.addAction('add_actionName', 'actionType');
                                     }
                               },
@@ -121,12 +121,12 @@ class RUMScreen extends React.Component {
                               }, {
                                     title: "Resource Normal",
                                     onPress: () => {
-                                          this.getHttp("https://www.baidu.com");
+                                          this.getHttp("https://httpbin.org/status/200");
                                     }
                               }, {
                                     title: "Resource Error",
                                     onPress: () => {
-                                          this.getHttp("https://console-api.guance.com/not/found/");
+                                          this.getHttp("https://httpbin.org/status/404");
                                     }
                               }, {
                                     title: "Add Error",
@@ -144,7 +144,7 @@ class RUMScreen extends React.Component {
                   },
                   {
                         key: "B",
-                        title: "开启 React-Native Error 自动采集 ，Error 示例",
+                        title: "Enable React-Native Error auto collection, Error examples",
                         data: [
                               {
                                     title: "Generate an Error",
@@ -161,24 +161,24 @@ class RUMScreen extends React.Component {
                   },
                   {
                         key: "C",
-                        title: "开启 React-Native Action 自动采集，添加一些自定义操作",
+                        title: "Enable React-Native Action auto collection, add some custom operations",
                         data: [{
-                              title: "自定义某一控件点击事件的 `actionName`",
+                              title: "Customize the `actionName` for a specific control click event",
                               custom: ActionCustomType.actionName,
                               onPress: () => {
-                                    console.log('Action 点击');
+                                    console.log('Action clicked');
                               }
                         }, {
-                              title: "不采集某一控件的点击事件",
+                              title: "Do not collect click events for a specific control",
                               custom: ActionCustomType.enableTrack,
                               onPress: () => {
-                                    console.log('Action 点击');
+                                    console.log('Action clicked');
                               }
                         }, {
-                              title: "对某一控件的点击事件添加额外属性",
+                              title: "Add extra properties to a specific control's click event",
                               custom: ActionCustomType.extraProperty,
                               onPress: () => {
-                                    console.log('Action 点击');
+                                    console.log('Action clicked');
                               }
                         }]
                   },
