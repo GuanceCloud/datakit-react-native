@@ -15,6 +15,7 @@ import com.ft.sdk.garble.bean.NetStatusBean;
 import com.ft.sdk.garble.bean.ResourceParams;
 import com.ft.sdk.reactnative.utils.ReactNativeUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,8 @@ public class FTRUMImpl {
     Map<String, Object> globalContext = (Map<String, Object>) map.get("globalContext");
     Integer rumCacheLimitCount = ReactNativeUtils.convertToNativeInt(map.get("rumCacheLimitCount"));
     Integer rumDiscardStrategy = ReactNativeUtils.convertToNativeInt(map.get("rumDiscardStrategy"));
+    Boolean enableTraceWebView = (Boolean) map.get("enableTraceWebView");
+    ArrayList<String> allowWebViewHost = (ArrayList<String>) map.get("allowWebViewHost");
 
     FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId);
     if (sampleRate != null) {
@@ -122,6 +125,15 @@ public class FTRUMImpl {
       }
       rumConfig.setRumCacheDiscardStrategy(rumCacheDiscard);
     }
+    if (enableTraceWebView != null) {
+      rumConfig.setEnableTraceWebView(enableTraceWebView);
+    }
+    if (allowWebViewHost != null) {
+      String[] allowWebViewHostArr = new String[allowWebViewHost.size()];
+      allowWebViewHost.toArray(allowWebViewHostArr);
+      rumConfig.setAllowWebViewHost(allowWebViewHostArr);
+    }
+
     FTSdk.initRUMWithConfig(rumConfig);
     //LogUtils.d("configCheck","rumConfig:"+new Gson().toJson(rumConfig));
     promise.resolve(null);

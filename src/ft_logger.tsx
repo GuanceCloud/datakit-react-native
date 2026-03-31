@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { bridgeContextManager } from './ft_mobile_agent';
 /**
  * Set log level.
  */
@@ -66,11 +67,14 @@ import { NativeModules } from 'react-native';
    * @param property log context (optional)
    */
    logging(content:String,logStatus:FTLogStatus|String,property?:object): Promise<void>{
+     // Automatically merge bridge context properties with local properties
+     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
+     
      if((typeof logStatus)==='string'){
-       return this.logger.logWithStatusString(content,logStatus.toString(),property)
+       return this.logger.logWithStatusString(content,logStatus.toString(),mergedProperties)
      }
      let enumLogStatus: FTLogStatus = logStatus as FTLogStatus;
-     return this.logger.logging(content,enumLogStatus,property);
+     return this.logger.logging(content,enumLogStatus,mergedProperties);
    }
  }
  export const FTReactNativeLog: FTReactNativeLogWrapper = new FTReactNativeLogWrapper();

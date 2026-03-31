@@ -70,6 +70,15 @@ RCT_REMAP_METHOD(setConfig,
   if ([context.allKeys containsObject:@"rumCacheLimitCount"]) {
     rumConfig.rumCacheLimitCount = [RCTConvert int:context[@"rumCacheLimitCount"]];
   }
+  if ([context.allKeys containsObject:@"enableTraceWebView"]) {
+    rumConfig.enableTraceWebView = [RCTConvert BOOL:context[@"enableTraceWebView"]];
+  }
+  if ([context.allKeys containsObject:@"allowWebViewHost"]) {
+    rumConfig.allowWebViewHost = [RCTConvert NSArray:context[@"allowWebViewHost"]];
+  }
+  if ([context.allKeys containsObject:@"iosCrashMonitoringType"]) {
+    rumConfig.crashMonitoring = (FTCrashMonitorType)[RCTConvert int:context[@"iosCrashMonitoringType"]];
+  }
 #if DEBUG
   rumConfig.resourceUrlHandler = ^BOOL(NSURL * _Nonnull url) {
     return [FTReactNativeUtils filterBlackResource:url];
