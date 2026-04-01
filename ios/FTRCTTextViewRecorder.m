@@ -91,10 +91,10 @@
 @end
 
 @implementation FTRCTTextViewBuilder
-- (nonnull NSArray<FTSRWireframe *> *)buildWireframes {
+- (nonnull NSArray<FTSRWireframe *> *)buildWireframesWithBuilder:(nonnull FTSessionReplayWireframesBuilder *)builder {
   CGRect frame = [self relativeIntersectedRect];
   FTSRTextWireframe *wireframe = [[FTSRTextWireframe alloc]initWithIdentifier:self.wireframeID frame:frame];
-
+  
   wireframe.text = [self.textObfuscator mask:self.text];
   wireframe.border = [[FTSRShapeBorder alloc]initWithColor:[FTSRUtils colorHexString:self.attributes.layerBorderColor] width:self.attributes.layerBorderWidth];
   wireframe.shapeStyle = [[FTSRShapeStyle alloc]initWithBackgroundColor:[FTSRUtils colorHexString:self.attributes.backgroundColor.CGColor] cornerRadius:@(self.attributes.layerCornerRadius) opacity:@(self.attributes.alpha)];

@@ -191,9 +191,9 @@ repositories {
 dependencies {
   // noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-sdk:1.7.0-alpha20'
-  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-native:1.1.1'
-  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-session-replay:0.1.2-alpha02'
+  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-sdk:1.7.0-alpha39'
+  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-native:1.1.2'
+  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-session-replay:0.1.3-alpha13'
 //   implementation files('../example/android/app/libs/ft-sdk-debug.aar')
 //    implementation files('../example/android/app/libs/ft-session-replay-debug.aar')
 

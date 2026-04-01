@@ -3,7 +3,7 @@ import {FTMobileConfig,FTMobileReactNative,EnvType,FTDBCacheDiscard,FTRemoteConf
 import {FTLogConfig,FTReactNativeLog,FTLogStatus,FTLogCacheDiscard} from './ft_logger'
 import {FTRUMConfig,FTRUMResource,FTReactNativeRUM,ErrorMonitorType,DeviceMetricsMonitorType,DetectFrequency,FTRUMResourceMetrics,FTRUMCacheDiscard,IOSCrashMonitoringType} from './ft_rum'
 import {FTTraceConfig,FTReactNativeTrace,TraceType} from './ft_tracing'
-import {FTSessionReplayConfig,SessionReplayPrivacy,FTReactNativeSessionReplay} from './ft_session_replay'
+import {FTSessionReplayConfig,SessionReplayPrivacy,FTReactNativeSessionReplay,TouchPrivacyLevel,TextAndInputPrivacyLevel,ImagePrivacyLevel} from './ft_session_replay'
 import {FTRumActionTracking} from './rum/FTRumActionTracking'
 import {FTRumErrorTracking} from './rum/FTRumErrorTracking'
 
@@ -14,7 +14,7 @@ import {FTRumErrorTracking} from './rum/FTRumErrorTracking'
    FTLogConfig, FTReactNativeLog,FTLogStatus,FTLogCacheDiscard,
    FTRUMConfig,FTReactNativeRUM,FTRUMResource,ErrorMonitorType,DeviceMetricsMonitorType,DetectFrequency,FTRUMResourceMetrics,FTRUMCacheDiscard,IOSCrashMonitoringType,
    FTTraceConfig,FTReactNativeTrace,TraceType,
-   FTSessionReplayConfig,SessionReplayPrivacy,FTReactNativeSessionReplay,
+   FTSessionReplayConfig,SessionReplayPrivacy,FTReactNativeSessionReplay,TouchPrivacyLevel,TextAndInputPrivacyLevel,ImagePrivacyLevel,
    FTRumActionTracking,
    FTRumErrorTracking
  };
