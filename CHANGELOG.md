@@ -2,6 +2,15 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# 0.4.0-alpha.5
+* iOS Fix the memory access crash caused by incorrect use of NSNumber modifiers in Session Replay
+* Compatible with iOS SDK 1.6.2-alpha.6
+
+# 0.4.0-alpha.4
+* iOS Fix crash issue caused by nil string in Session Replay
+* Compatible with iOS SDK 1.6.2-alpha.3
+
+---
 # 0.4.0-alpha.3
 * Android Fix import missing issues in rn76
 
@@ -16,7 +25,24 @@
 * Add Session Replay Features
 * Compatible with Android ft-sdk:1.7.0-alpha05 ft-session-replay:0.1.0-alpha05
 * Base on 0.3.3
-
+---
+# 0.3.16
+* Compatible with Android ft-sdk 1.6.17, iOS SDK 1.5.20
+* Add `FTRUMConfig.enableTraceWebView`, `FTRUMConfig.allowWebViewHost` to support webView collection rules configuration
+* Add `remoteConfiguration`, `remoteConfigMiniUpdateInterval`, and `remoteConfigOverrideRules` to `FTMobileConfig` to support remote configuration, update interval control, and config override rules
+* Add `FTRUMConfig.iosCrashMonitoringType` to support iOS crash monitoring type configuration
+* Add `FTMobileReactNative.appendBridgeContext` method to add bridge context for distinguishing data source or marking specific scenarios
+---
+# 0.3.16-alpha.1
+* Compatible with Android ft-sdk 1.6.15, iOS SDK 1.5.20
+* Add `FTRUMConfig.enableTraceWebView`, `FTRUMConfig.allowWebViewHost` to support webView collection rules configuration
+* Add `FTMobileConfig.remoteConfiguration` to support remote conditional configuration, and `FTMobileConfig.remoteConfigMiniUpdateInterval` to set minimum update interval after enabling remote control
+* Add `FTRUMConfig.iosCrashMonitoringType` to support iOS crash monitoring type configuration
+* Add `FTMobileReactNative.appendBridgeContext` method to add bridge context for distinguishing data source or marking specific scenarios
+---
+# 0.3.15
+* Compatible with Android ft-sdk 1.6.13, ft-native 1.1.2 
+* Compatible with iOS SDK 1.5.18
 ---
 # 0.3.14
 * Support setting error sampling through `FTRUMConfig.sessionErrorSampleRate`. When not sampled by sampleRate, RUM data from 1 minute before the error occurs can be sampled when an error occurs

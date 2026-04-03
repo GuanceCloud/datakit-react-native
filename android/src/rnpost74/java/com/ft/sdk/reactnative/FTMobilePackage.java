@@ -1,3 +1,8 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at Datadog (https://www.datadoghq.com/).
+ * Copyright 2016-Present Datadog, Inc.
+ */
 package com.ft.sdk.reactnative;
 
 import androidx.annotation.NonNull;
@@ -8,8 +13,12 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.uimanager.ViewManager;
+import com.ft.sdk.reactnative.sessionreplay.views.FTPrivacyViewManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FTMobilePackage extends BaseReactPackage {
@@ -66,5 +75,13 @@ public class FTMobilePackage extends BaseReactPackage {
         return moduleInfos;
       }
     };
+  }
+
+  @NonNull
+  @Override
+  public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactApplicationContext) {
+    List<ViewManager> viewManagers = new ArrayList<>();
+    viewManagers.add(new FTPrivacyViewManager(reactApplicationContext));
+    return viewManagers;
   }
 }

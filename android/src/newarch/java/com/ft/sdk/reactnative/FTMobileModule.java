@@ -63,4 +63,25 @@ public class FTMobileModule extends NativeFTMobileReactNativeSpec {
   public void clearAllData(Promise promise) {
     impl.clearAllData(promise);
   }
+
+  @ReactMethod
+  public void updateRemoteConfig(Promise promise) {
+    impl.updateRemoteConfig(promise); 
+  }
+
+  @ReactMethod
+  public void updateRemoteConfigWithMiniUpdateInterval(int interval, @Nullable ReadableArray rules, Promise promise) {
+    impl.updateRemoteConfigWithMiniUpdateInterval(interval, rules, promise);
+  }
+
+  @ReactMethod
+  public void addListener(String eventName) {
+    impl.addListener(eventName);
+  }
+
+  @ReactMethod
+  public void removeListeners(double count) {
+    impl.removeListeners(count);
+  }
+
 }

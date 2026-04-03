@@ -6,20 +6,20 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FTSRWireframesBuilder.h"
-#import "RCTUIManager.h"
+#import <FTMobileSDK/FTSRNodeWireframesBuilder.h>
+#import <React/RCTUIManager.h>
 @class FTViewAttributes,FTViewTreeRecorder;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FTRCTTextViewBuilder : NSObject<FTSRWireframesBuilder>
+@interface FTRCTTextViewBuilder : NSObject<FTSRNodeWireframesBuilder>
 @property (nonatomic, strong) FTViewAttributes *attributes;
 @property (nonatomic, assign) CGRect wireframeRect;
-@property (nonatomic, assign) int wireframeID;
+@property (nonatomic, assign) int64_t wireframeID;
 @property (nonatomic, strong) UIColor * backgroundColor;
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 @property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic,assign) CGFloat fontSize;
-@property (nonatomic,assign) CGRect contentRect;
+@property (nonatomic, assign) CGFloat fontSize;
+@property (nonatomic, assign) CGRect contentRect;
 @property (nonatomic, strong) id<FTSRTextObfuscatingProtocol> textObfuscator;
 
 @property (nonatomic, copy) NSString *text;

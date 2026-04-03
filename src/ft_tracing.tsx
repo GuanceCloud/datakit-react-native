@@ -5,11 +5,30 @@
  * Trace types for use.
  */
  export enum TraceType {
+  //
+  //  datadog trace
+  //
+  //  x-datadog-trace-id
+  //  x-datadog-parent-id
+  //  x-datadog-sampling-priority
+  //  x-datadog-origin
+  //
    ddTrace,
+   //
+   //  zipkin multi header
+   //
+   //  X-B3-TraceId
+   //  X-B3-SpanId
+   //  X-B3-Sampled
+   //
    zipkinMulti,
+   /// zipkin single header,b3
    zipkinSingle,
+   //  w3c, traceparent
    traceparent,
+   // skywalking 8.0+, sw-8
    skywalking,
+   // jaeger, header uber-trace-id
    jaeger,
  };
 /**
@@ -32,7 +51,7 @@
    * @param config trace configuration parameters.
    * @returns a Promise.
    */
-   setConfig(config: FTTraceConfig): Promise<void>; 
+   setConfig(config: FTTraceConfig): Promise<void>;
   /**
    * Get trace HTTP request header data.
    * @param url request URL
@@ -75,5 +94,5 @@
    }
 
  }
- export const FTReactNativeTrace:FTReactNativeTraceType = new FTReactNativeTraceWrapper(); 
+ export const FTReactNativeTrace:FTReactNativeTraceType = new FTReactNativeTraceWrapper();
 

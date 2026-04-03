@@ -1,5 +1,95 @@
-// import { NativeModules } from 'react-native';
-import { version as sdkVersion } from './version'
+import { EmitterSubscription, NativeEventEmitter, NativeModules } from 'react-native';
+import { version as sdkVersion } from './version';
+
+/**
+ * Bridge context manager for managing shared properties across RUM and Logger modules
+ * This class provides a centralized way to store and retrieve global properties that will be
+ * automatically merged with local properties when making calls to RUM and Logger functions
+ */
+class BridgeContextManager {
+  private static instance: BridgeContextManager;
+  private properties: Map<string, any> = new Map();
+
+  private constructor() {
+    // Initialize with SDK version information
+    this.initializeSDKInfo();
+  }
+
+  /**
+   * Initialize SDK information properties
+   * @private
+   */
+  private initializeSDKInfo(): void {
+    // Create sdk_bridge_info with version information
+    const sdkBridgeInfo = {
+      react_native: sdkVersion,
+    };
+
+    // Set the sdk_bridge_info property
+    this.properties.set('sdk_bridge_info', JSON.stringify(sdkBridgeInfo));
+  }
+
+  /**
+   * Get singleton instance of BridgeContextManager
+   * @returns BridgeContextManager instance
+   */
+  public static getInstance(): BridgeContextManager {
+    if (!BridgeContextManager.instance) {
+      BridgeContextManager.instance = new BridgeContextManager();
+    }
+    return BridgeContextManager.instance;
+  }
+
+  /**
+   * Add bridge context properties that will be automatically merged with local properties
+   * @param properties Object containing key-value pairs
+   */
+  public appendBridgeContext(properties: Record<string, any>): void {
+    // Store properties locally in JavaScript
+    try {
+      // Store properties locally in JavaScript
+      Object.entries(properties).forEach(([key, value]) => {
+        this.properties.set(key, value);
+      });
+    } catch (error) {
+      console.warn('Failed to append bridge context:', error);
+    }
+  }
+
+  /**
+   * Merge bridge context properties with local properties
+   * Bridge context properties take precedence over local properties
+   * @param localProperties Local properties to merge with bridge context properties
+   * @returns Merged properties object
+   */
+  public mergeWithLocalPropertiesSync(localProperties?: object): Record<string, any> {
+    try {
+      const merged: Record<string, any> = {};
+
+      // First add local properties (if any)
+      if (localProperties) {
+        Object.assign(merged, localProperties);
+      }
+
+      // Then add bridge context properties (these will override local properties with same keys)
+      this.properties.forEach((value, key) => {
+        merged[key] = value;
+      });
+
+      return merged;
+    } catch (error) {
+      console.warn(
+        'Failed to merge bridge context with local properties:',
+        error
+      );
+      // Return empty object or only local properties on error
+      return localProperties ? { ...localProperties } : {};
+    }
+  }
+}
+
+// Internal bridge context manager - not exported
+export const bridgeContextManager = BridgeContextManager.getInstance();
 
 /**
  * Environment.
@@ -8,6 +98,87 @@ export enum EnvType {
   prod, gray, pre, common, local
 };
 export enum FTDBCacheDiscard { discard, discardOldest };
+
+/**
+ * Remote config override rule matching condition for custom keys. Supports exact match and contains match.
+ * For exact match, set the value directly, for example: "userid": "test_user", which means the rule will be applied when the custom key "userid" is exactly "test_user".
+ * For contains match, set the value as an object with a "contains" field, for example: "userid": { "contains": "test_user" }, which means the rule will be applied when the custom key "userid" contains the object "test_user".
+*/
+export type FTRemoteConfigCustomKeyContainsMatch = {
+  contains: string | number | boolean;
+};
+
+/**
+ * Matching rules for remote config override
+ * Defines matching conditions using customKeys
+ */
+export type FTRemoteConfigOverrideMatch = {
+  customKeys?: Record<string, string | number | boolean | FTRemoteConfigCustomKeyContainsMatch>;
+};
+
+/**
+ * Values that can be modified by remote config override rules.
+ * These values will adjust the fetched remote configuration before it is applied.
+*/
+export type FTRemoteConfigOverrideValues = {
+  env?: string;
+  serviceName?: string;
+  autoSync?: boolean;
+  compressIntakeRequests?: boolean;
+  syncPageSize?: number;
+  syncSleepTime?: number;
+  rumSampleRate?: number;
+  rumSessionOnErrorSampleRate?: number;
+  rumEnableTraceUserAction?: boolean;
+  rumEnableTraceUserView?: boolean;
+  rumEnableTraceUserResource?: boolean;
+  rumEnableResourceHostIP?: boolean;
+  rumEnableTrackAppUIBlock?: boolean;
+  rumBlockDurationMs?: number;
+  rumEnableTrackAppCrash?: boolean;
+  rumEnableTrackAppANR?: boolean;
+  rumEnableTraceWebView?: boolean;
+  rumAllowWebViewHost?: Array<string>;
+  traceSampleRate?: number;
+  traceEnableAutoTrace?: boolean;
+  traceType?: string;
+  logSampleRate?: number;
+  logLevelFilters?: Array<string>;
+  logEnableCustomLog?: boolean;
+  logEnableConsoleLog?: boolean;
+};
+
+/**
+ * Remote config override rules .
+ * Adjust the fetched remote configuration before application.
+*/
+export type FTRemoteConfigOverrideRule = {
+  id?: string,
+  enabled?: boolean,
+  match: FTRemoteConfigOverrideMatch,
+  override: FTRemoteConfigOverrideValues,
+}
+/**
+ * Final result of the remote config update
+ * @param triggerType the type of remote config update trigger, auto or manual
+ * @param success whether the remote config update was successful
+ * @param platform the platform of the device, ios or android
+ * @param timestamp the timestamp when the remote config update was triggered
+ * @param rawJson the final remote config update result, in JSON string format
+ * @param errorCode the error code if the remote config update failed, may be null if the update was successful
+ * @param errorMessage the error message if the remote config update failed, may be null if the update was successful
+ * @param appliedOverrideRuleIds the list of override rule IDs applied in this remote config update, may be null if no rules were applied
+ */
+export type FTRemoteConfigResult = {
+  triggerType: 'auto' | 'manual';
+  success: boolean;
+  platform: 'ios' | 'android';
+  timestamp: number;
+  rawJson?: string;
+  errorCode?: string | number;
+  errorMessage?: string;
+  appliedOverrideRuleIds?: string[];
+};
 /**
  * Configure SDK startup parameters.
  * @param serverUrl data reporting address, deprecated, use [datakitUrl] instead
@@ -29,7 +200,10 @@ export enum FTDBCacheDiscard { discard, discardOldest };
  * @param dbDiscardStrategy db data discard strategy
  * @param dataModifier data modifier, modify individual fields {key:value}, after setting, the SDK will replace the original value with the set value according to the key
  * @param lineDataModifier data modifier, modify single data {"measurement":measurement,"data":{key:value}}, after setting, the SDK will replace the original value with the set value according to the key
- */
+ * @param remoteConfiguration Set whether to enable remote dynamic configuration
+ * @param remoteConfigMiniUpdateInterval Set remote dynamic configuration minimum update interval, unit seconds, default 12*60*60
+ * @param remoteConfigOverrideRules Remote config override rules .Adjust the fetched remote configuration before application.
+*/
  export interface FTMobileConfig {
    /**
     * @deprecated "serverUrl" parameter renamed to "datakitUrl"
@@ -52,11 +226,12 @@ export enum FTDBCacheDiscard { discard, discardOldest };
    enableLimitWithDbSize?:boolean,
    dbCacheLimit?:number,
    dbDiscardStrategy?:FTDBCacheDiscard,
-   pkgInfo?: string,
    dataModifier?:object,
-   lineDataModifier?:object
+   lineDataModifier?:object,
+   remoteConfiguration?:boolean,
+   remoteConfigMiniUpdateInterval?:number,
+   remoteConfigOverrideRules?:Array<FTRemoteConfigOverrideRule>,
  }
-
 
 type FTMobileReactNativeType = {
 
@@ -118,16 +293,39 @@ type FTMobileReactNativeType = {
     * Clear all data that has not yet been uploaded to the server.
     */
    clearAllData():Promise<void>
+   /**
+    * Add bridge context properties that will be automatically merged with local properties
+    * @param properties Object containing key-value pairs
+    */
+   appendBridgeContext(properties: Record<string, any>): void;
+   /**
+   * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
+    */
+   updateRemoteConfig():Promise<FTRemoteConfigResult>
+   /**
+    * Update remote configuration with minimum update interval, after enabling remote configuration, you can call this method to update the configuration in real time.
+    * This method is used to set the minimum update interval for remote configuration updates. If the time since the last update is less than the specified interval, the update will not be performed.
+    * @param interval minimum update interval, unit seconds
+    * @param rules Remote config override rules .Adjust the fetched remote configuration before application. 
+    * @returns the result of the remote config update
+   */
+   updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>
+   /**
+    * Listen for auto remote configuration updates triggered by the native SDK.
+    * Manual updates are returned through the update Promise instead of this event.
+    */
+   addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription
  };
 
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
    private sdk:FTMobileReactNativeType = require('./specs/NativeFTMobileReactNative')
         .default;
+   private emitter = new NativeEventEmitter(NativeModules.FTMobileReactNative);
+     
    sdkConfig(config:FTMobileConfig): Promise<void> {
      if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
        config.datakitUrl = config.serverUrl;
      }
-     config.pkgInfo = sdkVersion;
      return this.sdk.sdkConfig(config);
    }
    bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {
@@ -157,6 +355,18 @@ type FTMobileReactNativeType = {
    clearAllData():Promise<void>{
     return this.sdk.clearAllData();
    }
+   appendBridgeContext(properties: Record<string, any>): void {
+     // Use bridgeContextManager to store properties in JavaScript and send to native SDK
+    bridgeContextManager.appendBridgeContext(properties);
+  }
+   updateRemoteConfig():Promise<FTRemoteConfigResult>{
+    return this.sdk.updateRemoteConfig();
+   }
+   updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>{
+      return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval,rules);
+   }
+   addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription {
+     return this.emitter.addListener('ft_remote_config_callback', listener);
+   }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();
-

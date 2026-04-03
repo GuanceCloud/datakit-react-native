@@ -1,7 +1,7 @@
 {
   "name": "@cloudcare/react-native-mobile",
-  "version": "0.4.0-alpha.3",
-  "description": "Based on Guance Cloud Android iOS React Native SDK",
+  "version": "0.4.0-alpha.5",
+  "description": "Base on Guance Android iOS React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -59,8 +59,8 @@
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^2.0.0",
     "@types/jest": "^26.0.0",
-    "@types/react": "^16.9.19",
-    "@types/react-native": "^0.70.0",
+    "@types/react": "^18.2.6",
+    "@types/react-native": "0.71.0",
     "commitlint": "^11.0.0",
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^7.0.0",
@@ -123,7 +123,8 @@
     ],
     "rules": {
       "prettier/prettier": [
-        "error", {
+        "error",
+        {
           "quoteProps": "consistent",
           "singleQuote": true,
           "tabWidth": 2,
@@ -151,7 +152,8 @@
       "commonjs",
       "module",
       [
-        "typescript", {
+        "typescript",
+        {
           "project": "tsconfig.build.json"
         }
       ]
@@ -159,7 +161,7 @@
   },
   "codegenConfig": {
         "name": "FTSdkReactNative",
-        "type": "modules",
+        "type": "all",
         "jsSrcsDir": "./src/specs",
         "android": {
             "javaPackageName": "com.ft.sdk.reactnative"

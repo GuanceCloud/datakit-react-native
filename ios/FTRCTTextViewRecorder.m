@@ -1,24 +1,23 @@
-//
-//  FTRCTTextViewRecorder.m
-//  FTMobileReactNativeSDK
-//
-//  Created by hulilei on 2024/9/25.
-//
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at Datadog (https://www.datadoghq.com/).
+ * Copyright 2016-Present Datadog, Inc.
+ */
 
 #import "FTRCTTextViewRecorder.h"
-#import "RCTUIManagerUtils.h"
-#import "RCTTextView.h"
-#import "RCTShadowView.h"
-#import "RCTRawTextShadowView.h"
-#import "RCTTextShadowView.h"
-#import "RCTVirtualTextShadowView.h"
-#import "FTSRWireframe.h"
-#import "FTViewAttributes.h"
-#import "FTSRUtils.h"
-#import "FTSystemColors.h"
-#import "FTViewTreeRecordingContext.h"
-#import "FTSRUtils.h"
-#import "RCTShadowView+Layout.h"
+#import <React/RCTUIManagerUtils.h>
+#import <React/RCTTextView.h>
+#import <React/RCTShadowView.h>
+#import <React/RCTRawTextShadowView.h>
+#import <React/RCTTextShadowView.h>
+#import <React/RCTVirtualTextShadowView.h>
+#import <FTMobileSDK/FTSRWireframe.h>
+#import <FTMobileSDK/FTViewAttributes.h>
+#import <FTMobileSDK/FTSRUtils.h>
+#import <FTMobileSDK/FTSystemColors.h>
+#import <FTMobileSDK/FTViewTreeRecordingContext.h>
+#import <FTMobileSDK/FTSRUtils.h>
+#import <React/RCTShadowView+Layout.h>
 #import "FTRCTFabricWrapper.h"
 
 @interface FTRCTTextViewRecorder ()
@@ -144,10 +143,10 @@
 @end
 
 @implementation FTRCTTextViewBuilder
-- (nonnull NSArray<FTSRWireframe *> *)buildWireframes {
+- (nonnull NSArray<FTSRWireframe *> *)buildWireframesWithBuilder:(nonnull FTSessionReplayWireframesBuilder *)builder {
   CGRect frame = [self relativeIntersectedRect];
   FTSRTextWireframe *wireframe = [[FTSRTextWireframe alloc]initWithIdentifier:self.wireframeID frame:frame];
-
+  
   wireframe.text = [self.textObfuscator mask:self.text];
   wireframe.border = [[FTSRShapeBorder alloc]initWithColor:[FTSRUtils colorHexString:self.attributes.layerBorderColor] width:self.attributes.layerBorderWidth];
   wireframe.shapeStyle = [[FTSRShapeStyle alloc]initWithBackgroundColor:[FTSRUtils colorHexString:self.attributes.backgroundColor.CGColor] cornerRadius:@(self.attributes.layerCornerRadius) opacity:@(self.attributes.alpha)];
@@ -155,7 +154,7 @@
   FTSRTextPosition *textPosition = [[FTSRTextPosition alloc]init];
   textPosition.alignment = [[FTAlignment alloc]initWithTextAlignment:self.textAlignment vertical:@"top"];
   CGRect textFrame = [self textFrame];
-  textPosition.padding = [[FTPadding alloc]initWithLeft:CGRectGetMinX(frame)-CGRectGetMinX(textFrame) top:CGRectGetMinY(frame)-CGRectGetMinY(textFrame) right:CGRectGetMaxX(frame)-CGRectGetMaxX(textFrame) bottom:CGRectGetMaxY(frame)-CGRectGetMaxY(textFrame)];
+  textPosition.padding = [[FTPadding alloc]initWithLeft:CGRectGetMinX(textFrame)-CGRectGetMinX(frame) top:CGRectGetMinY(textFrame)-CGRectGetMinY(frame) right:CGRectGetMaxX(frame)-CGRectGetMaxX(textFrame) bottom:CGRectGetMaxY(frame)-CGRectGetMaxY(textFrame)];
   wireframe.textPosition = textPosition;
   wireframe.clip = [[FTSRContentClip alloc] initWithFrame:self.wireframeRect clip:self.attributes.clip];;
   return @[wireframe];

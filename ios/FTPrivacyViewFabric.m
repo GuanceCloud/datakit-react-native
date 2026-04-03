@@ -1,0 +1,89 @@
+/*
+ *
+ *  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ *  * This product includes software developed at Datadog (https://www.datadoghq.com/).
+ *  * Copyright 2016-Present Datadog, Inc.
+ *
+ */
+#if RCT_NEW_ARCH_ENABLED
+#import <react/renderer/components/FTSdkReactNative/ComponentDescriptors.h>
+#import <react/renderer/components/FTSdkReactNative/EventEmitters.h>
+#import <react/renderer/components/FTSdkReactNative/Props.h>
+#import <react/renderer/components/FTSdkReactNative/RCTComponentViewHelpers.h>
+#import <React/RCTFabricComponentsPlugins.h>
+#import "FTPrivacyViewFabric.h"
+#import <objc/runtime.h>
+#import <FTMobileSDK/FTSessionReplayPrivacyOverrides.h>
+#import <FTMobileSDK/UIView+FTSRPrivacy.h>
+
+using namespace facebook::react;
+
+@implementation FTPrivacyViewFabric
+
+- (instancetype)init {
+  if (self = [super init]) {
+    static const auto defaultProps = std::make_shared<FTPrivacyViewProps const>();
+    _props = defaultProps;
+  }
+  return self;
+}
+
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps {
+    const auto &newProps = *std::static_pointer_cast<FTPrivacyViewProps const>(props);
+    const auto &oldPropsRef = oldProps ? *std::static_pointer_cast<FTPrivacyViewProps const>(oldProps) : FTPrivacyViewProps{};
+    
+    if (newProps.textAndInputPrivacy != oldPropsRef.textAndInputPrivacy) {
+        NSString *value = [NSString stringWithUTF8String:newProps.textAndInputPrivacy.c_str()];
+        if (value.length > 0) {
+            if ([value isEqualToString:@"MASK_SENSITIVE_INPUTS"]) {
+                self.sessionReplayPrivacyOverrides.nTextAndInputPrivacy = @0;
+            } else if ([value isEqualToString:@"MASK_ALL_INPUTS"]) {
+                self.sessionReplayPrivacyOverrides.nTextAndInputPrivacy = @1;
+            } else if ([value isEqualToString:@"MASK_ALL"]) {
+                self.sessionReplayPrivacyOverrides.nTextAndInputPrivacy = @2;
+            }
+        }
+    }
+    
+    if (newProps.imagePrivacy != oldPropsRef.imagePrivacy) {
+        NSString *value = [NSString stringWithUTF8String:newProps.imagePrivacy.c_str()];
+        if (value.length > 0) {
+            if ([value isEqualToString:@"MASK_NON_BUNDLED_ONLY"]) {
+                self.sessionReplayPrivacyOverrides.nImagePrivacy = @0;
+            } else if ([value isEqualToString:@"MASK_ALL"]) {
+                self.sessionReplayPrivacyOverrides.nImagePrivacy = @1;
+            } else if ([value isEqualToString:@"MASK_NONE"]) {
+                self.sessionReplayPrivacyOverrides.nImagePrivacy = @2;
+            }
+        }
+    }
+    
+    if (newProps.touchPrivacy != oldPropsRef.touchPrivacy) {
+        NSString *value = [NSString stringWithUTF8String:newProps.touchPrivacy.c_str()];
+        if (value.length > 0) {
+            if ([value isEqualToString:@"SHOW"]) {
+                self.sessionReplayPrivacyOverrides.nTouchPrivacy = @0;
+            } else if ([value isEqualToString:@"HIDE"]) {
+                self.sessionReplayPrivacyOverrides.nTouchPrivacy = @1;
+            }
+        }
+    }
+    
+    if (newProps.hide != oldPropsRef.hide) {
+        self.sessionReplayPrivacyOverrides.hide = newProps.hide;
+    }
+    
+    if (newProps.nativeID != oldPropsRef.nativeID) {
+        NSString *value = [NSString stringWithUTF8String:newProps.nativeID.c_str()];
+        self.nativeID = value;
+    }
+    
+    [super updateProps:props oldProps:oldProps];
+}
+
+Class<RCTComponentViewProtocol> FTPrivacyViewCls(void)
+{
+  return FTPrivacyViewFabric.class;
+}
+@end
+#endif

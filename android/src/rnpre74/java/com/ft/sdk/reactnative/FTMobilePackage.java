@@ -6,6 +6,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.ft.sdk.reactnative.sessionreplay.views.FTPrivacyViewManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +28,9 @@ public class FTMobilePackage implements ReactPackage {
   @NonNull
   @Override
   public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactApplicationContext) {
-    return Collections.emptyList();
+    List<ViewManager> viewManagers = new ArrayList<>();
+    viewManagers.add(new FTPrivacyViewManager(reactApplicationContext));
+    return viewManagers;
   }
 
 

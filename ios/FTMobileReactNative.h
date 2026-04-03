@@ -15,7 +15,8 @@
 #else
 
 #import <React/RCTBridgeModule.h>
-@interface FTMobileReactNative : NSObject <RCTBridgeModule>
+#import <React/RCTEventEmitter.h>
+@interface FTMobileReactNative : RCTEventEmitter<RCTBridgeModule>
 #endif
 
 @end
