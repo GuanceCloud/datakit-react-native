@@ -385,7 +385,7 @@ RCT_REMAP_METHOD(sdkConfig,
     _remoteConfigurationEnabled = config.remoteConfiguration;
     _remoteConfigMiniUpdateInterval = config.remoteConfigMiniUpdateInterval;
     if (config.remoteConfiguration) {
-      __weak typeof(self) weakSelf = self;
+      __weak __typeof(self) weakSelf = self;
       config.remoteConfigFetchCompletionBlock = ^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
@@ -515,7 +515,7 @@ RCT_REMAP_METHOD(updateRemoteConfigWithMiniUpdateInterval,
     reject(@"E_REMOTE_CONFIG_DISABLED", @"Remote configuration is not enabled.", nil);
     return;
   }
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   [FTMobileAgent updateRemoteConfigWithMiniUpdateInterval:(NSInteger)interval completion:^FTRemoteConfigModel * _Nullable(BOOL success, NSError * _Nullable error, FTRemoteConfigModel * _Nullable model, NSDictionary<NSString *,id> * _Nullable content) {
     __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {
