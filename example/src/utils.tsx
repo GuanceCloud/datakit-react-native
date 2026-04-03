@@ -1,16 +1,17 @@
-import { StyleSheet } from 'react-native';
-
+import {StyleSheet} from 'react-native';
 
 const Utils = {
-
   getUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-
-}
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+      /[xy]/g,
+      function (c) {
+        var r = (Math.random() * 16) | 0,
+          v = c == 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      },
+    );
+  },
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
@@ -100,13 +101,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
- pickerContainer: {
-    backgroundColor: 'white', 
+  pickerContainer: {
+    backgroundColor: 'white',
     padding: 20,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
-    pickerWrapper: {
+  pickerWrapper: {
     backgroundColor: 'white',
     overflow: 'hidden',
     borderWidth: 1,
@@ -119,16 +120,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
-   picker: {
+  picker: {
     width: '100%',
     height: 150,
-    color: '#000', // 确保选择器文字不透明
+    color: '#000', // Ensure picker text is opaque
   },
   pickerItem: {
-    color: '#000', // 确保选项文字不透明
-    backgroundColor: 'white', // 选项背景色
+    color: '#000', // Ensure picker item text is opaque
+    backgroundColor: 'white', // Picker item background color
   },
- cancelButton: {
+  cancelButton: {
     flex: 1,
     padding: 12,
     backgroundColor: '#f5f5f5',
@@ -204,8 +205,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   leftMargin: {
-    marginLeft: 12
+    marginLeft: 12,
   },
 });
 
-export { Utils, styles }
+export {Utils, styles};

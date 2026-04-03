@@ -12,39 +12,36 @@ export enum SessionReplayPrivacy {
  * Available privacy levels for touch masking in session replay.
  */
 export enum TouchPrivacyLevel {
-  /// Show all user touches
-  SHOW = 0,
-  /// Hide all user touches
-  HIDE = 1,
+  SHOW = 'SHOW',
+  HIDE = 'HIDE',
 }
 
 /**
  * Available privacy levels for image masking in session replay
  */
 export enum ImagePrivacyLevel {
-  /// Only SF symbols and images loaded using [UIImage imageNamed:]/UIImage(named:) that are bundled in the application will be recorded
-  MASK_NON_BUNDLED_ONLY = 0,
-  /// No images will be recorded
-  MASK_ALL = 1,
-  /// All images will be recorded, including images downloaded from the internet or generated during application runtime
-  MASK_NONE = 2,
+  MASK_NON_BUNDLED_ONLY = 'MASK_NON_BUNDLED_ONLY',
+  MASK_ALL = 'MASK_ALL',
+  MASK_NONE = 'MASK_NONE',
 }
 
 /**
  * Available privacy levels for text and input masking in session replay
  */
 export enum TextAndInputPrivacyLevel {
-  /// Show all text except sensitive inputs. For example: password fields
-  MASK_SENSITIVE_INPUTS = 0,
-  /// Mask all input fields. For example: textfields, switches, checkboxes
-  MASK_ALL_INPUTS = 1,
-  /// Mask all text and inputs. For example: label
-  MASK_ALL = 2,
+  MASK_SENSITIVE_INPUTS = 'MASK_SENSITIVE_INPUTS',
+  MASK_ALL_INPUTS = 'MASK_ALL_INPUTS',
+  MASK_ALL = 'MASK_ALL',
 }
 /**
  * Set Session Replay configuration.
  * @param sampleRate Sampling rate
  * @param privacy Privacy level for content masking in session replay
+ * @param touchPrivacy Privacy level for touch masking in session replay
+ * @param textAndInputPrivacy Privacy level for text and input masking in session replay
+ * @param imagePrivacy Privacy level for image masking in session replay
+ * @param enableLinkRUMKeys Enable linking RUM data with session replay data. The value is an array of RUM global context keys. When the keys exist in RUM global context, the corresponding values will be linked to session replay data.
+ * @returns a Promise.
  */
 export interface FTSessionReplayConfig {
   sampleRate?: number;

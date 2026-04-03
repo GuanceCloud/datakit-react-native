@@ -16,6 +16,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { FTSessionReplayView } from '@cloudcare/react-native-mobile';
+
 import Slider from '@react-native-community/slider'
 import { styles } from './utils';
 const wait = (timeout: number) => {
@@ -127,18 +129,20 @@ class SessionReplayScreen extends React.Component<{}, State> {
         }>
           {/* Page Title */}
           <Text style={styles.pageTitle}>Session Replay Demo</Text>
-
+        
           {/* Text Input Area */}
+          <FTSessionReplayView.MaskAll nativeID='maskAll'>
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Text</Text>
             <Text style={styles.paddedText}>This text has padding set.</Text>
             <Text style={styles.redText}>This is a red Text component</Text>
           </View>
-
+          </FTSessionReplayView.MaskAll>
           {/* Switch and Slider Area */}
+         
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Controls</Text>
-
+            <FTSessionReplayView.MaskAll showTouch={true} nativeID='maskAll.showTouch'>
             <View style={styles.srSwitchContainter}>
               <Text>Toggle Switch: {this.state.toggleSwitch ? 'ON' : 'OFF'}</Text>
               <Switch
@@ -148,8 +152,10 @@ class SessionReplayScreen extends React.Component<{}, State> {
                 trackColor={{ false: "#767577", true: "#81C784" }}
               />
             </View>
+            </FTSessionReplayView.MaskAll>
               <View style={styles.sliderContainer}>
               <Text>Slider Value: {this.state.sliderValue.toFixed(2)}</Text>
+               <FTSessionReplayView.Hide nativeID='hideView' >
               <Slider
                 value={this.state.sliderValue}
                 onValueChange={(value) => this.setState({ sliderValue: value })}
@@ -159,6 +165,7 @@ class SessionReplayScreen extends React.Component<{}, State> {
                 minimumTrackTintColor="#2196F3"
                 maximumTrackTintColor="#BDBDBD"
               />
+              </FTSessionReplayView.Hide>
             </View>
 
           </View>

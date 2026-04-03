@@ -1,9 +1,8 @@
-//
-//  FTRCTTextViewRecorder.m
-//  FTMobileReactNativeSDK
-//
-//  Created by hulilei on 2024/9/25.
-//
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at Datadog (https://www.datadoghq.com/).
+ * Copyright 2016-Present Datadog, Inc.
+ */
 
 #import "FTRCTTextViewRecorder.h"
 #import <React/RCTUIManagerUtils.h>
