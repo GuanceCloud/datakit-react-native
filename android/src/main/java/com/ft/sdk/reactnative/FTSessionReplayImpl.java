@@ -30,9 +30,9 @@ public class FTSessionReplayImpl {
     Double sampleRate = map.get("sampleRate") instanceof Double ? (Double) map.get("sampleRate") : null;
     Double sessionReplayOnErrorSampleRate = map.get("sessionReplayOnErrorSampleRate") instanceof Double ? (Double) map.get("sessionReplayOnErrorSampleRate") : null;
     Integer privacy = ReactNativeUtils.convertToNativeInt(map.get("privacy"));
-    Integer touchPrivacy = ReactNativeUtils.convertToNativeInt(map.get("touchPrivacy"));
-    Integer textAndInputPrivacy = ReactNativeUtils.convertToNativeInt(map.get("textAndInputPrivacy"));
-    Integer imagePrivacy = ReactNativeUtils.convertToNativeInt(map.get("imagePrivacy"));
+    String touchPrivacy = map.get("touchPrivacy") instanceof String ? (String) map.get("touchPrivacy") : null;
+    String textAndInputPrivacy = map.get("textAndInputPrivacy") instanceof String ? (String) map.get("textAndInputPrivacy") : null;
+    String imagePrivacy = map.get("imagePrivacy") instanceof String ? (String) map.get("imagePrivacy") : null;
     Object enableLinkRUMKeysObj = map.get("enableLinkRUMKeys");
 
     FTSessionReplayConfig sessionReplayConfig = new FTSessionReplayConfig();
@@ -59,10 +59,10 @@ public class FTSessionReplayImpl {
     // Handle fine-grained privacy settings (overrides deprecated privacy setting if provided)
     if (touchPrivacy != null) {
       switch (touchPrivacy) {
-        case 0:
+        case "SHOW":
           sessionReplayConfig.setTouchPrivacy(TouchPrivacy.SHOW);
           break;
-        case 1:
+        case "HIDE":
           sessionReplayConfig.setTouchPrivacy(TouchPrivacy.HIDE);
           break;
       }
@@ -70,13 +70,13 @@ public class FTSessionReplayImpl {
 
     if (textAndInputPrivacy != null) {
       switch (textAndInputPrivacy) {
-        case 0:
+        case "MASK_SENSITIVE_INPUTS":
           sessionReplayConfig.setTextAndInputPrivacy(TextAndInputPrivacy.MASK_SENSITIVE_INPUTS);
           break;
-        case 1:
+        case "MASK_ALL_INPUTS":
           sessionReplayConfig.setTextAndInputPrivacy(TextAndInputPrivacy.MASK_ALL_INPUTS);
           break;
-        case 2:
+        case "MASK_ALL":
           sessionReplayConfig.setTextAndInputPrivacy(TextAndInputPrivacy.MASK_ALL);
           break;
       }
@@ -84,15 +84,15 @@ public class FTSessionReplayImpl {
 
     if (imagePrivacy != null) {
       switch (imagePrivacy) {
-        case 0:
+        case "MASK_NON_BUNDLED_ONLY":
           // MASK_NON_BUNDLED_ONLY (iOS) maps to MASK_LARGE_ONLY (Android)
           sessionReplayConfig.setImagePrivacy(ImagePrivacy.MASK_LARGE_ONLY);
           break;
-        case 1:
+        case "MASK_ALL":
           // MASK_ALL
           sessionReplayConfig.setImagePrivacy(ImagePrivacy.MASK_ALL);
           break;
-        case 2:
+        case "MASK_NONE":
           // MASK_NONE
           sessionReplayConfig.setImagePrivacy(ImagePrivacy.MASK_NONE);
           break;

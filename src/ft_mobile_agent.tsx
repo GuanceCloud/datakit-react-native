@@ -320,7 +320,17 @@ type FTMobileReactNativeType = {
  class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
    private sdk:FTMobileReactNativeType = require('./specs/NativeFTMobileReactNative')
         .default;
-   private emitter = new NativeEventEmitter(NativeModules.FTMobileReactNative);
+   private emitter: NativeEventEmitter | null = null;
+
+   private getEmitter(): NativeEventEmitter {
+     if (this.emitter) {
+       return this.emitter;
+     }
+
+     const nativeEventModule = NativeModules.FTMobileReactNative ?? this.sdk;
+     this.emitter = new NativeEventEmitter(nativeEventModule as never);
+     return this.emitter;
+   }
      
    sdkConfig(config:FTMobileConfig): Promise<void> {
      if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
@@ -366,7 +376,7 @@ type FTMobileReactNativeType = {
       return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval,rules);
    }
    addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription {
-     return this.emitter.addListener('ft_remote_config_callback', listener);
+     return this.getEmitter().addListener('ft_remote_config_callback', listener);
    }
  }
 export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();

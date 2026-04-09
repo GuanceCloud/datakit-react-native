@@ -64,6 +64,6 @@ public class FabricTextViewUtils extends TextViewUtils {
   }
 
   private void handleError(Exception e, String message) {
-    logger.e(TAG, "message:" + message + "," + LogUtils.getStackTraceString(e));
+    logger.w(TAG, "message:" + message + "," + LogUtils.getStackTraceString(e));
   }
 }

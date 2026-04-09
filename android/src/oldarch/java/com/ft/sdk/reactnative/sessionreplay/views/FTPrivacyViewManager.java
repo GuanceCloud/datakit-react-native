@@ -33,8 +33,8 @@ public class FTPrivacyViewManager extends ViewGroupManager<FTPrivacyView> {
         return new FTPrivacyView(context);
     }
 
-    @ReactProp(name = "hide")
-    public void setHide(FTPrivacyView view, Boolean value) {
+    @ReactProp(name = "hide", defaultBoolean = false)
+    public void setHide(FTPrivacyView view, boolean value) {
         if (view != null) {
             view.setHide(value);
         }

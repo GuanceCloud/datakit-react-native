@@ -1,16 +1,20 @@
 package com.ft.sdk.reactnative;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 
 public class FTMobileModule extends NativeFTMobileReactNativeSpec {
-  private final FTMobileImpl impl = new FTMobileImpl();
+  private final FTMobileImpl impl;
 
   public FTMobileModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    impl = new FTMobileImpl(reactContext);
   }
 
   @ReactMethod

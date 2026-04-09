@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1762EF462F7CEEC200930450 /* FTPrivacyView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1762EF452F7CEEC200930450 /* FTPrivacyView.mm */; };
-		1762EF492F7CF40900930450 /* FTPrivacyViewFabric.m in Sources */ = {isa = PBXBuildFile; fileRef = 1762EF482F7CF40900930450 /* FTPrivacyViewFabric.m */; };
+		1762EF492F7CF40900930450 /* FTPrivacyViewFabric.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1762EF482F7CF40900930450 /* FTPrivacyViewFabric.mm */; };
 		17C492802D43B4F900487920 /* FTReactNativeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C4927F2D43B4F900487920 /* FTReactNativeUtils.m */; };
 		17E2407F2CA93E2600E8014B /* FTReactNativeSessionReplay.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E2407E2CA93E2600E8014B /* FTReactNativeSessionReplay.mm */; };
 /* End PBXBuildFile section */
@@ -30,7 +30,7 @@
 		1762EF442F7CEEC200930450 /* FTPrivacyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTPrivacyView.h; sourceTree = "<group>"; };
 		1762EF452F7CEEC200930450 /* FTPrivacyView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FTPrivacyView.mm; sourceTree = "<group>"; };
 		1762EF472F7CF40900930450 /* FTPrivacyViewFabric.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTPrivacyViewFabric.h; sourceTree = "<group>"; };
-		1762EF482F7CF40900930450 /* FTPrivacyViewFabric.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTPrivacyViewFabric.m; sourceTree = "<group>"; };
+		1762EF482F7CF40900930450 /* FTPrivacyViewFabric.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FTPrivacyViewFabric.mm; sourceTree = "<group>"; };
 		17A8D6132E6FF23800A990A2 /* FTRCTTextViewRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTRCTTextViewRecorder.h; sourceTree = "<group>"; };
 		17A8D6142E6FF23800A990A2 /* FTRCTTextViewRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTRCTTextViewRecorder.m; sourceTree = "<group>"; };
 		17C4927E2D43B4F900487920 /* FTReactNativeUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTReactNativeUtils.h; sourceTree = "<group>"; };
@@ -70,7 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				1762EF472F7CF40900930450 /* FTPrivacyViewFabric.h */,
-				1762EF482F7CF40900930450 /* FTPrivacyViewFabric.m */,
+				1762EF482F7CF40900930450 /* FTPrivacyViewFabric.mm */,
 				1762EF442F7CEEC200930450 /* FTPrivacyView.h */,
 				1762EF452F7CEEC200930450 /* FTPrivacyView.mm */,
 				17A8D6132E6FF23800A990A2 /* FTRCTTextViewRecorder.h */,
@@ -150,7 +150,7 @@
 			files = (
 				1762EF462F7CEEC200930450 /* FTPrivacyView.mm in Sources */,
 				17C492802D43B4F900487920 /* FTReactNativeUtils.m in Sources */,
-				1762EF492F7CF40900930450 /* FTPrivacyViewFabric.m in Sources */,
+				1762EF492F7CF40900930450 /* FTPrivacyViewFabric.mm in Sources */,
 				17E2407F2CA93E2600E8014B /* FTReactNativeSessionReplay.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

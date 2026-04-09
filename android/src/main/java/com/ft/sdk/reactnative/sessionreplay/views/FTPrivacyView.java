@@ -18,7 +18,7 @@ public class FTPrivacyView extends ReactViewGroup {
     private TextAndInputPrivacy textAndInputPrivacy;
     private ImagePrivacy imagePrivacy;
     private TouchPrivacy touchPrivacy;
-    private Boolean hide;
+    private boolean hide;
     private String nativeID;
 
     public FTPrivacyView(Context context) {
@@ -82,11 +82,9 @@ public class FTPrivacyView extends ReactViewGroup {
         PrivacyOverrideExtensions.setSessionReplayTouchPrivacy(this, this.touchPrivacy);
     }
 
-    public void setHide(Boolean value) {
+    public void setHide(boolean value) {
         this.hide = value;
-        if (this.hide != null) {
-            PrivacyOverrideExtensions.setSessionReplayHidden(this, this.hide);
-        }
+        PrivacyOverrideExtensions.setSessionReplayHidden(this, this.hide);
     }
 
     public void setNativeID(String nativeID) {

@@ -6,10 +6,15 @@
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewComponentView.h>
-
+#import <react/renderer/components/FTSdkReactNative/ComponentDescriptors.h>
+#import <react/renderer/components/FTSdkReactNative/EventEmitters.h>
+#import <react/renderer/components/FTSdkReactNative/Props.h>
+#import <react/renderer/components/FTSdkReactNative/RCTComponentViewHelpers.h>
+#import <React/RCTFabricComponentsPlugins.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FTPrivacyViewFabric : RCTViewComponentView
+@property (nonatomic, copy) NSString *nativeID;
 
 @end
 

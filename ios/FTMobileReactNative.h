@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <React/RCTEventEmitter.h>
 
 
 #if RCT_NEW_ARCH_ENABLED
 #import <FTSdkReactNative/FTSdkReactNative.h>
-@interface FTMobileReactNative: NSObject <NativeFTMobileReactNativeSpec>
+@interface FTMobileReactNative: RCTEventEmitter <NativeFTMobileReactNativeSpec>
 #else
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
 @interface FTMobileReactNative : RCTEventEmitter<RCTBridgeModule>
 #endif
 

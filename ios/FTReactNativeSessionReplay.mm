@@ -38,18 +38,34 @@ RCT_REMAP_METHOD(sessionReplayConfig,
   
   // Handle fine-grained privacy settings (overrides deprecated privacy setting if provided)
   if([context.allKeys containsObject:@"touchPrivacy"]){
-    int touchPrivacy = [context[@"touchPrivacy"] intValue];
-    config.touchPrivacy = (FTTouchPrivacyLevel)touchPrivacy;
+    NSString *touchPrivacy = [RCTConvert NSString:context[@"touchPrivacy"]];
+    if ([touchPrivacy isEqualToString:@"SHOW"]) {
+      config.touchPrivacy = FTTouchPrivacyLevelShow;
+    } else if ([touchPrivacy isEqualToString:@"HIDE"]) {
+      config.touchPrivacy = FTTouchPrivacyLevelHide;
+    }
   }
   
   if([context.allKeys containsObject:@"textAndInputPrivacy"]){
-    int textAndInputPrivacy = [context[@"textAndInputPrivacy"] intValue];
-    config.textAndInputPrivacy = (FTTextAndInputPrivacyLevel)textAndInputPrivacy;
+    NSString *textAndInputPrivacy = [RCTConvert NSString:context[@"textAndInputPrivacy"]];
+    if ([textAndInputPrivacy isEqualToString:@"MASK_SENSITIVE_INPUTS"]) {
+      config.textAndInputPrivacy = FTTextAndInputPrivacyLevelMaskAllInputs;
+    } else if ([textAndInputPrivacy isEqualToString:@"MASK_ALL_INPUTS"]) {
+      config.textAndInputPrivacy = FTTextAndInputPrivacyLevelMaskAllInputs;
+    } else if ([textAndInputPrivacy isEqualToString:@"MASK_ALL"]) {
+      config.textAndInputPrivacy = FTTextAndInputPrivacyLevelMaskAll;
+    }
   }
   
   if([context.allKeys containsObject:@"imagePrivacy"]){
-    int imagePrivacy = [context[@"imagePrivacy"] intValue];
-    config.imagePrivacy = (FTImagePrivacyLevel)imagePrivacy;
+    NSString *imagePrivacy = [RCTConvert NSString:context[@"imagePrivacy"]];
+    if ([imagePrivacy isEqualToString:@"MASK_NON_BUNDLED_ONLY"]) {
+      config.imagePrivacy = FTImagePrivacyLevelMaskNonBundledOnly;
+    } else if ([imagePrivacy isEqualToString:@"MASK_ALL"]) {
+      config.imagePrivacy = FTImagePrivacyLevelMaskAll;
+    } else if ([imagePrivacy isEqualToString:@"MASK_NONE"]) {
+      config.imagePrivacy = FTImagePrivacyLevelMaskNone;
+    }
   }
   
   if([context.allKeys containsObject:@"enableLinkRUMKeys"]){
