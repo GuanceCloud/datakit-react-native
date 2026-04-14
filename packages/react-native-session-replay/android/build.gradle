@@ -1,0 +1,228 @@
+buildscript {
+
+  repositories {
+    mavenCentral()
+    google()
+    jcenter()
+    gradlePluginPortal()
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:7.3.1'
+  }
+}
+
+apply plugin: 'com.android.library'
+
+def getExtOrDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['FTSessionReplayReactNative_' + name]
+}
+
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['FTSessionReplayReactNative_' + name]).toInteger()
+}
+
+def findNodeModulePath = { File baseDir, String packageName ->
+  def parentDir = baseDir
+  while (parentDir != null) {
+    def candidate = new File(parentDir, "node_modules/${packageName}")
+    if (candidate.exists()) {
+      return candidate
+    }
+    parentDir = parentDir.parentFile
+  }
+  return null
+}
+
+def resolveReactNativeDir = {
+  if (rootProject.ext.has('reactNativeDir')) {
+    return rootProject.ext.get('reactNativeDir')
+  }
+
+  def reactNativePath = findNodeModulePath(projectDir, 'react-native')
+  if (reactNativePath != null) {
+    return reactNativePath
+  }
+
+  throw new GradleException(
+    "${project.name}: unable to locate React Native. " +
+    "Ensure dependencies are installed, or set reactNativeDir in gradle.properties."
+  )
+}
+
+def reactNativeDir = resolveReactNativeDir()
+def reactNativeVersion = new groovy.json.JsonSlurper()
+  .parseText(file("$reactNativeDir/package.json").text)
+  .version
+
+def (reactNativeMajorVersion, reactNativeMinorVersion) = reactNativeVersion.split("\\.").collect { it.isInteger() ? it.toInteger() : it }
+
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+if (isNewArchitectureEnabled()) {
+  apply plugin: 'com.facebook.react'
+}
+
+android {
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+    namespace "com.ft.sdk.reactnative.sessionreplay"
+
+    sourceSets {
+      main {
+        manifest.srcFile "src/main/AndroidManifestNew.xml"
+      }
+    }
+  }
+
+  if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
+    buildFeatures {
+      buildConfig = true
+    }
+  }
+
+  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+  buildToolsVersion getExtOrDefault('buildToolsVersion')
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+  }
+
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_1_8
+      targetCompatibility JavaVersion.VERSION_1_8
+    }
+  } else {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_17
+      targetCompatibility JavaVersion.VERSION_17
+    }
+  }
+
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += ['src/newarch/java']
+      } else {
+        java.srcDirs += ['src/oldarch/java']
+      }
+
+      if (reactNativeMajorVersion == 0) {
+        if (reactNativeMinorVersion >= 80) {
+          java.srcDirs += ['src/rn80/java']
+        } else if (reactNativeMinorVersion >= 79) {
+          java.srcDirs += ['src/rn79/java']
+        } else if (reactNativeMinorVersion >= 76) {
+          java.srcDirs += ['src/rn76/java']
+        } else if (reactNativeMinorVersion >= 75) {
+          java.srcDirs += ['src/rn75/java']
+        } else if (reactNativeMinorVersion >= 69) {
+          java.srcDirs += ['src/rn69/java']
+        } else {
+          java.srcDirs += ['src/rnlegacy/java']
+        }
+
+        if (reactNativeMinorVersion >= 74) {
+          java.srcDirs += ['src/rnpost74/java']
+        } else {
+          java.srcDirs += ['src/rnpre74/java']
+        }
+      }
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+  jcenter()
+  google()
+  maven {
+    url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
+  }
+
+  def found = false
+  def defaultDir = null
+  def androidSourcesName = 'React Native sources'
+
+  if (rootProject.ext.has('reactNativeAndroidRoot')) {
+    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
+  } else {
+    defaultDir = new File(
+      projectDir,
+      '/../../../node_modules/react-native/android'
+    )
+  }
+
+  if (defaultDir.exists()) {
+    maven {
+      url defaultDir.toString()
+      name androidSourcesName
+    }
+
+    logger.info(":${project.name}:reactNativeAndroidRoot ${defaultDir.canonicalPath}")
+    found = true
+  } else {
+    def parentDir = rootProject.projectDir
+
+    1.upto(5, {
+      if (found) return true
+      parentDir = parentDir.parentFile
+
+      def androidSourcesDir = new File(
+        parentDir,
+        'node_modules/react-native'
+      )
+
+      def androidPrebuiltBinaryDir = new File(
+        parentDir,
+        'node_modules/react-native/android'
+      )
+
+      if (androidPrebuiltBinaryDir.exists()) {
+        maven {
+          url androidPrebuiltBinaryDir.toString()
+          name androidSourcesName
+        }
+
+        logger.info(":${project.name}:reactNativeAndroidRoot ${androidPrebuiltBinaryDir.canonicalPath}")
+        found = true
+      } else if (androidSourcesDir.exists()) {
+        maven {
+          url androidSourcesDir.toString()
+          name androidSourcesName
+        }
+
+        logger.info(":${project.name}:reactNativeAndroidRoot ${androidSourcesDir.canonicalPath}")
+        found = true
+      }
+    })
+  }
+
+  if (!found) {
+    throw new GradleException(
+      "${project.name}: unable to locate React Native android sources. " +
+      "Ensure you have you installed React Native as a dependency in your project and try again."
+    )
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-native:+'
+  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-sdk:1.7.0-beta01'
+  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-native:1.1.2'
+  implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-session-replay:0.1.3-beta01'
+  implementation 'com.google.code.gson:gson:2.8.5'
+}

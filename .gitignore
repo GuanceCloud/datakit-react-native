@@ -34,12 +34,15 @@ project.xcworkspace
 .idea
 .gradle
 local.properties
-android.iml
+*.iml
+.project
+.settings/
 
 # Cocoapods
 #
-example/ios/Pods
-example-new-architecture/ios/Pods
+/ios/Pods/
+/vendor/bundle/
+packages/react-native-session-replay/ios/RCTVersion.h
 
 #ENV
 *.env
@@ -51,11 +54,21 @@ npm-debug.log
 yarn-debug.log
 yarn-error.log
 
+# Yarn ignored files
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # BUCK
 buck-out/
 \.buckd/
 android/app/libs
 android/keystores/debug.keystore
+example/android/app/src/main/assets/index.android*
 
 # Expo
 .expo/*

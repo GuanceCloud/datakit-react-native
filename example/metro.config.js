@@ -1,49 +1,41 @@
 const path = require('path');
-const blacklist = require('metro-config/src/defaults/exclusionList');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
 const escape = require('escape-string-regexp');
-const pak = require('../package.json');
+const pakCore = require('../packages/react-native-mobile/package.json');
 const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('metro-config').MetroConfig}
- */
-
 
 const root = path.resolve(__dirname, '..');
 
 const modules = Object.keys({
-  ...pak.peerDependencies,
+  ...pakCore.peerDependencies,
 });
+
+/**
+ * Metro configuration
+ * https://facebook.github.io/metro/docs/configuration
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
 const config = {
   projectRoot: __dirname,
   watchFolders: [root],
-
-  // We need to make sure that only one version is loaded for peerDependencies
-  // So we blacklist them at the root, and alias them to the versions in example's node_modules
+  resetCache: true,
+  
   resolver: {
-    blacklistRE: blacklist(
+    blockList: exclusionList(
       modules.map(
-        (m) =>
-          new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
-      )
+        m => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`),
+      ),
     ),
+
 
     extraNodeModules: modules.reduce((acc, name) => {
       acc[name] = path.join(__dirname, 'node_modules', name);
       return acc;
     }, {}),
-  },
 
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: true,
-      },
-    }),
+    unstable_enablePackageExports: true,
+    unstable_conditionNames: ['react-native', 'browser', 'require', 'default'],
   },
 };
 

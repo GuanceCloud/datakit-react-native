@@ -124,8 +124,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-    api project(':reactnativeftmobileagent')
-
     // gradle dependency for mixed React Native and Android  Project
     implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-sdk:1.7.0-beta01'
     implementation 'com.cloudcare.ft.mobile.sdk.tracker.agent:ft-native:1.1.2'

@@ -24,17 +24,17 @@ import {
   FTReactNativeLog,
   FTReactNativeRUM,
   FTReactNativeTrace,
-  FTReactNativeSessionReplay,
   FTRUMConfig,
   FTRUMResource,
   FTTraceConfig,
-  FTSessionReplayConfig,
   FTDBCacheDiscard,
-  SessionReplayPrivacy,
   TraceType,
+} from '@cloudcare/react-native-mobile';
+import {
+  FTReactNativeSessionReplay,
   FTSessionReplayView,
   TextAndInputPrivacyLevel,
-} from '@cloudcare/react-native-mobile';
+} from '@cloudcare/react-native-session-replay';
 import Config from 'react-native-config';
 
 function App(): React.JSX.Element {
@@ -173,7 +173,6 @@ function App(): React.JSX.Element {
   const handleStartView = async () => {
     await FTReactNativeRUM.startView('TestView');
     Alert.alert('View Started', 'View tracking started');
-    setTimeout(() => FTReactNativeRUM.stopView(), 2000);
   };
 
   const handleStopView = async () => {

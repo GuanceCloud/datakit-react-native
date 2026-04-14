@@ -16,7 +16,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { FTSessionReplayView } from '@cloudcare/react-native-mobile';
+import { FTSessionReplayView } from '@cloudcare/react-native-session-replay';
 
 import Slider from '@react-native-community/slider'
 import { styles } from './utils';

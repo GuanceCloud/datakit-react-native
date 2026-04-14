@@ -1,18 +1,42 @@
+const path = require('path');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
+const escape = require('escape-string-regexp');
+const pakCore = require('../packages/react-native-mobile/package.json');
 const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-const {
-  getLinkedPackagesConfig,
-} = require('@mgcrea/metro-plugin-linked-packages');
+
+const root = path.resolve(__dirname, '..');
+
+const modules = Object.keys({
+  ...pakCore.peerDependencies,
+});
 
 /**
  * Metro configuration
- * https://reactnative.dev/docs/metro
+ * https://facebook.github.io/metro/docs/configuration
  *
- * @type {import('@react-native/metro-config').MetroConfig}
+ * @type {import('metro-config').MetroConfig}
  */
-const config = {};
+const config = {
+  projectRoot: __dirname,
+  watchFolders: [root],
+  resetCache: true,
+  
+  resolver: {
+    blockList: exclusionList(
+      modules.map(
+        m => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`),
+      ),
+    ),
 
-module.exports = mergeConfig(
-  getDefaultConfig(__dirname),
-  getLinkedPackagesConfig(__dirname),
-  config,
-);
+
+    extraNodeModules: modules.reduce((acc, name) => {
+      acc[name] = path.join(__dirname, 'node_modules', name);
+      return acc;
+    }, {}),
+
+    unstable_enablePackageExports: true,
+    unstable_conditionNames: ['react-native', 'browser', 'require', 'default'],
+  },
+};
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

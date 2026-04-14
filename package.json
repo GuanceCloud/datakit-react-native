@@ -1,40 +1,6 @@
 {
-  "name": "@cloudcare/react-native-mobile",
-  "version": "0.4.0-alpha.5",
-  "description": "Base on Guance Android iOS React Native SDK",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
-  "files": [
-    "src",
-    "lib",
-    "scripts/replace-react-require.js",
-    "android",
-    "ios",
-    "cpp",
-    "FTMobileReactNativeSDK.podspec",
-    "!lib/typescript/example",
-    "!android/build",
-    "!android/.gradle",
-    "!android/.idea",
-    "!ios/build",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
-  "scripts": {
-    "test": "jest",
-    "typescript": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepare": "genversion --es6 --semi src/version.ts && bob build",
-    "release": "release-it",
-    "example": "yarn --cwd example",
-    "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods",
-    "postinstall": "node scripts/replace-react-require.js && node scripts/set-ios-rn-version.js"
-  },
+  "name": "ft-sdk-react-native",
+  "description": "CloudCare React Native SDK workspace",
   "keywords": [
     "cloudcare",
     "react-native",
@@ -47,45 +13,24 @@
   },
   "author": "Brandon <brandonfaustine@gmail.com> (https://github.com/Br4ndonZhang)",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/GuanceCloud/datakit-react-native.git/issues"
-  },
   "homepage": "https://github.com/GuanceCloud/datakit-react-native.git#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
-  "devDependencies": {
-    "@commitlint/config-conventional": "^11.0.0",
-    "@react-native-community/eslint-config": "^2.0.0",
-    "@release-it/conventional-changelog": "^2.0.0",
-    "@types/jest": "^26.0.0",
-    "@types/react": "^18.2.6",
-    "@types/react-native": "0.71.0",
-    "commitlint": "^11.0.0",
-    "eslint": "^7.2.0",
-    "eslint-config-prettier": "^7.0.0",
-    "eslint-plugin-prettier": "^3.1.3",
-    "genversion": "3.0.2",
-    "husky": "^4.2.5",
-    "jest": "^26.0.1",
-    "pod-install": "^0.1.0",
-    "prettier": "^2.0.5",
-    "react": "18.1.0",
-    "react-native": "0.70.0",
-    "react-native-builder-bob": "^0.17.1",
-    "release-it": "^14.2.2",
-    "typescript": "^4.1.3"
-  },
-  "peerDependencies": {
-    "react": ">=16.13.1",
-    "react-native": ">=0.63.4 <1.0"
-  },
-  "jest": {
-    "preset": "react-native",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
-      "<rootDir>/lib/"
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "example",
+      "example-new-architecture"
     ]
+  },
+  "scripts": {
+    "prepare": "lerna run prepare",
+    "bootstrap": "yarn install && yarn pods",
+    "update-version": "./update-version.sh",
+    "check-version": "node scripts/check-version.js",
+    "pods": "cd example && pod-install --quiet",
+    "lint": "yarn workspace @cloudcare/react-native-mobile lint && yarn workspace @cloudcare/react-native-session-replay lint",
+    "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript",
+    "test": "yarn workspace @cloudcare/react-native-mobile test"
   },
   "husky": {
     "hooks": {
@@ -145,33 +90,32 @@
     "trailingComma": "es5",
     "useTabs": false
   },
-  "react-native-builder-bob": {
-    "source": "src",
-    "output": "lib",
-    "targets": [
-      "commonjs",
-      "module",
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json"
-        }
-      ]
-    ]
+  "devDependencies": {
+    "@commitlint/config-conventional": "^11.0.0",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@release-it/conventional-changelog": "^2.0.0",
+    "@types/jest": "^26.0.0",
+    "@types/react": "^18.2.6",
+    "@types/react-native": "0.71.0",
+    "commitlint": "^11.0.0",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "genversion": "3.0.2",
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "lerna": "9.0.5",
+    "pod-install": "^0.1.0",
+    "prettier": "^2.0.5",
+    "react": "18.1.0",
+    "react-native": "0.70.0",
+    "react-native-builder-bob": "^0.17.1",
+    "react-native-gradle-plugin": "^0.71.19",
+    "release-it": "^14.2.2",
+    "typescript": "^4.1.3"
   },
-  "codegenConfig": {
-        "name": "FTSdkReactNative",
-        "type": "all",
-        "jsSrcsDir": "./src/specs",
-        "android": {
-            "javaPackageName": "com.ft.sdk.reactnative"
-        }
-    },
-  "dependencies": {
-    "@babel/runtime": "^7.16.5"
+  "engines": {
+    "node": ">=18"
   },
-  "directories": {
-    "example": "example",
-    "lib": "lib"
-  }
+  "packageManager": "yarn@3.4.1"
 }

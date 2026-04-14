@@ -1,0 +1,100 @@
+{
+  "name": "@cloudcare/react-native-mobile",
+  "version": "0.4.0-alpha.6",
+  "description": "Base on Guance Android iOS React Native SDK",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "scripts/replace-react-require.js",
+    "android",
+    "ios",
+    "cpp",
+    "FTMobileReactNativeSDK.podspec",
+    "!lib/typescript/example",
+    "!android/.project",
+    "!android/build",
+    "!android/.gradle",
+    "!android/.idea",
+    "!android/.settings",
+    "!ios/build",
+    "!ios/**/xcuserdata",
+    "!ios/**/*.xcuserstate",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "scripts": {
+    "test": "yarn run -T jest",
+    "typescript": "yarn run -T tsc --noEmit",
+    "lint": "yarn run -T eslint \"**/*.{js,ts,tsx}\"",
+    "prepare": "yarn run -T genversion --es6 --semi src/version.ts && yarn run -T bob build",
+    "prepack": "yarn run -T check-version && yarn prepare",
+    "release": "yarn run -T release-it",
+    "postinstall": "node scripts/replace-react-require.js"
+  },
+  "keywords": [
+    "cloudcare",
+    "react-native",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuanceCloud/datakit-react-native.git"
+  },
+  "author": "Brandon <brandonfaustine@gmail.com> (https://github.com/Br4ndonZhang)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/GuanceCloud/datakit-react-native.git/issues"
+  },
+  "homepage": "https://github.com/GuanceCloud/datakit-react-native.git#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "react": ">=16.13.1",
+    "react-native": ">=0.63.4 <1.0"
+  },
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/lib/"
+    ]
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "FTSdkReactNative",
+    "type": "all",
+    "jsSrcsDir": "./src/specs",
+    "android": {
+      "javaPackageName": "com.ft.sdk.reactnative"
+    }
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.16.5"
+  },
+  "directories": {
+    "lib": "lib"
+  }
+}

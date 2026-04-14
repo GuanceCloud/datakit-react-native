@@ -1,6 +1,5 @@
 package com.ft.sdk.reactnative.example
 
-import com.ft.sdk.reactnative.FTMobilePackage
 import com.ft.sdk.reactnative.utils.ReactNativeUtils
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -30,7 +29,6 @@ class MainApplication : NavigationApplication(), ReactApplication {
       override fun getPackages(): List<ReactPackage> =
         PackageList(this).packages.apply {
           // Packages that cannot be autolinked yet can be added manually here, for example:
-          add(FTMobilePackage())
         }
 
       override fun getJSMainModuleName(): String = "index"

@@ -20,14 +20,16 @@ import {
   FTRUMConfig,
   FTTraceConfig,
   TraceType,
-  SessionReplayPrivacy,
-  FTReactNativeSessionReplay,
-  FTSessionReplayConfig,
   FTDBCacheDiscard,
   FTRUMCacheDiscard,
   FTRumActionTracking,
   FTRumErrorTracking
 } from '@cloudcare/react-native-mobile';
+import {
+  FTReactNativeSessionReplay,
+  FTSessionReplayConfig,
+  SessionReplayPrivacy,
+} from '@cloudcare/react-native-session-replay';
 import Config from 'react-native-config';
 
 
