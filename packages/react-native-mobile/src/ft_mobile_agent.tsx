@@ -242,6 +242,19 @@ type FTMobileReactNativeType = {
    */
    sdkConfig(config:FTMobileConfig): Promise<void>;
   /**
+   * Dynamically set the Datakit upload URL after SDK initialization.
+   * @param datakitUrl Datakit upload URL.
+   * @returns a Promise.
+   */
+   setDatakitURL(datakitUrl:string): Promise<void>;
+  /**
+   * Dynamically set the Dataway upload URL and client token after SDK initialization.
+   * @param datawayUrl Dataway upload URL.
+   * @param clientToken Dataway authentication token.
+   * @returns a Promise.
+   */
+   setDatawayURL(datawayUrl:string,clientToken:string): Promise<void>;
+  /**
    * Bind user.
    * @param userId user ID.
    * @param userName user name.
@@ -337,6 +350,12 @@ type FTMobileReactNativeType = {
        config.datakitUrl = config.serverUrl;
      }
      return this.sdk.sdkConfig(config);
+   }
+   setDatakitURL(datakitUrl:string): Promise<void> {
+     return this.sdk.setDatakitURL(datakitUrl);
+   }
+   setDatawayURL(datawayUrl:string,clientToken:string): Promise<void> {
+     return this.sdk.setDatawayURL(datawayUrl,clientToken);
    }
    bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {
      return this.sdk.bindRUMUserData(userId,userName,userEmail,extra);

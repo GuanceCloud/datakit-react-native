@@ -295,6 +295,23 @@ RCT_REMAP_METHOD(sdkConfig,
   [self sdkConfig:context resolve:resolve reject:reject];
 }
 
+RCT_REMAP_METHOD(setDatakitURL,
+                 datakitUrl:(NSString *)datakitUrl
+                 setDatakitURLWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self setDatakitURL:datakitUrl resolve:resolve reject:reject];
+}
+
+RCT_REMAP_METHOD(setDatawayURL,
+                 datawayUrl:(NSString *)datawayUrl
+                 clientToken:(NSString *)clientToken
+                 setDatawayURLWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self setDatawayURL:datawayUrl clientToken:clientToken resolve:resolve reject:reject];
+}
+
 RCT_REMAP_METHOD(bindRUMUserData,
                   userId:(NSString*)userId userName:(NSString*)userName userEmail:(NSString*)userEmail extra:(NSDictionary *)extra
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
@@ -470,6 +487,16 @@ RCT_REMAP_METHOD(clearAllData,
     resolve(nil);
   }];
 }
+- (void)setDatakitURL:(NSString *)datakitUrl resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [FTMobileAgent setDatakitURL:datakitUrl];
+  resolve(nil);
+}
+
+- (void)setDatawayURL:(NSString *)datawayUrl clientToken:(NSString *)clientToken resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [FTMobileAgent setDatawayURL:datawayUrl clientToken:clientToken];
+  resolve(nil);
+}
+
 - (void)appendGlobalContext:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [FTMobileAgent appendGlobalContext:context];
   resolve(nil);

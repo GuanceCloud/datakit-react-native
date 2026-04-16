@@ -512,6 +512,16 @@ public class FTMobileImpl {
         promise.resolve(null);
     }
 
+    public void setDatakitURL(String datakitUrl, Promise promise) {
+        FTSdk.setDatakitUrl(datakitUrl);
+        promise.resolve(null);
+    }
+
+    public void setDatawayURL(String datawayUrl, String clientToken, Promise promise) {
+        FTSdk.setDatawayUrl(datawayUrl, clientToken);
+        promise.resolve(null);
+    }
+
     public void flushSyncData(Promise promise) {
         FTSdk.flushSyncData();
         promise.resolve(null);

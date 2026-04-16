@@ -24,6 +24,16 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setDatakitURL(String datakitUrl, Promise promise) {
+    impl.setDatakitURL(datakitUrl, promise);
+  }
+
+  @ReactMethod
+  public void setDatawayURL(String datawayUrl, String clientToken, Promise promise) {
+    impl.setDatawayURL(datawayUrl, clientToken, promise);
+  }
+
+  @ReactMethod
   public void bindRUMUserData(String userId, String userName, String userEmail, ReadableMap extra, Promise promise) {
     impl.bindRUMUserData(userId, userName, userEmail, extra, promise);
   }

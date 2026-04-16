@@ -11,6 +11,19 @@ export interface Spec extends TurboModule {
      */
      sdkConfig(config:Object): Promise<void>;
     /**
+     * Dynamically set the Datakit upload URL after SDK initialization.
+     * @param datakitUrl Datakit upload URL.
+     * @returns a Promise.
+     */
+     setDatakitURL(datakitUrl:string): Promise<void>;
+    /**
+     * Dynamically set the Dataway upload URL and client token after SDK initialization.
+     * @param datawayUrl Dataway upload URL.
+     * @param clientToken Dataway authentication token.
+     * @returns a Promise.
+     */
+     setDatawayURL(datawayUrl:string,clientToken:string): Promise<void>;
+    /**
      * Bind user.
      * @param userId user ID.
      * @param userName user name.
