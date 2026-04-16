@@ -1,12 +1,10 @@
 import React from 'react';
-import { View, Button } from 'react-native';
+import { Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import {
   FTMobileReactNative,
-  FTReactNativeLog,
-  FTLogStatus,
-  FTRemoteConfigResult,
 } from '@cloudcare/react-native-mobile';
+import Config from 'react-native-config';
 import RUMScreen from './rum';
 import LogScreen from './logging';
 import TraceScreen from './tracing';
@@ -108,31 +106,74 @@ const HomeScreen = (props) => {
     }
   };
 
+  const onSetDatakitURL = async () => {
+    const datakitUrl = Config.SERVER_URL;
+    if (!datakitUrl) {
+      console.log('set Datakit URL skipped: SERVER_URL is empty');
+      return;
+    }
+    try {
+      await FTMobileReactNative.setDatakitURL(datakitUrl);
+      console.log('set Datakit URL success', datakitUrl);
+    } catch (error) {
+      console.log('set Datakit URL error', error);
+    }
+  };
+
+  const onSetDatawayURL = async () => {
+    const datawayUrl = Config.DATAWAY_URL;
+    const clientToken = Config.CLIENT_TOKEN;
+    if (!datawayUrl || !clientToken) {
+      console.log('set Dataway URL skipped: DATAWAY_URL or CLIENT_TOKEN is empty');
+      return;
+    }
+    try {
+      await FTMobileReactNative.setDatawayURL(datawayUrl, clientToken);
+      console.log('set Dataway URL success', datawayUrl);
+    } catch (error) {
+      console.log('set Dataway URL error', error);
+    }
+  };
+
+  const renderButton = (title: string, onPress: () => void) => (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        homeStyles.button,
+        pressed && homeStyles.buttonPressed,
+      ]}
+    >
+      <Text style={homeStyles.buttonText}>{title}</Text>
+    </Pressable>
+  );
+
+  const renderSectionTitle = (title: string) => (
+    <Text style={homeStyles.sectionTitle}>{title}</Text>
+  );
+
   return (
-    <View style={{
-      flex: 1,
-      alignItems: 'center',
-      backgroundColor: 'whitesmoke',
-      padding: 20,
-    }}>
-      <Button title='Bind User' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
-      <Button title='Unbind User' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
-      <Button title='Log Output' onPress={() => Navigation.push(props.componentId, { component: { name: 'Logger' } })} />
-      <Button title='Network Trace' onPress={() => Navigation.push(props.componentId, { component: { name: 'Trace' } })} />
-      <Button title='RUM Data Collection' onPress={() => Navigation.push(props.componentId, { component: { name: 'RUM' } })} />
-      <Button title='Active Data Sync' onPress={() => FTMobileReactNative.flushSyncData()} />
-      <Button title='WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'WebView' } })} />
-      <Button title='Local WebView' onPress={() => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } })} />
-      <Button title='Shutdown SDK' onPress={() => FTMobileReactNative.shutDown()} />
-      <Button title='Clear SDK Cache Data' onPress={() => {
+    <ScrollView style={homeStyles.scrollView} contentContainerStyle={homeStyles.content}>
+      {renderSectionTitle('User')}
+      {renderButton('Bind User', () => FTMobileReactNative.bindRUMUserData('react-native-user'))}
+      {renderButton('Unbind User', () => FTMobileReactNative.unbindRUMUserData())}
+
+      {renderSectionTitle('SDK')}
+      {renderButton('Flush Sync Data', () => FTMobileReactNative.flushSyncData())}
+      {renderButton('Set Datakit URL', onSetDatakitURL)}
+      {renderButton('Set Dataway URL', onSetDatawayURL)}
+      {renderButton('Shutdown SDK', () => FTMobileReactNative.shutDown())}
+      {renderButton('Clear SDK Cache', () => {
          FTMobileReactNative.clearAllData();
-      }} />
-      <Button title='Dynamic GlobalContext Property Setting' onPress={() => {
+      })}
+
+      {renderSectionTitle('Global Context')}
+      {renderButton('Append Global Context', () => {
          FTMobileReactNative.appendGlobalContext({'global_key':'global_value'});
          FTMobileReactNative.appendLogGlobalContext({'log_key':'log_value'});
          FTMobileReactNative.appendRUMGlobalContext({'rum_key':'rum_value'});
-      }} />
-      <Button title="Runtime File Read/Write GlobalContext Setting" onPress={() => {
+      })}
+      {renderButton('Write Runtime Context', () => {
           AsyncStorage.setItem("track_id", "dynamic_id", (error: any) => {
             if (error) {
               console.log('Storage failed: ' + error);
@@ -140,12 +181,20 @@ const HomeScreen = (props) => {
               console.log('Storage successful');
             }
           })
-        }}
-        />
-      <Button title='Update Remote Config' onPress={onUpdateRemoteConfig} />
-      <Button title='Update Remote Config With Mini Update Interval' onPress={onUpdateRemoteConfigWithMiniInterval} />
-      <Button title='SessionReplay' onPress={() => Navigation.push(props.componentId, { component: { name: 'SessionReplay' } })} />
-    </View>
+        })}
+
+      {renderSectionTitle('Remote Config')}
+      {renderButton('Update Remote Config', onUpdateRemoteConfig)}
+      {renderButton('Update Remote Config With Mini Interval', onUpdateRemoteConfigWithMiniInterval)}
+
+      {renderSectionTitle('Features')}
+      {renderButton('Log Output', () => Navigation.push(props.componentId, { component: { name: 'Logger' } }))}
+      {renderButton('Network Trace', () => Navigation.push(props.componentId, { component: { name: 'Trace' } }))}
+      {renderButton('RUM Data Collection', () => Navigation.push(props.componentId, { component: { name: 'RUM' } }))}
+      {renderButton('WebView', () => Navigation.push(props.componentId, { component: { name: 'WebView' } }))}
+      {renderButton('Local WebView', () => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } }))}
+      {renderButton('Session Replay', () => Navigation.push(props.componentId, { component: { name: 'SessionReplay' } }))}
+    </ScrollView>
   );
 };
 HomeScreen.options = {
@@ -159,5 +208,41 @@ HomeScreen.options = {
     },
   },
 };
+
+const homeStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'whitesmoke',
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 36,
+  },
+  sectionTitle: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 18,
+    marginBottom: 8,
+  },
+  button: {
+    minHeight: 44,
+    justifyContent: 'center',
+    backgroundColor: '#0f766e',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  buttonPressed: {
+    opacity: 0.72,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+});
 
 export { startReactNativeNavigation };

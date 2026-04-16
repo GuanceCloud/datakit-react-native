@@ -158,9 +158,13 @@ function App(): React.JSX.Element {
   };
 
   const handleAddAction = async () => {
-    await FTReactNativeRUM.addAction(`add_action_${actionCount + 1}`, 'custom', {
-      addAction_property: 'rn_demo',
-    });
+    await FTReactNativeRUM.addAction(
+      `add_action_${actionCount + 1}`,
+      'custom',
+      {
+        addAction_property: 'rn_demo',
+      },
+    );
     setActionCount(actionCount + 1);
     Alert.alert('Action Added', `Count: ${actionCount + 1}`);
   };
@@ -243,7 +247,9 @@ function App(): React.JSX.Element {
         {/* Log Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Log Test</Text>
-          <Text style={styles.configText}>Logger: {sdkReady ? 'Ready' : initMessage}</Text>
+          <Text style={styles.configText}>
+            Logger: {sdkReady ? 'Ready' : initMessage}
+          </Text>
           <View style={styles.logButtonRow}>
             <TouchableOpacity
               style={styles.smallButton}
@@ -265,7 +271,7 @@ function App(): React.JSX.Element {
               onPress={() => handleLog(FTLogStatus.critical)}>
               <Text style={styles.smallButtonText}>Critical</Text>
             </TouchableOpacity>
-             <TouchableOpacity
+            <TouchableOpacity
               style={styles.smallButton}
               onPress={() => handleLog(FTLogStatus.ok)}>
               <Text style={styles.smallButtonText}>OK</Text>
@@ -300,7 +306,9 @@ function App(): React.JSX.Element {
           <TouchableOpacity style={styles.button} onPress={handleStopView}>
             <Text style={styles.buttonText}>Stop View</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleResourceNormal}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleResourceNormal}>
             <Text style={styles.buttonText}>Resource Normal</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleResourceError}>
@@ -362,16 +370,6 @@ function App(): React.JSX.Element {
           </Text>
           <FTSessionReplayView.MaskNone nativeID="gallery-visible">
             <View style={styles.galleryCard}>
-              <View style={styles.galleryHeader}>
-                <Text style={styles.galleryName}>
-                  {String(randomImage.timestamp)}
-                </Text>
-                <TouchableOpacity
-                  style={styles.imageRefreshButton}
-                  onPress={() => setRandomImage(createRandomImage())}>
-                  <Text style={styles.imageRefreshButtonText}>⟳</Text>
-                </TouchableOpacity>
-              </View>
               <Image
                 source={{uri: randomImage.uri}}
                 style={styles.galleryImage}
@@ -493,19 +491,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 220,
     backgroundColor: '#e5e7eb',
-  },
-  imageRefreshButton: {
-    backgroundColor: 'rgba(17, 24, 39, 0.78)',
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  imageRefreshButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
   },
   logButtonRow: {
     flexDirection: 'row',
