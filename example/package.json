@@ -12,8 +12,8 @@
     "build:android": "react-native bundle --entry-file='index.tsx' --bundle-output='./android/app/src/main/assets/index.android.bundle' --assets-dest='./android/app/src/main/res' --dev=false --platform='android'"
   },
   "dependencies": {
-    "@cloudcare/react-native-mobile": "workspace:*",
-    "@cloudcare/react-native-session-replay": "workspace:*",
+    "@cloudcare/react-native-mobile": "workspace:packages/react-native-mobile",
+    "@cloudcare/react-native-session-replay": "workspace:packages/react-native-session-replay",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/slider": "4.5.1",
     "@react-native-picker/picker": "^2.11.2",

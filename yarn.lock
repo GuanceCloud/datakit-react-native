@@ -1676,7 +1676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudcare/react-native-mobile@workspace:*, @cloudcare/react-native-mobile@workspace:packages/react-native-mobile":
+"@cloudcare/react-native-mobile@workspace:packages/react-native-mobile":
   version: 0.0.0-use.local
   resolution: "@cloudcare/react-native-mobile@workspace:packages/react-native-mobile"
   dependencies:
@@ -1687,7 +1687,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@cloudcare/react-native-session-replay@workspace:*, @cloudcare/react-native-session-replay@workspace:packages/react-native-session-replay":
+"@cloudcare/react-native-session-replay@workspace:packages/react-native-session-replay":
   version: 0.0.0-use.local
   resolution: "@cloudcare/react-native-session-replay@workspace:packages/react-native-session-replay"
   dependencies:
@@ -17230,9 +17230,9 @@ __metadata:
     "@babel/core": ^7.20.0
     "@babel/preset-env": ^7.1.6
     "@babel/runtime": ^7.20.0
-    "@cloudcare/react-native-mobile": "workspace:*"
+    "@cloudcare/react-native-mobile": "workspace:packages/react-native-mobile"
     "@cloudcare/react-native-mobile-cli": "file:../ft-react-native-mobile-cli-v1.0.0.tgz"
-    "@cloudcare/react-native-session-replay": "workspace:*"
+    "@cloudcare/react-native-session-replay": "workspace:packages/react-native-session-replay"
     "@react-native-async-storage/async-storage": ^1.24.0
     "@react-native-community/slider": 4.5.1
     "@react-native-picker/picker": ^2.11.2
