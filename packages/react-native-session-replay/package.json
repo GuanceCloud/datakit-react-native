@@ -1,6 +1,6 @@
 {
   "name": "@cloudcare/react-native-session-replay",
-  "version": "0.4.0-alpha.6",
+  "version": "0.4.1-alpha.1",
   "description": "Session Replay package for CloudCare React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

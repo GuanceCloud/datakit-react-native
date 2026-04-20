@@ -2,10 +2,17 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# 0.4.1-alpha.1
+* Support React Native New Architecture 
+* Split Session Replay into the standalone `@cloudcare/react-native-session-replay` package
+* Add `FTSessionReplayView` component support for marking Session Replay content in React Native UI
+* Support dynamically updating upload endpoints through `FTMobileReactNative.setDatakitURL` and `FTMobileReactNative.setDatawayURL`
+* Compatible with Android ft-sdk 1.7.0, ft-session-replay 0.1.3,iOS SDK 1.6.2
+---
 # 0.4.0-alpha.5
 * iOS Fix the memory access crash caused by incorrect use of NSNumber modifiers in Session Replay
 * Compatible with iOS SDK 1.6.2-alpha.6
-
+---
 # 0.4.0-alpha.4
 * iOS Fix crash issue caused by nil string in Session Replay
 * Compatible with iOS SDK 1.6.2-alpha.3
