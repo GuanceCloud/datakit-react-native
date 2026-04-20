@@ -2,6 +2,14 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# 0.4.1
+* Added Session Replay capability and made it available as the standalone @cloudcare/react-native-session-replay package for independent installation and usage.
+* Added error sampling for Session Replay, with support for dynamic control of Session Replay via remote configuration.
+* Session Replay now supports privacy configuration for touches, text & inputs, and images through touchPrivacy, textAndInputPrivacy, and imagePrivacy. A new native component FTSessionReplayView is also added to mark and protect sensitive areas in the React Native UI during Session Replay recording.
+* Added support for React Native New Architecture to improve compatibility with the latest React Native app setups.
+* Added support for dynamically updating data upload endpoints via FTMobileReactNative.setDatakitURL and FTMobileReactNative.setDatawayURL.
+* Upgraded compatibility to Android `ft-sdk` 1.7.0, Android `ft-session-replay` 0.1.3, and iOS SDK 1.6.2.
+---
 # 0.4.1-alpha.1
 * Support React Native New Architecture 
 * Split Session Replay into the standalone `@cloudcare/react-native-session-replay` package

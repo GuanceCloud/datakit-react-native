@@ -36,6 +36,7 @@ export enum TextAndInputPrivacyLevel {
 /**
  * Set Session Replay configuration.
  * @param sampleRate Sampling rate
+ * @param sessionReplayOnErrorSampleRate error session sampling rate. For sessions not sampled, if ERROR is hit, collect data 1 minute before the error occurs
  * @param privacy Privacy level for content masking in session replay
  * @param touchPrivacy Privacy level for touch masking in session replay
  * @param textAndInputPrivacy Privacy level for text and input masking in session replay
