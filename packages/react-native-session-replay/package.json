@@ -81,6 +81,11 @@
     "jsSrcsDir": "./src/specs",
     "android": {
       "javaPackageName": "com.ft.sdk.reactnative.sessionreplay"
+    },
+    "ios": {
+      "componentProvider": {
+        "FTPrivacyView": "FTPrivacyViewFabric"
+      }
     }
   },
   "dependencies": {
