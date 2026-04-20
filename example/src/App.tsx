@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { NavigationContainerRef } from '@react-navigation/native';
-import { View, Button, Text } from 'react-native';
+import { View, Button, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,7 +8,6 @@ import {
   FTMobileReactNative,
   FTReactNativeLog,
   FTLogStatus,
-  FTRemoteConfigResult,
 } from '@cloudcare/react-native-mobile';
 import Config from 'react-native-config';
 import RUMScreen from './rum';
@@ -16,7 +15,8 @@ import LogScreen from './logging';
 import TraceScreen from './tracing';
 import WebViewScreen from './webView';
 import LocalWebViewScreen from './localWebView';
-import { styles } from './utils';
+import SessionReplayScreen from './sessionReplay';
+
 import { FTRumReactNavigationTracking } from './FTRumReactNavigationTracking';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -52,40 +52,76 @@ class HomeScreen extends React.Component<{ navigation: any }> {
     }
   };
 
+  private onSetDatakitURL = async () => {
+    const datakitUrl = Config.SERVER_URL;
+    if (!datakitUrl) {
+      console.log('set Datakit URL skipped: SERVER_URL is empty');
+      return;
+    }
+    try {
+      await FTMobileReactNative.setDatakitURL(datakitUrl);
+      console.log('set Datakit URL success', datakitUrl);
+    } catch (error) {
+      console.log('set Datakit URL error', error);
+    }
+  };
+
+  private onSetDatawayURL = async () => {
+    const datawayUrl = Config.DATAWAY_URL;
+    const clientToken = Config.CLIENT_TOKEN;
+    if (!datawayUrl || !clientToken) {
+      console.log('set Dataway URL skipped: DATAWAY_URL or CLIENT_TOKEN is empty');
+      return;
+    }
+    try {
+      await FTMobileReactNative.setDatawayURL(datawayUrl, clientToken);
+      console.log('set Dataway URL success', datawayUrl);
+    } catch (error) {
+      console.log('set Dataway URL error', error);
+    }
+  };
+
   render() {
     let { navigation } = this.props;
     FTReactNativeLog.logging("react-navigation HomeScreen render", FTLogStatus.info);
 
+    const renderButton = (title: string, onPress: () => void) => (
+      <Pressable
+        accessibilityRole="button"
+        onPress={onPress}
+        style={({ pressed }) => [
+          homeStyles.button,
+          pressed && homeStyles.buttonPressed,
+        ]}
+      >
+        <Text style={homeStyles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+
+    const renderSectionTitle = (title: string) => (
+      <Text style={homeStyles.sectionTitle}>{title}</Text>
+    );
+
     return (
-      <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
-        <Button title='Bind User' onPress={() => FTMobileReactNative.bindRUMUserData('react-native-user')} />
-        <View style={styles.space} />
-        <Button title='Unbind User' onPress={() => FTMobileReactNative.unbindRUMUserData()} />
-        <View style={styles.space} />
-        <Button title='Log Output' onPress={() => navigation.navigate('Log')} />
-        <View style={styles.space} />
-        <Button title='Network Trace' onPress={() => navigation.navigate('Trace')} />
-        <View style={styles.space} />
-        <Button title='RUM Data Collection' onPress={() => navigation.navigate('RUM')} />
-        <View style={styles.space} />
-        <Button title='Active Data Sync' onPress={() => FTMobileReactNative.flushSyncData()} />
-        <View style={styles.space} />
-        <Button title='WebView' onPress={() => navigation.navigate('WebView')} />
-        <View style={styles.space} />
-        <Button title='Local WebView' onPress={() => navigation.navigate('LocalWebView')} />
-        <View style={styles.space} />
-        <View style={styles.space} />
-        <Button title='Shutdown SDK' onPress={() => FTMobileReactNative.shutDown()} />
-        <View style={styles.space} />
-        <Button title='Clear SDK Cache Data' onPress={() => FTMobileReactNative.clearAllData()} />
-        <View style={styles.space} />
-        <Button title='Dynamic GlobalContext Property Setting' onPress={() => {
+      <ScrollView style={homeStyles.scrollView} contentContainerStyle={homeStyles.content}>
+        {renderSectionTitle('User')}
+        {renderButton('Bind User', () => FTMobileReactNative.bindRUMUserData('react-native-user'))}
+        {renderButton('Unbind User', () => FTMobileReactNative.unbindRUMUserData())}
+
+        {renderSectionTitle('SDK')}
+        {renderButton('Flush Sync Data', () => FTMobileReactNative.flushSyncData())}
+        {renderButton('Set Datakit URL', this.onSetDatakitURL)}
+        {renderButton('Set Dataway URL', this.onSetDatawayURL)}
+        {renderButton('Shutdown SDK', () => FTMobileReactNative.shutDown())}
+        {renderButton('Clear SDK Cache', () => FTMobileReactNative.clearAllData())}
+
+        {renderSectionTitle('Global Context')}
+        {renderButton('Append Global Context', () => {
           FTMobileReactNative.appendGlobalContext({ 'global_key': 'global_value' });
           FTMobileReactNative.appendLogGlobalContext({ 'log_key': 'log_value' });
           FTMobileReactNative.appendRUMGlobalContext({ 'rum_key': 'rum_value' });
-        }} />
-        <View style={styles.space} />
-        <Button title="Runtime File Read/Write GlobalContext Setting" onPress={() => {
+        })}
+        {renderButton('Write Runtime Context', () => {
           AsyncStorage.setItem("track_id", "dynamic_id", (error: any) => {
             if (error) {
               console.log('Storage failed: ' + error);
@@ -93,13 +129,20 @@ class HomeScreen extends React.Component<{ navigation: any }> {
               console.log('Storage successful');
             }
           })
-        }}
-        />
-        <View style={styles.space} />
-        <Button title='Update Remote Config' onPress={this.onUpdateRemoteConfig} />
-        <View style={styles.space} />
-        <Button title='Update Remote Config With Mini Update Interval' onPress={this.onUpdateRemoteConfigWithMiniInterval} />
-      </View>
+        })}
+
+        {renderSectionTitle('Remote Config')}
+        {renderButton('Update Remote Config', this.onUpdateRemoteConfig)}
+        {renderButton('Update Remote Config With Mini Interval', this.onUpdateRemoteConfigWithMiniInterval)}
+
+        {renderSectionTitle('Features')}
+        {renderButton('Log Output', () => navigation.navigate('Log'))}
+        {renderButton('Network Trace', () => navigation.navigate('Trace'))}
+        {renderButton('RUM Data Collection', () => navigation.navigate('RUM'))}
+        {renderButton('WebView', () => navigation.navigate('WebView'))}
+        {renderButton('Local WebView', () => navigation.navigate('LocalWebView'))}
+        {renderButton('Session Replay', () => navigation.navigate('SessionReplay'))}
+      </ScrollView>
     );
   }
 }
@@ -141,6 +184,42 @@ const Tab = createBottomTabNavigator();
 
 const navigationRef: React.RefObject<NavigationContainerRef<ReactNavigation.RootParamList>> = React.createRef();
 
+const homeStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'whitesmoke',
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 36,
+  },
+  sectionTitle: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 18,
+    marginBottom: 8,
+  },
+  button: {
+    minHeight: 44,
+    justifyContent: 'center',
+    backgroundColor: '#0f766e',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  buttonPressed: {
+    opacity: 0.72,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+});
+
 
 
 function App() {
@@ -168,6 +247,8 @@ function App() {
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }} />
         <Stack.Screen name="WebView" component={WebViewScreen} options={{ title: 'WebView' }} />
         <Stack.Screen name="LocalWebView" component={LocalWebViewScreen} options={{ title: 'LocalWebView' }} />
+        <Stack.Screen name="SessionReplay" component={SessionReplayScreen} options={{ title: 'SessionReplay' }}/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );
