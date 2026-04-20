@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"
-  s.dependency "FTMobileSDK", "1.6.2-alpha.17"
-  s.dependency "FTMobileSDK/FTSessionReplay", "1.6.2-alpha.17"
+  s.dependency "FTMobileSDK", "1.6.2"
+  s.dependency "FTMobileSDK/FTSessionReplay", "1.6.2"
 
   xcconfig = {
     "HEADER_SEARCH_PATHS" => "$(inherited) " +
