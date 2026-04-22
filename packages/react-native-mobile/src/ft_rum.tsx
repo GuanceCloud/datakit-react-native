@@ -1,31 +1,36 @@
 // import { NativeModules } from 'react-native';
-import { FTRumErrorTracking} from './rum/FTRumErrorTracking';
-import { FTRumActionTracking} from './rum/FTRumActionTracking';
+import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
+import { FTRumActionTracking } from './rum/FTRumActionTracking';
 import { bridgeContextManager } from './ft_mobile_agent';
 
 /**
  * Error monitoring type.
  */
- export enum ErrorMonitorType {
-   all=0xFFFFFFFF,
-   battery=1 << 1,
-   memory=1 << 2,
-   cpu=1 << 3,
- }
-  /**
-  * Page monitoring supplement type
-  */
- export enum DeviceMetricsMonitorType {
-    all=0xFFFFFFFF,
-    battery=1 << 1,
-    memory=1 << 2,
-    cpu=1 << 3,
-    fps=1 << 4
- }
- /**
-  * Device information monitoring cycle.
-  */
- export enum DetectFrequency { normal, frequent, rare }
+/* eslint-disable no-bitwise */
+export enum ErrorMonitorType {
+  all = 0xffffffff,
+  battery = 1 << 1,
+  memory = 1 << 2,
+  cpu = 1 << 3,
+}
+/**
+ * Page monitoring supplement type
+ */
+export enum DeviceMetricsMonitorType {
+  all = 0xffffffff,
+  battery = 1 << 1,
+  memory = 1 << 2,
+  cpu = 1 << 3,
+  fps = 1 << 4,
+}
+/**
+ * Device information monitoring cycle.
+ */
+export enum DetectFrequency {
+  normal,
+  frequent,
+  rare,
+}
 
 export enum FTRUMCacheDiscard {
   discard,
@@ -62,7 +67,7 @@ export enum IOSCrashMonitoringType {
   /** High compatibility crash monitor types (excludes Mach exceptions). */
   highCompatibility = all & ~machException,
 }
-
+/* eslint-enable no-bitwise */
 /**
  * Set RUM tracking conditions.
  * @param androidAppId appId, apply during monitoring
@@ -87,33 +92,33 @@ export enum IOSCrashMonitoringType {
  * @param rumDiscardStrategy RUM data discard strategy
  * @param enableTraceWebView Set whether to enable WebView data collection, default true
  * @param allowWebViewHost Set specific hosts or domains allowed to collect WebView data, nil means collect all
- * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information. 
+ * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information.
  */
- export interface FTRUMConfig{
-   androidAppId:string,
-   iOSAppId:string,
-   sampleRate?:number,
-   sessionOnErrorSampleRate?:number,
-   enableAutoTrackUserAction?:boolean,
-   enableAutoTrackError?:boolean,
-   enableTrackNativeCrash?:boolean,
-   enableTrackNativeAppANR?:boolean,
-   enableTrackNativeFreeze?:boolean,
-   nativeFreezeDurationMs?:number,
-   enableNativeUserAction?:boolean,
-   enableNativeUserView?:boolean,
-   enableNativeUserResource?:boolean,
-   enableResourceHostIP?:boolean,
-   errorMonitorType?:ErrorMonitorType,
-   deviceMonitorType?:DeviceMetricsMonitorType,
-   detectFrequency?:DetectFrequency
-   globalContext?:object,
-   rumCacheLimitCount?:number,
-   rumDiscardStrategy?:FTRUMCacheDiscard,
-   enableTraceWebView?: boolean,
-   allowWebViewHost?: Array<string>,
-   iosCrashMonitoringType?: IOSCrashMonitoringType,
- }
+export interface FTRUMConfig {
+  androidAppId: string;
+  iOSAppId: string;
+  sampleRate?: number;
+  sessionOnErrorSampleRate?: number;
+  enableAutoTrackUserAction?: boolean;
+  enableAutoTrackError?: boolean;
+  enableTrackNativeCrash?: boolean;
+  enableTrackNativeAppANR?: boolean;
+  enableTrackNativeFreeze?: boolean;
+  nativeFreezeDurationMs?: number;
+  enableNativeUserAction?: boolean;
+  enableNativeUserView?: boolean;
+  enableNativeUserResource?: boolean;
+  enableResourceHostIP?: boolean;
+  errorMonitorType?: ErrorMonitorType;
+  deviceMonitorType?: DeviceMetricsMonitorType;
+  detectFrequency?: DetectFrequency;
+  globalContext?: object;
+  rumCacheLimitCount?: number;
+  rumDiscardStrategy?: FTRUMCacheDiscard;
+  enableTraceWebView?: boolean;
+  allowWebViewHost?: Array<string>;
+  iosCrashMonitoringType?: IOSCrashMonitoringType;
+}
 /**
  * RUM Resource data.
  * @param url request URL
@@ -123,14 +128,14 @@ export enum IOSCrashMonitoringType {
  * @param responseBody response content
  * @param resourceStatus response status code
  */
- export interface FTRUMResource{
-   url:string,
-   httpMethod:string,
-   requestHeader:object,
-   responseHeader?:object,
-   responseBody?:string,
-   resourceStatus?:number
- };
+export interface FTRUMResource {
+  url: string;
+  httpMethod: string;
+  requestHeader: object;
+  responseHeader?: object;
+  responseBody?: string;
+  resourceStatus?: number;
+}
 /**
  * RUM Resource performance metrics.
  * @param duration resource load time
@@ -141,22 +146,22 @@ export enum IOSCrashMonitoringType {
  * @param resource_trans resource content transfer time
  * @param resource_first_byte resource first byte time
  */
- export interface FTRUMResourceMetrics{
-   duration?:number,
-   resource_dns?:number,
-   resource_tcp?:number,
-   resource_ssl?:number,
-   resource_ttfb?:number,
-   resource_trans?:number,
-   resource_first_byte?:number,
- };
- type FTReactNativeRUMType = {
+export interface FTRUMResourceMetrics {
+  duration?: number;
+  resource_dns?: number;
+  resource_tcp?: number;
+  resource_ssl?: number;
+  resource_ttfb?: number;
+  resource_trans?: number;
+  resource_first_byte?: number;
+}
+type FTReactNativeRUMType = {
   /**
    * Set RUM tracking conditions and enable RUM collection.
    * @param config rum configuration parameters.
    * @returns a Promise.
    */
-   setConfig(config:FTRUMConfig): Promise<void>;
+  setConfig(config: FTRUMConfig): Promise<void>;
   /**
    * Start RUM Action.
    * RUM will bind Resource, Error, LongTask events that may be triggered by this Action.
@@ -167,35 +172,43 @@ export enum IOSCrashMonitoringType {
    * @param property event context (optional)
    * @returns a Promise.
    */
-   startAction(actionName:string,actionType:string,property?:object): Promise<void>;
-   /**
+  startAction(
+    actionName: string,
+    actionType: string,
+    property?: object
+  ): Promise<void>;
+  /**
    * Add Action event. This type of data cannot be associated with Error, Resource, LongTask data, and has no discard logic.
    * @param actionName action name
    * @param actionType action type
    * @param property event context (optional)
    * @returns a Promise.
    */
-   addAction(actionName:string,actionType:string,property?:object): Promise<void>;
+  addAction(
+    actionName: string,
+    actionType: string,
+    property?: object
+  ): Promise<void>;
   /**
    * view load duration.
    * @param viewName view name
    * @param loadTime view load duration
    * @returns a Promise.
    */
-   onCreateView(viewName:string,loadTime:number): Promise<void>;
+  onCreateView(viewName: string, loadTime: number): Promise<void>;
   /**
    * view start.
    * @param viewName page name
    * @param property event context (optional)
    * @returns a Promise.
    */
-   startView(viewName: string, property?: object): Promise<void>;
+  startView(viewName: string, property?: object): Promise<void>;
   /**
    * view end.
    * @param property event context (optional)
    * @returns a Promise.
    */
-   stopView(property?:object): Promise<void>;
+  stopView(property?: object): Promise<void>;
   /**
    * Exception capture and log collection.
    * @param stack stack log
@@ -203,7 +216,7 @@ export enum IOSCrashMonitoringType {
    * @param property event context (optional)
    * @returns a Promise.
    */
-   addError(stack: string, message: string,property?:object): Promise<void>;
+  addError(stack: string, message: string, property?: object): Promise<void>;
   /**
    * Exception capture and log collection.
    * @param type error type
@@ -212,21 +225,26 @@ export enum IOSCrashMonitoringType {
    * @param property event context (optional)
    * @returns a Promise.
    */
-   addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>;
+  addErrorWithType(
+    type: string,
+    stack: string,
+    message: string,
+    property?: object
+  ): Promise<void>;
   /**
    * Start resource request.
    * @param key unique id
    * @param property event context (optional)
    * @returns a Promise.
    */
-   startResource(key: string,property?:object): Promise<void>;
+  startResource(key: string, property?: object): Promise<void>;
   /**
    * End resource request.
    * @param key unique id
    * @param property event context (optional)
    * @returns a Promise.
    */
-   stopResource(key: string,property?:object): Promise<void>;
+  stopResource(key: string, property?: object): Promise<void>;
   /**
    * Send resource data metrics.
    * @param key unique id
@@ -234,70 +252,100 @@ export enum IOSCrashMonitoringType {
    * @param metrics resource performance data
    * @returns a Promise.
    */
-   addResource(key:string, resource:FTRUMResource,metrics?:FTRUMResourceMetrics):Promise<void>;
- }
+  addResource(
+    key: string,
+    resource: FTRUMResource,
+    metrics?: FTRUMResourceMetrics
+  ): Promise<void>;
+};
 
- class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
-   private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
-        .default;
+class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
+    .default;
 
-   setConfig(config:FTRUMConfig): Promise<void>{
-     console.log('FTRUMConfig');
-     if(config.enableAutoTrackError){
-        FTRumErrorTracking.startTracking();
-     }
-     if(config.enableAutoTrackUserAction){
-        FTRumActionTracking.startTracking();
-     }
-     return this.rum.setConfig(config);
-   }
-   startAction(actionName:string,actionType:string,property?:object): Promise<void>{
-     // Automatically merge bridge context properties with local properties
-     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-     return this.rum.startAction(actionName,actionType,mergedProperties);
-   }
-   addAction(actionName: string, actionType: string, property?: object): Promise<void> {
-    // Automatically merge bridge context properties with local properties
-    const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-    return this.rum.addAction(actionName,actionType,mergedProperties);
-   }
-   onCreateView(viewName:string,loadTime:number): Promise<void>{
-     return this.rum.onCreateView(viewName,loadTime);
-   }
-   startView(viewName: string, property?:object): Promise<void>{
-     // Automatically merge bridge context properties with local properties
-     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-     return this.rum.startView(viewName,mergedProperties);
-   }
-   stopView(property?:object): Promise<void>{
-     // Automatically merge bridge context properties with local properties
-     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-     return this.rum.stopView(mergedProperties);
-   }
-   addError(stack: string, message: string,property?:object): Promise<void>{
-     // Automatically merge bridge context properties with local properties
-     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-     return this.rum.addError(stack,message,mergedProperties);
-   }
-   addErrorWithType(type:string,stack: string, message: string,property?:object): Promise<void>{
-    // Automatically merge bridge context properties with local properties
-    const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-    return this.rum.addErrorWithType(type,stack,message,mergedProperties);
+  setConfig(config: FTRUMConfig): Promise<void> {
+    console.log('FTRUMConfig');
+    if (config.enableAutoTrackError) {
+      FTRumErrorTracking.startTracking();
+    }
+    if (config.enableAutoTrackUserAction) {
+      FTRumActionTracking.startTracking();
+    }
+    return this.rum.setConfig(config);
   }
-   startResource(key: string,property?:object): Promise<void>{
-     // Automatically merge bridge context properties with local properties
-     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-     return this.rum.startResource(key,mergedProperties);
-   }
-   stopResource(key: string,property?:object): Promise<void>{
-     // Automatically merge bridge context properties with local properties
-     const mergedProperties = bridgeContextManager.mergeWithLocalPropertiesSync(property);
-     return this.rum.stopResource(key,mergedProperties);
-   }
-   addResource(key:string, resource:FTRUMResource,metrics:FTRUMResourceMetrics={}):Promise<void>{
-     return this.rum.addResource(key,resource,metrics);
-   }
- }
+  startAction(
+    actionName: string,
+    actionType: string,
+    property?: object
+  ): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.startAction(actionName, actionType, mergedProperties);
+  }
+  addAction(
+    actionName: string,
+    actionType: string,
+    property?: object
+  ): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addAction(actionName, actionType, mergedProperties);
+  }
+  onCreateView(viewName: string, loadTime: number): Promise<void> {
+    return this.rum.onCreateView(viewName, loadTime);
+  }
+  startView(viewName: string, property?: object): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.startView(viewName, mergedProperties);
+  }
+  stopView(property?: object): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.stopView(mergedProperties);
+  }
+  addError(stack: string, message: string, property?: object): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addError(stack, message, mergedProperties);
+  }
+  addErrorWithType(
+    type: string,
+    stack: string,
+    message: string,
+    property?: object
+  ): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.addErrorWithType(type, stack, message, mergedProperties);
+  }
+  startResource(key: string, property?: object): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.startResource(key, mergedProperties);
+  }
+  stopResource(key: string, property?: object): Promise<void> {
+    // Automatically merge bridge context properties with local properties
+    const mergedProperties =
+      bridgeContextManager.mergeWithLocalPropertiesSync(property);
+    return this.rum.stopResource(key, mergedProperties);
+  }
+  addResource(
+    key: string,
+    resource: FTRUMResource,
+    metrics: FTRUMResourceMetrics = {}
+  ): Promise<void> {
+    return this.rum.addResource(key, resource, metrics);
+  }
+}
 
- export const FTReactNativeRUM: FTReactNativeRUMType = new FTReactNativeRUMWrapper();
-
+export const FTReactNativeRUM: FTReactNativeRUMType =
+  new FTReactNativeRUMWrapper();

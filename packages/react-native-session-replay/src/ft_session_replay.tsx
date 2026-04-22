@@ -62,12 +62,17 @@ type FTReactNativeSessionReplayType = {
   sessionReplayConfig(config: FTSessionReplayConfig): Promise<void>;
 };
 
-class FTReactNativeSessionReplayWrapper implements FTReactNativeSessionReplayType {
-    private sessionReplay: FTReactNativeSessionReplayType = require('./specs/NativeFTReactNativeSessionReplay')
-        .default;
-    sessionReplayConfig(config:FTSessionReplayConfig): Promise<void>{
-        return this.sessionReplay.sessionReplayConfig(config);
-    }
+class FTReactNativeSessionReplayWrapper
+  implements FTReactNativeSessionReplayType
+{
+  /* eslint-disable @typescript-eslint/no-var-requires */
+  private sessionReplay: FTReactNativeSessionReplayType =
+    require('./specs/NativeFTReactNativeSessionReplay').default;
+  /* eslint-enable @typescript-eslint/no-var-requires */
+
+  sessionReplayConfig(config: FTSessionReplayConfig): Promise<void> {
+    return this.sessionReplay.sessionReplayConfig(config);
+  }
 }
 export const FTReactNativeSessionReplay: FTReactNativeSessionReplayType =
   new FTReactNativeSessionReplayWrapper();

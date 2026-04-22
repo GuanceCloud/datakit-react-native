@@ -12,7 +12,9 @@ const mockFTMobileReactNative = {
   shutDown: jest.fn().mockResolvedValue(undefined),
   clearAllData: jest.fn().mockResolvedValue(undefined),
   updateRemoteConfig: jest.fn().mockResolvedValue(undefined),
-  updateRemoteConfigWithMiniUpdateInterval: jest.fn().mockResolvedValue(undefined),
+  updateRemoteConfigWithMiniUpdateInterval: jest
+    .fn()
+    .mockResolvedValue(undefined),
   addListener: jest.fn(),
   removeListeners: jest.fn(),
 };
@@ -29,6 +31,7 @@ jest.mock('react-native', () => ({
   },
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTMobileReactNative } = require('../ft_mobile_agent');
 
 describe('FTMobileReactNative upload endpoint APIs', () => {
@@ -42,7 +45,9 @@ describe('FTMobileReactNative upload endpoint APIs', () => {
     await FTMobileReactNative.setDatakitURL(datakitUrl);
 
     expect(mockFTMobileReactNative.setDatakitURL).toHaveBeenCalledTimes(1);
-    expect(mockFTMobileReactNative.setDatakitURL).toHaveBeenCalledWith(datakitUrl);
+    expect(mockFTMobileReactNative.setDatakitURL).toHaveBeenCalledWith(
+      datakitUrl
+    );
   });
 
   it('forwards setDatawayURL and clientToken to the native module', async () => {

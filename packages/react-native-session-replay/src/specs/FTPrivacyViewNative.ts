@@ -9,8 +9,10 @@ const isNewArchitectureEnabled = () => {
 const getNativeComponent = () => {
   if (isNewArchitectureEnabled()) {
     try {
+      /* eslint-disable @typescript-eslint/no-var-requires */
       const NewArchComponent =
         require('./FTPrivacyViewNativeComponent').default;
+      /* eslint-enable @typescript-eslint/no-var-requires */
       if (NewArchComponent) {
         return NewArchComponent;
       }

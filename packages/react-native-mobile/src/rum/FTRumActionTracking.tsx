@@ -48,7 +48,9 @@ export class FTRumActionTracking {
       ): ReturnType<typeof React.createElement> => {
         return this.patchCreateElementFunction(originaljsx, args);
       };
-    } catch (e) {}
+    } catch (e) {
+      // Ignore missing jsx runtime support on older React versions.
+    }
 
     const originalMemo = React.memo;
     React.memo = (
@@ -193,7 +195,7 @@ export class FTRumActionTracking {
     while (currentNode) {
       const props = currentNode.memoizedProps;
       if (props && props[FT_ENABLE_TRACK]) {
-        enable = props[FT_ENABLE_TRACK] == 'true';
+        enable = props[FT_ENABLE_TRACK] === 'true';
         break;
       }
       currentNode = currentNode.return;

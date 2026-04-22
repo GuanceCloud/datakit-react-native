@@ -1,4 +1,8 @@
-import { EmitterSubscription, NativeEventEmitter, NativeModules } from 'react-native';
+import {
+  EmitterSubscription,
+  NativeEventEmitter,
+  NativeModules,
+} from 'react-native';
 import { version as sdkVersion } from './version';
 
 /**
@@ -62,7 +66,9 @@ class BridgeContextManager {
    * @param localProperties Local properties to merge with bridge context properties
    * @returns Merged properties object
    */
-  public mergeWithLocalPropertiesSync(localProperties?: object): Record<string, any> {
+  public mergeWithLocalPropertiesSync(
+    localProperties?: object
+  ): Record<string, any> {
     try {
       const merged: Record<string, any> = {};
 
@@ -95,15 +101,22 @@ export const bridgeContextManager = BridgeContextManager.getInstance();
  * Environment.
  */
 export enum EnvType {
-  prod, gray, pre, common, local
-};
-export enum FTDBCacheDiscard { discard, discardOldest };
+  prod,
+  gray,
+  pre,
+  common,
+  local,
+}
+export enum FTDBCacheDiscard {
+  discard,
+  discardOldest,
+}
 
 /**
  * Remote config override rule matching condition for custom keys. Supports exact match and contains match.
  * For exact match, set the value directly, for example: "userid": "test_user", which means the rule will be applied when the custom key "userid" is exactly "test_user".
  * For contains match, set the value as an object with a "contains" field, for example: "userid": { "contains": "test_user" }, which means the rule will be applied when the custom key "userid" contains the object "test_user".
-*/
+ */
 export type FTRemoteConfigCustomKeyContainsMatch = {
   contains: string | number | boolean;
 };
@@ -113,13 +126,16 @@ export type FTRemoteConfigCustomKeyContainsMatch = {
  * Defines matching conditions using customKeys
  */
 export type FTRemoteConfigOverrideMatch = {
-  customKeys?: Record<string, string | number | boolean | FTRemoteConfigCustomKeyContainsMatch>;
+  customKeys?: Record<
+    string,
+    string | number | boolean | FTRemoteConfigCustomKeyContainsMatch
+  >;
 };
 
 /**
  * Values that can be modified by remote config override rules.
  * These values will adjust the fetched remote configuration before it is applied.
-*/
+ */
 export type FTRemoteConfigOverrideValues = {
   env?: string;
   serviceName?: string;
@@ -151,13 +167,13 @@ export type FTRemoteConfigOverrideValues = {
 /**
  * Remote config override rules .
  * Adjust the fetched remote configuration before application.
-*/
+ */
 export type FTRemoteConfigOverrideRule = {
-  id?: string,
-  enabled?: boolean,
-  match: FTRemoteConfigOverrideMatch,
-  override: FTRemoteConfigOverrideValues,
-}
+  id?: string;
+  enabled?: boolean;
+  match: FTRemoteConfigOverrideMatch;
+  override: FTRemoteConfigOverrideValues;
+};
 /**
  * Final result of the remote config update
  * @param triggerType the type of remote config update trigger, auto or manual
@@ -203,57 +219,56 @@ export type FTRemoteConfigResult = {
  * @param remoteConfiguration Set whether to enable remote dynamic configuration
  * @param remoteConfigMiniUpdateInterval Set remote dynamic configuration minimum update interval, unit seconds, default 12*60*60
  * @param remoteConfigOverrideRules Remote config override rules .Adjust the fetched remote configuration before application.
-*/
- export interface FTMobileConfig {
-   /**
-    * @deprecated "serverUrl" parameter renamed to "datakitUrl"
-    */
-   serverUrl?: string,
-   datakitUrl?: string,
-   datawayUrl?: string,
-   clientToken?: string,
-   debug?:boolean,
-   envType?:EnvType,
-   env?:string,
-   service?:string,
-   autoSync?:boolean,
-   syncPageSize?:number,
-   syncSleepTime?:number,
-   enableDataIntegerCompatible?:boolean,
-   compressIntakeRequests?:boolean,
-   globalContext?:object,
-   groupIdentifiers?:Array<string>,
-   enableLimitWithDbSize?:boolean,
-   dbCacheLimit?:number,
-   dbDiscardStrategy?:FTDBCacheDiscard,
-   dataModifier?:object,
-   lineDataModifier?:object,
-   remoteConfiguration?:boolean,
-   remoteConfigMiniUpdateInterval?:number,
-   remoteConfigOverrideRules?:Array<FTRemoteConfigOverrideRule>,
- }
+ */
+export interface FTMobileConfig {
+  /**
+   * @deprecated "serverUrl" parameter renamed to "datakitUrl"
+   */
+  serverUrl?: string;
+  datakitUrl?: string;
+  datawayUrl?: string;
+  clientToken?: string;
+  debug?: boolean;
+  envType?: EnvType;
+  env?: string;
+  service?: string;
+  autoSync?: boolean;
+  syncPageSize?: number;
+  syncSleepTime?: number;
+  enableDataIntegerCompatible?: boolean;
+  compressIntakeRequests?: boolean;
+  globalContext?: object;
+  groupIdentifiers?: Array<string>;
+  enableLimitWithDbSize?: boolean;
+  dbCacheLimit?: number;
+  dbDiscardStrategy?: FTDBCacheDiscard;
+  dataModifier?: object;
+  lineDataModifier?: object;
+  remoteConfiguration?: boolean;
+  remoteConfigMiniUpdateInterval?: number;
+  remoteConfigOverrideRules?: Array<FTRemoteConfigOverrideRule>;
+}
 
 type FTMobileReactNativeType = {
-
   /**
    * SDK initialization method.
    * @param config SDK initialization configuration items.
    * @returns a Promise.
    */
-   sdkConfig(config:FTMobileConfig): Promise<void>;
+  sdkConfig(config: FTMobileConfig): Promise<void>;
   /**
    * Dynamically set the Datakit upload URL after SDK initialization.
    * @param datakitUrl Datakit upload URL.
    * @returns a Promise.
    */
-   setDatakitURL(datakitUrl:string): Promise<void>;
+  setDatakitURL(datakitUrl: string): Promise<void>;
   /**
    * Dynamically set the Dataway upload URL and client token after SDK initialization.
    * @param datawayUrl Dataway upload URL.
    * @param clientToken Dataway authentication token.
    * @returns a Promise.
    */
-   setDatawayURL(datawayUrl:string,clientToken:string): Promise<void>;
+  setDatawayURL(datawayUrl: string, clientToken: string): Promise<void>;
   /**
    * Bind user.
    * @param userId user ID.
@@ -262,140 +277,168 @@ type FTMobileReactNativeType = {
    * @param extra additional user information
    * @returns a Promise.
    */
-   bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void>;
+  bindRUMUserData(
+    userId: string,
+    userName?: string,
+    userEmail?: string,
+    extra?: object
+  ): Promise<void>;
   /**
    * Unbind user.
    * @returns a Promise.
    */
-   unbindRUMUserData(): Promise<void>;
-   /**
+  unbindRUMUserData(): Promise<void>;
+  /**
    * Add custom global parameters. Applies to RUM and Log data
    * @param context custom global parameters.
    * @returns a Promise.
    */
-   appendGlobalContext(context:object):Promise<void>;
-   /**
+  appendGlobalContext(context: object): Promise<void>;
+  /**
    * Add custom RUM global parameters. Applies to RUM data
    * @param context custom RUM global parameters.
    * @returns a Promise.
    */
-   appendRUMGlobalContext(context:object):Promise<void>;
+  appendRUMGlobalContext(context: object): Promise<void>;
   /**
    * Add custom RUM and Log global parameters. Applies to Log data
    * @param context custom Log global parameters.
    * @returns a Promise.
    */
-   appendLogGlobalContext(context:object):Promise<void>;
-   /**
-    * Actively synchronize data. When `FTMobileConfig.autoSync=false` is configured, you need to actively trigger this method to synchronize data.
-    * @returns a Promise.
+  appendLogGlobalContext(context: object): Promise<void>;
+  /**
+   * Actively synchronize data. When `FTMobileConfig.autoSync=false` is configured, you need to actively trigger this method to synchronize data.
+   * @returns a Promise.
    */
-   flushSyncData():Promise<void>;
+  flushSyncData(): Promise<void>;
 
-   /**
+  /**
    * Synchronize events in iOS Widget Extension, iOS only
    * @param groupIdentifier app groupId
    * @returns {groupIdentifier:string,datas:Array<object>} can be used to view data collected in Extension.
    */
-   trackEventFromExtension(identifier:string): Promise<object>
-   /**
-    * Shut down objects currently running in the SDK
-    */
-   shutDown():Promise<void>
-   /**
-    * Clear all data that has not yet been uploaded to the server.
-    */
-   clearAllData():Promise<void>
-   /**
-    * Add bridge context properties that will be automatically merged with local properties
-    * @param properties Object containing key-value pairs
-    */
-   appendBridgeContext(properties: Record<string, any>): void;
-   /**
-   * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
-    */
-   updateRemoteConfig():Promise<FTRemoteConfigResult>
-   /**
-    * Update remote configuration with minimum update interval, after enabling remote configuration, you can call this method to update the configuration in real time.
-    * This method is used to set the minimum update interval for remote configuration updates. If the time since the last update is less than the specified interval, the update will not be performed.
-    * @param interval minimum update interval, unit seconds
-    * @param rules Remote config override rules .Adjust the fetched remote configuration before application. 
-    * @returns the result of the remote config update
+  trackEventFromExtension(identifier: string): Promise<object>;
+  /**
+   * Shut down objects currently running in the SDK
    */
-   updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>
-   /**
-    * Listen for auto remote configuration updates triggered by the native SDK.
-    * Manual updates are returned through the update Promise instead of this event.
-    */
-   addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription
- };
+  shutDown(): Promise<void>;
+  /**
+   * Clear all data that has not yet been uploaded to the server.
+   */
+  clearAllData(): Promise<void>;
+  /**
+   * Add bridge context properties that will be automatically merged with local properties
+   * @param properties Object containing key-value pairs
+   */
+  appendBridgeContext(properties: Record<string, any>): void;
+  /**
+   * Update remote configuration, after enabling remote configuration, you can call this method to update the configuration in real time.
+   */
+  updateRemoteConfig(): Promise<FTRemoteConfigResult>;
+  /**
+   * Update remote configuration with minimum update interval, after enabling remote configuration, you can call this method to update the configuration in real time.
+   * This method is used to set the minimum update interval for remote configuration updates. If the time since the last update is less than the specified interval, the update will not be performed.
+   * @param interval minimum update interval, unit seconds
+   * @param rules Remote config override rules .Adjust the fetched remote configuration before application.
+   * @returns the result of the remote config update
+   */
+  updateRemoteConfigWithMiniUpdateInterval(
+    interval: number,
+    rules?: Array<FTRemoteConfigOverrideRule>
+  ): Promise<FTRemoteConfigResult>;
+  /**
+   * Listen for auto remote configuration updates triggered by the native SDK.
+   * Manual updates are returned through the update Promise instead of this event.
+   */
+  addRemoteConfigListener(
+    listener: (result: FTRemoteConfigResult) => void
+  ): EmitterSubscription;
+};
 
- class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
-   private sdk:FTMobileReactNativeType = require('./specs/NativeFTMobileReactNative')
-        .default;
-   private emitter: NativeEventEmitter | null = null;
+class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
+  /* eslint-disable @typescript-eslint/no-var-requires */
+  private sdk: FTMobileReactNativeType =
+    require('./specs/NativeFTMobileReactNative').default;
+  /* eslint-enable @typescript-eslint/no-var-requires */
 
-   private getEmitter(): NativeEventEmitter {
-     if (this.emitter) {
-       return this.emitter;
-     }
+  private emitter: NativeEventEmitter | null = null;
 
-     const nativeEventModule = NativeModules.FTMobileReactNative ?? this.sdk;
-     this.emitter = new NativeEventEmitter(nativeEventModule as never);
-     return this.emitter;
-   }
-     
-   sdkConfig(config:FTMobileConfig): Promise<void> {
-     if(config.serverUrl != null && config.serverUrl.length>0 && config.datakitUrl == null){
-       config.datakitUrl = config.serverUrl;
-     }
-     return this.sdk.sdkConfig(config);
-   }
-   setDatakitURL(datakitUrl:string): Promise<void> {
-     return this.sdk.setDatakitURL(datakitUrl);
-   }
-   setDatawayURL(datawayUrl:string,clientToken:string): Promise<void> {
-     return this.sdk.setDatawayURL(datawayUrl,clientToken);
-   }
-   bindRUMUserData(userId: string,userName?:string,userEmail?:string,extra?:object): Promise<void> {
-     return this.sdk.bindRUMUserData(userId,userName,userEmail,extra);
-   }
-   unbindRUMUserData(): Promise<void> {
-     return this.sdk.unbindRUMUserData();
-   }
-   appendGlobalContext(context: object): Promise<void> {
+  private getEmitter(): NativeEventEmitter {
+    if (this.emitter) {
+      return this.emitter;
+    }
+
+    const nativeEventModule = NativeModules.FTMobileReactNative ?? this.sdk;
+    this.emitter = new NativeEventEmitter(nativeEventModule as never);
+    return this.emitter;
+  }
+
+  sdkConfig(config: FTMobileConfig): Promise<void> {
+    if (
+      config.serverUrl != null &&
+      config.serverUrl.length > 0 &&
+      config.datakitUrl == null
+    ) {
+      config.datakitUrl = config.serverUrl;
+    }
+    return this.sdk.sdkConfig(config);
+  }
+  setDatakitURL(datakitUrl: string): Promise<void> {
+    return this.sdk.setDatakitURL(datakitUrl);
+  }
+  setDatawayURL(datawayUrl: string, clientToken: string): Promise<void> {
+    return this.sdk.setDatawayURL(datawayUrl, clientToken);
+  }
+  bindRUMUserData(
+    userId: string,
+    userName?: string,
+    userEmail?: string,
+    extra?: object
+  ): Promise<void> {
+    return this.sdk.bindRUMUserData(userId, userName, userEmail, extra);
+  }
+  unbindRUMUserData(): Promise<void> {
+    return this.sdk.unbindRUMUserData();
+  }
+  appendGlobalContext(context: object): Promise<void> {
     return this.sdk.appendGlobalContext(context);
-   }
-   appendLogGlobalContext(context: object): Promise<void> {
-       return this.sdk.appendLogGlobalContext(context);
-   }
-   appendRUMGlobalContext(context: object): Promise<void> {
-       return this.sdk.appendRUMGlobalContext(context);
-   }
-   trackEventFromExtension(identifier:string) :Promise<object>{
-     return this.sdk.trackEventFromExtension(identifier);
-   }
-   flushSyncData():Promise<void>{
+  }
+  appendLogGlobalContext(context: object): Promise<void> {
+    return this.sdk.appendLogGlobalContext(context);
+  }
+  appendRUMGlobalContext(context: object): Promise<void> {
+    return this.sdk.appendRUMGlobalContext(context);
+  }
+  trackEventFromExtension(identifier: string): Promise<object> {
+    return this.sdk.trackEventFromExtension(identifier);
+  }
+  flushSyncData(): Promise<void> {
     return this.sdk.flushSyncData();
-   }
-   shutDown():Promise<void>{
+  }
+  shutDown(): Promise<void> {
     return this.sdk.shutDown();
-   }
-   clearAllData():Promise<void>{
+  }
+  clearAllData(): Promise<void> {
     return this.sdk.clearAllData();
-   }
-   appendBridgeContext(properties: Record<string, any>): void {
-     // Use bridgeContextManager to store properties in JavaScript and send to native SDK
+  }
+  appendBridgeContext(properties: Record<string, any>): void {
+    // Use bridgeContextManager to store properties in JavaScript and send to native SDK
     bridgeContextManager.appendBridgeContext(properties);
   }
-   updateRemoteConfig():Promise<FTRemoteConfigResult>{
+  updateRemoteConfig(): Promise<FTRemoteConfigResult> {
     return this.sdk.updateRemoteConfig();
-   }
-   updateRemoteConfigWithMiniUpdateInterval(interval:number,rules?: Array<FTRemoteConfigOverrideRule>):Promise<FTRemoteConfigResult>{
-      return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval,rules);
-   }
-   addRemoteConfigListener(listener:(result:FTRemoteConfigResult)=>void): EmitterSubscription {
-     return this.getEmitter().addListener('ft_remote_config_callback', listener);
-   }
- }
-export const FTMobileReactNative: FTMobileReactNativeType = new FTMobileReactNativeWrapper();
+  }
+  updateRemoteConfigWithMiniUpdateInterval(
+    interval: number,
+    rules?: Array<FTRemoteConfigOverrideRule>
+  ): Promise<FTRemoteConfigResult> {
+    return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval, rules);
+  }
+  addRemoteConfigListener(
+    listener: (result: FTRemoteConfigResult) => void
+  ): EmitterSubscription {
+    return this.getEmitter().addListener('ft_remote_config_callback', listener);
+  }
+}
+export const FTMobileReactNative: FTMobileReactNativeType =
+  new FTMobileReactNativeWrapper();

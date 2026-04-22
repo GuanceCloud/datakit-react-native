@@ -26,9 +26,7 @@ import {
   IOSCrashMonitoringType,
 } from './ft_rum';
 import { FTTraceConfig, FTReactNativeTrace, TraceType } from './ft_tracing';
-import {
-  FTRumActionTracking,
-} from './rum/FTRumActionTracking';
+import { FTRumActionTracking } from './rum/FTRumActionTracking';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
 
 export {
