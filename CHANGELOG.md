@@ -1,3 +1,46 @@
+> Related SDK update content
+> * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
+> * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
+
+# 0.4.1
+* Added Session Replay capability and made it available as the standalone @cloudcare/react-native-session-replay package for independent installation and usage.
+* Added error sampling for Session Replay, with support for dynamic control of Session Replay via remote configuration.
+* Session Replay now supports privacy configuration for touches, text & inputs, and images through touchPrivacy, textAndInputPrivacy, and imagePrivacy. A new native component FTSessionReplayView is also added to mark and protect sensitive areas in the React Native UI during Session Replay recording.
+* Added support for React Native New Architecture to improve compatibility with the latest React Native app setups.
+* Added support for dynamically updating data upload endpoints via FTMobileReactNative.setDatakitURL and FTMobileReactNative.setDatawayURL.
+* Upgraded compatibility to Android `ft-sdk` 1.7.0, Android `ft-session-replay` 0.1.3, and iOS SDK 1.6.2.
+---
+# 0.4.1-alpha.1
+* Support React Native New Architecture 
+* Split Session Replay into the standalone `@cloudcare/react-native-session-replay` package
+* Add `FTSessionReplayView` component support for marking Session Replay content in React Native UI
+* Support dynamically updating upload endpoints through `FTMobileReactNative.setDatakitURL` and `FTMobileReactNative.setDatawayURL`
+* Compatible with Android ft-sdk 1.7.0, ft-session-replay 0.1.3,iOS SDK 1.6.2
+---
+# 0.4.0-alpha.5
+* iOS Fix the memory access crash caused by incorrect use of NSNumber modifiers in Session Replay
+* Compatible with iOS SDK 1.6.2-alpha.6
+---
+# 0.4.0-alpha.4
+* iOS Fix crash issue caused by nil string in Session Replay
+* Compatible with iOS SDK 1.6.2-alpha.3
+
+---
+# 0.4.0-alpha.3
+* Android Fix import missing issues in rn76
+
+---
+# 0.4.0-alpha.2
+* Android compatible with multiple versions of React Native rn75 rn76 rn79 rn80
+* Compatible with Android ft-sdk 1.7.0-alpha20, ft-session-replay 0.1.2-alpha02, iOS 1.6.2-alpha.1
+* merge the version 0.3.14
+
+---
+# 0.4.0-alpha.1
+* Add Session Replay Features
+* Compatible with Android ft-sdk:1.7.0-alpha05 ft-session-replay:0.1.0-alpha05
+* Base on 0.3.3
+---
 # 0.3.16
 * Compatible with Android ft-sdk 1.6.17, iOS SDK 1.5.20
 * Add `FTRUMConfig.enableTraceWebView`, `FTRUMConfig.allowWebViewHost` to support webView collection rules configuration
@@ -20,6 +63,7 @@
 * Support setting error sampling through `FTRUMConfig.sessionErrorSampleRate`. When not sampled by sampleRate, RUM data from 1 minute before the error occurs can be sampled when an error occurs
 * Add `FTMobileConfig.lineDataModifier`, `FTMobileConfig.dataModifier` to support data write replacement and data desensitization
 * Compatible with Android ft-sdk 1.6.11, iOS 1.5.16
+
 ---
 # 0.3.13
 * Android Java 8 compatibility adjustments, remove kotlin library dependency

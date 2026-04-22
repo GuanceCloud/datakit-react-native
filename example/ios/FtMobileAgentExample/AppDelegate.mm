@@ -8,23 +8,23 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 //  //Hybrid development SDK initialization example
-//  [self SDKInit];
-
+//  [self guanceSDKInit];
+  
   self.moduleName = @"FtMobileAgentExample";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
-
+  
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   [ReactNativeNavigation bootstrapWithBridge:bridge];
   return YES;
 }
 
-- (void)SDKInit{
+- (void)guanceSDKInit{
   FTMobileConfig *config = [[FTMobileConfig alloc]initWithDatakitUrl:@"datakitUrl"];
   config.enableSDKDebugLog = YES;
   [FTMobileAgent startWithConfigOptions:config];
-
+  
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:@"rumAppId"];
   rumConfig.enableTraceUserResource = YES;
   #if DEBUG

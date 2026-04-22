@@ -25,6 +25,11 @@ import {
   FTRumActionTracking,
   FTRumErrorTracking
 } from '@cloudcare/react-native-mobile';
+import {
+  FTReactNativeSessionReplay,
+  FTSessionReplayConfig,
+  SessionReplayPrivacy,
+} from '@cloudcare/react-native-session-replay';
 import Config from 'react-native-config';
 
 
@@ -49,7 +54,8 @@ function hybridConfig(){
 async function reactNativeInitSDK() {
   //Basic configuration
   let config: FTMobileConfig = {
-    datakitUrl:Config.SERVER_URL,
+    datawayUrl:Config.DATAWAY_URL,
+    clientToken:Config.CLIENT_TOKEN,
     debug: true,
     env:'test',
     enableLimitWithDbSize:true,
@@ -144,7 +150,11 @@ async function reactNativeInitSDK() {
       })
      })
    */
-
+  let sessionReplayConfig:FTSessionReplayConfig = {
+    sampleRate:1,
+    privacy:SessionReplayPrivacy.ALLOW
+  }
+  await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);
   FTReactNativeLog.logging('config complete', FTLogStatus.info);
 }
 
