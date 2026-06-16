@@ -2,6 +2,11 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# Unreleased
+
+* Added `FTMobileConfig.enableDataFilter` and `FTMobileConfig.dataFilters` for DataKit-compatible data filtering, adapting iOS `FTMobileSDK 1.6.5` and Android `ft-sdk 1.7.2`.
+
+---
 # 0.4.1
 * Added Session Replay capability and made it available as the standalone @cloudcare/react-native-session-replay package for independent installation and usage.
 * Added error sampling for Session Replay, with support for dynamic control of Session Replay via remote configuration.

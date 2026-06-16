@@ -47,7 +47,7 @@
   builder.attributes = attributes;
   builder.text = textProperties.text;
   builder.textAlignment = textProperties.alignment;
-  builder.textColor = textProperties.foregroundColor;
+  builder.textColor = [FTSRColorSnapshot snapshotWithColor:textProperties.foregroundColor traitCollection:view.traitCollection];
   builder.textObfuscator = self.textObfuscator(context,attributes);
   builder.fontSize = textProperties.fontSize;
   builder.wireframeRect = attributes.frame;
@@ -148,9 +148,9 @@
   FTSRTextWireframe *wireframe = [[FTSRTextWireframe alloc]initWithIdentifier:self.wireframeID frame:frame];
   
   wireframe.text = [self.textObfuscator mask:self.text];
-  wireframe.border = [[FTSRShapeBorder alloc]initWithColor:[FTSRUtils colorHexString:self.attributes.layerBorderColor] width:self.attributes.layerBorderWidth];
-  wireframe.shapeStyle = [[FTSRShapeStyle alloc]initWithBackgroundColor:[FTSRUtils colorHexString:self.attributes.backgroundColor.CGColor] cornerRadius:@(self.attributes.layerCornerRadius) opacity:@(self.attributes.alpha)];
-  wireframe.textStyle = [[FTSRTextStyle alloc]initWithSize:self.fontSize?self.fontSize:RCTTextPropertiesDefaultFontSize color:[FTSRUtils colorHexString:self.textColor.CGColor] family:nil];
+  wireframe.border = [[FTSRShapeBorder alloc]initWithColor:self.attributes.layerBorderColor.hexString width:self.attributes.layerBorderWidth];
+  wireframe.shapeStyle = [[FTSRShapeStyle alloc]initWithBackgroundColor:self.attributes.backgroundColor.hexString cornerRadius:@(self.attributes.layerCornerRadius) opacity:@(self.attributes.alpha)];
+  wireframe.textStyle = [[FTSRTextStyle alloc]initWithSize:self.fontSize?self.fontSize:RCTTextPropertiesDefaultFontSize color:self.textColor.hexString family:nil];
   FTSRTextPosition *textPosition = [[FTSRTextPosition alloc]init];
   textPosition.alignment = [[FTAlignment alloc]initWithTextAlignment:self.textAlignment vertical:@"top"];
   CGRect textFrame = [self textFrame];
@@ -167,6 +167,5 @@
   return CGRectMake(self.attributes.frame.origin.x+self.contentRect.origin.x, self.attributes.frame.origin.y+self.contentRect.origin.y, self.contentRect.size.width, self.contentRect.size.height);
 }
 @end
-
 
 

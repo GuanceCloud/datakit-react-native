@@ -421,6 +421,12 @@ RCT_REMAP_METHOD(clearAllData,
     if ([context.allKeys containsObject:@"compressIntakeRequests"]) {
       config.compressIntakeRequests = [RCTConvert BOOL:context[@"compressIntakeRequests"]];
     }
+    if ([context.allKeys containsObject:@"enableDataFilter"]) {
+      config.enableDataFilter = [RCTConvert BOOL:context[@"enableDataFilter"]];
+    }
+    if ([context.allKeys containsObject:@"dataFilters"]) {
+      config.dataFilters = [RCTConvert NSDictionary:context[@"dataFilters"]];
+    }
     if ([context.allKeys containsObject:@"globalContext"]) {
       config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
     }

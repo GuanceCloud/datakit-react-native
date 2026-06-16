@@ -62,4 +62,20 @@ describe('FTMobileReactNative upload endpoint APIs', () => {
       clientToken
     );
   });
+
+  it('forwards data filter config to the native module', async () => {
+    const config = {
+      datawayUrl: 'https://openway.guance.com',
+      clientToken: 'client-token',
+      enableDataFilter: false,
+      dataFilters: {
+        logging: ["{ source in ['custom_log'] and message in ['drop'] }"],
+      },
+    };
+
+    await FTMobileReactNative.sdkConfig(config);
+
+    expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledTimes(1);
+    expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledWith(config);
+  });
 });
