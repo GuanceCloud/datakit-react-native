@@ -67,4 +67,9 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
   public void stopResource(String key, ReadableMap map, Promise promise) {
     impl.stopResource(key, map, promise);
   }
+
+  @ReactMethod
+  public void addResource(String key, ReadableMap resource, ReadableMap metrics, Promise promise) {
+    impl.addResource(key, resource, metrics, promise);
+  }
 }
