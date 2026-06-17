@@ -2,6 +2,10 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# 0.4.2-alpha.1
+* Fixed Android adapter compilation with AGP 7.x and Java 8/11 source levels.
+* Fixed Android old architecture RUM `addResource` bridge.
+---
 # 0.4.1
 * Added Session Replay capability and made it available as the standalone @cloudcare/react-native-session-replay package for independent installation and usage.
 * Added error sampling for Session Replay, with support for dynamic control of Session Replay via remote configuration.
