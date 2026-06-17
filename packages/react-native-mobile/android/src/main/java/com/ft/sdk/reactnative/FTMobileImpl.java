@@ -271,7 +271,8 @@ public class FTMobileImpl {
             return false;
         }
 
-        if (actual instanceof String actualString) {
+        if (actual instanceof String) {
+            String actualString = (String) actual;
             Object normalizedActual = parseJsonStringIfNeeded(actualString);
             if (normalizedActual != actual) {
                 return isEqualValue(normalizedActual, expected);
@@ -298,18 +299,23 @@ public class FTMobileImpl {
     }
 
     private boolean matchesCustomKey(Object actual, Object expected) {
-        if (expected instanceof Map<?, ?> expectedMap && expectedMap.containsKey("contains")) {
-            return containsValue(actual, expectedMap.get("contains"));
+        if (expected instanceof Map) {
+            Map<?, ?> expectedMap = (Map<?, ?>) expected;
+            if (expectedMap.containsKey("contains")) {
+                return containsValue(actual, expectedMap.get("contains"));
+            }
         }
         return isEqualValue(actual, expected);
     }
 
     private boolean containsValue(Object actual, Object expectedValue) {
-        Object normalizedActual = actual instanceof String actualString
-            ? parseJsonStringIfNeeded(actualString)
-            : actual;
+        Object normalizedActual = actual;
+        if (actual instanceof String) {
+            normalizedActual = parseJsonStringIfNeeded((String) actual);
+        }
 
-        if (normalizedActual instanceof JSONArray actualArray) {
+        if (normalizedActual instanceof JSONArray) {
+            JSONArray actualArray = (JSONArray) normalizedActual;
             try {
                 for (int i = 0; i < actualArray.length(); i++) {
                     if (isEqualValue(actualArray.get(i), expectedValue)) {
