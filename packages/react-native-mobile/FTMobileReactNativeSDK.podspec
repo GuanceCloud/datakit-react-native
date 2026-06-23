@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React-Core"
-  s.dependency 'FTMobileSDK', '1.6.2'
+  s.dependency 'FTMobileSDK', '1.6.5'
   
     xcconfig = {
     "HEADER_SEARCH_PATHS" => "$(inherited) " +
