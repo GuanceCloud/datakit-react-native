@@ -209,8 +209,8 @@ export type FTRemoteConfigResult = {
  * @param syncSleepTime interval time between each request during data synchronization, unit milliseconds, 0 < syncSleepTime < 100
  * @param enableDataIntegerCompatible whether to enable data integer compatibility during data synchronization, enabled by default
  * @param compressIntakeRequests whether to compress synchronized data
- * @param enableDataFilter whether to enable SDK-side DataKit-compatible data filters, enabled by default
- * @param dataFilters local DataKit-compatible filter rules grouped by category, for example logging or rum
+ * @param enableDataFilter whether to enable SDK-side local data filters, enabled by default
+ * @param dataFilters local blocklist filter rules. Supported categories include `logging` and `rum`. Any data that matches a rule will be discarded.
  * @param globalContext custom global parameters
  * @param groupIdentifiers iOS side sets the AppGroups Identifier array corresponding to the collected Widget Extension
  * @param enableLimitWithDbSize set whether to enable using db to limit data size, after enabling, `FTLogConfig.logCacheLimitCount` and `FTRUMConfig.rumCacheLimitCount` will no longer take effect

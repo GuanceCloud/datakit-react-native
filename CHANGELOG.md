@@ -2,9 +2,8 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
-# Unreleased
-
-* Added `FTMobileConfig.enableDataFilter` and `FTMobileConfig.dataFilters` for DataKit-compatible data filtering, adapting iOS `FTMobileSDK 1.6.5` and Android `ft-sdk 1.7.2`.
+# 0.4.2-alpha.2
+* Added `FTMobileConfig.enableDataFilter` and `FTMobileConfig.dataFilters` for SDK-side local blocklist data filtering, adapting iOS `FTMobileSDK 1.6.5` and Android `ft-sdk 1.7.2`.
 ---
 # 0.4.2-alpha.1
 * Fixed Android adapter compilation with AGP 7.x and Java 8/11 source levels.
