@@ -69,7 +69,9 @@ describe('FTMobileReactNative upload endpoint APIs', () => {
       clientToken: 'client-token',
       enableDataFilter: false,
       dataFilters: {
-        logging: ["{ source in [ 'df_rum_ios_log' ] and message match [ 'timeout' ] }"],
+        logging: [
+          "{ `source` in [ 'df_rum_ios_log' , 'df_rum_android_log' ] and `message` match [ 'timeout' ] }",
+        ],
       },
     };
 

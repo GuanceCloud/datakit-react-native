@@ -63,7 +63,9 @@ async function reactNativeInitSDK() {
     dbDiscardStrategy:FTDBCacheDiscard.discard,
     enableDataFilter:true,
     dataFilters: {
-      logging: ["{ source in [ 'df_rum_ios_log' ] and message match [ 'timeout' ] }"],
+      logging: [
+        "{ `source` in [ 'df_rum_ios_log' , 'df_rum_android_log' ] and `message` match [ 'timeout' ] }",
+      ],
     },
     remoteConfiguration:true,
     // envType:EnvType.prod,
