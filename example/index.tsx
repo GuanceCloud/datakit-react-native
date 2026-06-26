@@ -61,6 +61,12 @@ async function reactNativeInitSDK() {
     enableLimitWithDbSize:true,
     dbCacheLimit:50*1024*1024,
     dbDiscardStrategy:FTDBCacheDiscard.discard,
+    enableDataFilter:true,
+    dataFilters: {
+      logging: [
+        "{ `source` in [ 'df_rum_ios_log' , 'df_rum_android_log' ] and `message` match [ 'timeout' ] }",
+      ],
+    },
     remoteConfiguration:true,
     // envType:EnvType.prod,
     globalContext: { 'sdk_example': 'example1' },

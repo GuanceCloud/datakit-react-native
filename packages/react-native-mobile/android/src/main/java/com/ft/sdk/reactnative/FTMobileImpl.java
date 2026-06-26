@@ -271,7 +271,8 @@ public class FTMobileImpl {
             return false;
         }
 
-        if (actual instanceof String actualString) {
+        if (actual instanceof String) {
+            String actualString = (String) actual;
             Object normalizedActual = parseJsonStringIfNeeded(actualString);
             if (normalizedActual != actual) {
                 return isEqualValue(normalizedActual, expected);
@@ -298,18 +299,23 @@ public class FTMobileImpl {
     }
 
     private boolean matchesCustomKey(Object actual, Object expected) {
-        if (expected instanceof Map<?, ?> expectedMap && expectedMap.containsKey("contains")) {
-            return containsValue(actual, expectedMap.get("contains"));
+        if (expected instanceof Map) {
+            Map<?, ?> expectedMap = (Map<?, ?>) expected;
+            if (expectedMap.containsKey("contains")) {
+                return containsValue(actual, expectedMap.get("contains"));
+            }
         }
         return isEqualValue(actual, expected);
     }
 
     private boolean containsValue(Object actual, Object expectedValue) {
-        Object normalizedActual = actual instanceof String actualString
-            ? parseJsonStringIfNeeded(actualString)
-            : actual;
+        Object normalizedActual = actual;
+        if (actual instanceof String) {
+            normalizedActual = parseJsonStringIfNeeded((String) actual);
+        }
 
-        if (normalizedActual instanceof JSONArray actualArray) {
+        if (normalizedActual instanceof JSONArray) {
+            JSONArray actualArray = (JSONArray) normalizedActual;
             try {
                 for (int i = 0; i < actualArray.length(); i++) {
                     if (isEqualValue(actualArray.get(i), expectedValue)) {
@@ -338,6 +344,29 @@ public class FTMobileImpl {
         return value;
     }
 
+    @Nullable
+    private HashMap<String, String[]> convertDataFilters(@Nullable Map<String, Object> filters) {
+        if (filters == null) {
+            return null;
+        }
+        HashMap<String, String[]> convertedFilters = new HashMap<>();
+        for (Map.Entry<String, Object> entry : filters.entrySet()) {
+            Object value = entry.getValue();
+            if (!(value instanceof List<?>)) {
+                continue;
+            }
+            List<?> filterList = (List<?>) value;
+            List<String> filterValues = new ArrayList<>();
+            for (Object filter : filterList) {
+                if (filter != null) {
+                    filterValues.add(filter.toString());
+                }
+            }
+            convertedFilters.put(entry.getKey(), filterValues.toArray(new String[0]));
+        }
+        return convertedFilters;
+    }
+
     public void sdkConfig(ReadableMap context, Promise promise) {
         Map<String, Object> map = context.toHashMap();
         String datakitUrl = (String) map.get("datakitUrl");
@@ -349,6 +378,8 @@ public class FTMobileImpl {
         Integer syncSleepTime = ReactNativeUtils.convertToNativeInt(map.get("syncSleepTime"));
         Boolean enableDataIntegerCompatible = (Boolean) map.get("enableDataIntegerCompatible");
         Boolean compressIntakeRequests = (Boolean) map.get("compressIntakeRequests");
+        Boolean enableDataFilter = (Boolean) map.get("enableDataFilter");
+        Map<String, Object> dataFilters = (Map<String, Object>) map.get("dataFilters");
         Integer env = ReactNativeUtils.convertToNativeInt(map.get("envType"));
         String serviceName = (String) map.get("service");
         Map<String, Object> globalContext = (Map<String, Object>) map.get("globalContext");
@@ -403,6 +434,13 @@ public class FTMobileImpl {
         }
         if (compressIntakeRequests != null && compressIntakeRequests) {
             sdkConfig.setCompressIntakeRequests(compressIntakeRequests);
+        }
+        if (enableDataFilter != null) {
+            sdkConfig.setEnableDataFilter(enableDataFilter);
+        }
+        HashMap<String, String[]> convertedDataFilters = convertDataFilters(dataFilters);
+        if (convertedDataFilters != null) {
+            sdkConfig.setDataFilters(convertedDataFilters);
         }
         if (globalContext != null) {
             for (Map.Entry<String, Object> entry : globalContext.entrySet()) {

@@ -31,6 +31,9 @@ class LogScreen extends React.Component {
         <PressableItem title="Log Status: info" onPress={() => {
           this.logging("info log content", FTLogStatus.info);
         }} />
+        <PressableItem title="Data Filter Test: info timeout" onPress={() => {
+          this.logging("network timeout log content", FTLogStatus.info);
+        }} />
         <PressableItem title="Log Status: warning" onPress={() => {
           this.logging("warning log content", FTLogStatus.warning);
         }} />

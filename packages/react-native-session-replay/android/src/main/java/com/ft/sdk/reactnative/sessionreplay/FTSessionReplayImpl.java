@@ -46,12 +46,18 @@ public class FTSessionReplayImpl {
 
     // Handle deprecated privacy setting for backward compatibility
     if (privacy != null) {
-      SessionReplayPrivacy sessionReplayPrivacy = switch (privacy) {
-        case 0 -> SessionReplayPrivacy.MASK;
-        case 1 -> SessionReplayPrivacy.ALLOW;
-        case 2 -> SessionReplayPrivacy.MASK_USER_INPUT;
-        default -> null;
-      };
+      SessionReplayPrivacy sessionReplayPrivacy = null;
+      switch (privacy) {
+        case 0:
+          sessionReplayPrivacy = SessionReplayPrivacy.MASK;
+          break;
+        case 1:
+          sessionReplayPrivacy = SessionReplayPrivacy.ALLOW;
+          break;
+        case 2:
+          sessionReplayPrivacy = SessionReplayPrivacy.MASK_USER_INPUT;
+          break;
+      }
       sessionReplayConfig.setPrivacy(sessionReplayPrivacy);
     }
 
@@ -99,7 +105,8 @@ public class FTSessionReplayImpl {
     }
 
     // Handle enableLinkRUMKeys
-    if (enableLinkRUMKeysObj instanceof ReadableArray rumKeysArray) {
+    if (enableLinkRUMKeysObj instanceof ReadableArray) {
+      ReadableArray rumKeysArray = (ReadableArray) enableLinkRUMKeysObj;
       String[] rumKeys = new String[rumKeysArray.size()];
       for (int i = 0; i < rumKeysArray.size(); i++) {
         rumKeys[i] = rumKeysArray.getString(i);
