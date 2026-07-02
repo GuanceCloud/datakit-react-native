@@ -12,7 +12,7 @@ buildscript {
         mavenCentral()
         maven {
               // Plugin Guance Maven repo
-              url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
+              url 'https://mvnrepo.guance.com/repository/maven-releases'
             }
     }
     dependencies {
@@ -30,7 +30,7 @@ allprojects {
   mavenCentral()
    // Agent Guance Maven repo
     maven {
-      url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
+      url 'https://mvnrepo.guance.com/repository/maven-releases'
    }
    }
 }

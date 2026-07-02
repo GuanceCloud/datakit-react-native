@@ -150,7 +150,7 @@ repositories {
   jcenter()
   google()
   maven {
-    url 'https://mvnrepo.jiagouyun.com/repository/maven-releases'
+    url 'https://mvnrepo.guance.com/repository/maven-releases'
   }
 
   def found = false
