@@ -2,7 +2,7 @@
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 #import <React/RCTBundleURLProvider.h>
 #import <FTMobileReactNativeSDK/FTReactNativeUtils.h>
-#import <FTMobileSDK/FTMobileAgent.h>
+#import <GuanceSDK/FTMobileAgent.h>
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -21,7 +21,7 @@
 }
 
 - (void)guanceSDKInit{
-  FTMobileConfig *config = [[FTMobileConfig alloc]initWithDatakitUrl:@"datakitUrl"];
+  FTSDKConfig *config = [[FTSDKConfig alloc]initWithDatakitUrl:@"datakitUrl"];
   config.enableSDKDebugLog = YES;
   [FTMobileAgent startWithConfigOptions:config];
   

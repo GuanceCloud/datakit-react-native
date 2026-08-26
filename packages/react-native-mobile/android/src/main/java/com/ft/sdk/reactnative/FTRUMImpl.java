@@ -131,7 +131,10 @@ public class FTRUMImpl {
     if (allowWebViewHost != null) {
       String[] allowWebViewHostArr = new String[allowWebViewHost.size()];
       allowWebViewHost.toArray(allowWebViewHostArr);
-      rumConfig.setAllowWebViewHost(allowWebViewHostArr);
+      FTSdk ftSdk = FTSdk.get();
+      if (ftSdk != null) {
+        ftSdk.getBaseConfig().setAllowWebViewHost(allowWebViewHostArr);
+      }
     }
 
     FTSdk.initRUMWithConfig(rumConfig);

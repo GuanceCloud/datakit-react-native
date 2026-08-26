@@ -1,6 +1,6 @@
 #import "FTReactNativeSessionReplay.h"
-#import <FTMobileSDK/FTRumSessionReplay.h>
-#import <FTMobileSDK/FTSessionReplayConfig+Private.h>
+#import <GuanceSDK/FTRumSessionReplay.h>
+#import <GuanceSDK/FTSessionReplayConfig+Private.h>
 #import <React/RCTConvert.h>
 #import "FTRCTTextViewRecorder.h"
 @implementation FTReactNativeSessionReplay

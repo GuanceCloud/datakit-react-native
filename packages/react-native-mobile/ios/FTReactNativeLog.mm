@@ -7,9 +7,9 @@
 //
 
 #import "FTReactNativeLog.h"
-#import <FTMobileSDK/FTMobileAgent.h>
+#import <GuanceSDK/FTMobileAgent.h>
 #import <React/RCTConvert.h>
-#import <FTMobileSDK/FTLogger+Private.h>
+#import <GuanceSDK/FTLogger+Private.h>
 @implementation FTReactNativeLog
 RCT_EXPORT_MODULE()
 
@@ -43,7 +43,7 @@ RCT_REMAP_METHOD(logWithStatusString,
 - (void)logConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FTLoggerConfig *logger = [[FTLoggerConfig alloc]init];
   if ([context.allKeys containsObject:@"sampleRate"]) {
-      logger.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
+      logger.sampleRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
   NSArray<NSNumber *>*filters = [RCTConvert NSNumberArray:context[@"logLevelFilters"]];
   if (filters) {
@@ -76,4 +76,3 @@ RCT_REMAP_METHOD(logWithStatusString,
 }
 
 @end
-

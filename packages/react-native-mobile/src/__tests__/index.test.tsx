@@ -19,20 +19,45 @@ const mockFTMobileReactNative = {
   removeListeners: jest.fn(),
 };
 
+const mockFTReactNativeRUM = {
+  setConfig: jest.fn().mockResolvedValue(undefined),
+};
+
+const mockFTReactNativeLog = {
+  logConfig: jest.fn().mockResolvedValue(undefined),
+};
+
+const mockFTReactNativeTrace = {
+  setConfig: jest.fn().mockResolvedValue(undefined),
+};
+
+const mockNativeModules = {
+  FTMobileReactNative: mockFTMobileReactNative,
+  FTReactNativeRUM: mockFTReactNativeRUM,
+  FTReactNativeLog: mockFTReactNativeLog,
+  FTReactNativeTrace: mockFTReactNativeTrace,
+};
+
 jest.mock('react-native', () => ({
-  NativeModules: {
-    FTMobileReactNative: mockFTMobileReactNative,
-  },
+  NativeModules: mockNativeModules,
   NativeEventEmitter: jest.fn().mockImplementation(() => ({
     addListener: jest.fn(),
   })),
   TurboModuleRegistry: {
-    get: jest.fn(() => mockFTMobileReactNative),
+    get: jest.fn(
+      (name: keyof typeof mockNativeModules) => mockNativeModules[name]
+    ),
   },
 }));
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTMobileReactNative } = require('../ft_mobile_agent');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { FTReactNativeRUM } = require('../ft_rum');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { FTReactNativeLog } = require('../ft_logger');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { FTReactNativeTrace } = require('../ft_tracing');
 
 describe('FTMobileReactNative upload endpoint APIs', () => {
   beforeEach(() => {
@@ -79,5 +104,48 @@ describe('FTMobileReactNative upload endpoint APIs', () => {
 
     expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledTimes(1);
     expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledWith(config);
+  });
+});
+
+describe('native adapter config forwarding', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('forwards RUM sampling and WebView hosts to the native module', async () => {
+    const config = {
+      androidAppId: 'android-app-id',
+      iOSAppId: 'ios-app-id',
+      sampleRate: 0.75,
+      allowWebViewHost: ['example.com'],
+    };
+
+    await FTReactNativeRUM.setConfig(config);
+
+    expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledTimes(1);
+    expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(config);
+  });
+
+  it('forwards Logger sampling to the native module', async () => {
+    const config = {
+      sampleRate: 0.5,
+      enableCustomLog: true,
+    };
+
+    await FTReactNativeLog.logConfig(config);
+
+    expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledTimes(1);
+    expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith(config);
+  });
+
+  it('forwards Trace sampling to the native module', async () => {
+    const config = {
+      sampleRate: 0.25,
+    };
+
+    await FTReactNativeTrace.setConfig(config);
+
+    expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledTimes(1);
+    expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledWith(config);
   });
 });

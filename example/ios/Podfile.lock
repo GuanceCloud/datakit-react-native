@@ -3,10 +3,10 @@ PODS:
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.5)
   - fmt (9.1.0)
-  - FTMobileReactNativeSDK (0.4.1):
+  - FTMobileReactNativeSDK (0.4.2):
     - DoubleConversion
-    - FTMobileSDK (= 1.6.5)
     - glog
+    - GuanceSDK (= 1.6.7)
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
@@ -25,54 +25,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - FTMobileSDK (1.6.5):
-    - FTMobileSDK/FTMobileAgent (= 1.6.5)
-  - FTMobileSDK/FTMobileAgent (1.6.5):
-    - FTMobileSDK/FTSDKCore
-  - FTMobileSDK/FTSDKCore (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/DataManager (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/FTRUM (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/FTWKWebView (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/Logger (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/Protocol (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/RemoteConfig (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (= 1.6.5)
-  - FTMobileSDK/FTSDKCore/BaseUtils (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (= 1.6.5)
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread (= 1.6.5)
-  - FTMobileSDK/FTSDKCore/BaseUtils/Base (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread
-  - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base
-  - FTMobileSDK/FTSDKCore/BaseUtils/Thread (1.6.5)
-  - FTMobileSDK/FTSDKCore/DataManager (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base
-    - FTMobileSDK/FTSDKCore/BaseUtils/Thread
-    - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/FTRUM (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base
-    - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/FTWKWebView (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
-    - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Logger (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Base
-    - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSDKCore/Protocol (1.6.5)
-  - FTMobileSDK/FTSDKCore/RemoteConfig (1.6.5):
-    - FTMobileSDK/FTSDKCore/DataManager
-  - FTMobileSDK/FTSDKCore/URLSessionAutoInstrumentation (1.6.5):
-    - FTMobileSDK/FTSDKCore/BaseUtils/Swizzle
-    - FTMobileSDK/FTSDKCore/Protocol
-  - FTMobileSDK/FTSessionReplay (1.6.5):
-    - FTMobileSDK/FTSDKCore
-  - FTSessionReplayReactNative (0.4.1):
+  - FTSessionReplayReactNative (0.4.2):
     - DoubleConversion
-    - FTMobileSDK (= 1.6.5)
-    - FTMobileSDK/FTSessionReplay (= 1.6.5)
     - glog
+    - GuanceSDK (= 1.6.7)
+    - GuanceSDK/SessionReplay (= 1.6.7)
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
@@ -92,6 +49,49 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - glog (0.3.5)
+  - GuanceSDK (1.6.7):
+    - GuanceSDK/Agent (= 1.6.7)
+  - GuanceSDK/Agent (1.6.7):
+    - GuanceSDK/Core
+  - GuanceSDK/Core (1.6.7):
+    - GuanceSDK/Core/BaseUtils (= 1.6.7)
+    - GuanceSDK/Core/DataManager (= 1.6.7)
+    - GuanceSDK/Core/FTRUM (= 1.6.7)
+    - GuanceSDK/Core/FTWKWebView (= 1.6.7)
+    - GuanceSDK/Core/Logger (= 1.6.7)
+    - GuanceSDK/Core/Protocol (= 1.6.7)
+    - GuanceSDK/Core/RemoteConfig (= 1.6.7)
+    - GuanceSDK/Core/URLSessionAutoInstrumentation (= 1.6.7)
+  - GuanceSDK/Core/BaseUtils (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Base (= 1.6.7)
+    - GuanceSDK/Core/BaseUtils/Swizzle (= 1.6.7)
+    - GuanceSDK/Core/BaseUtils/Thread (= 1.6.7)
+  - GuanceSDK/Core/BaseUtils/Base (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Thread
+  - GuanceSDK/Core/BaseUtils/Swizzle (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Base
+  - GuanceSDK/Core/BaseUtils/Thread (1.6.7)
+  - GuanceSDK/Core/DataManager (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Base
+    - GuanceSDK/Core/BaseUtils/Thread
+    - GuanceSDK/Core/Protocol
+  - GuanceSDK/Core/FTRUM (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Base
+    - GuanceSDK/Core/Protocol
+  - GuanceSDK/Core/FTWKWebView (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Swizzle
+    - GuanceSDK/Core/Protocol
+  - GuanceSDK/Core/Logger (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Base
+    - GuanceSDK/Core/Protocol
+  - GuanceSDK/Core/Protocol (1.6.7)
+  - GuanceSDK/Core/RemoteConfig (1.6.7):
+    - GuanceSDK/Core/DataManager
+  - GuanceSDK/Core/URLSessionAutoInstrumentation (1.6.7):
+    - GuanceSDK/Core/BaseUtils/Swizzle
+    - GuanceSDK/Core/Protocol
+  - GuanceSDK/SessionReplay (1.6.7):
+    - GuanceSDK/Core
   - hermes-engine (0.74.5):
     - hermes-engine/Pre-built (= 0.74.5)
   - hermes-engine/Pre-built (0.74.5)
@@ -1501,7 +1501,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - FTMobileSDK
+    - GuanceSDK
     - HMSegmentedControl
     - SocketRocket
 
@@ -1645,10 +1645,10 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  FTMobileReactNativeSDK: a6e9d813310d84baafd44b775b6c1642a8adeb4a
-  FTMobileSDK: 21891e8d0d5c3aa49c8a3363c934a87a479a3106
-  FTSessionReplayReactNative: 3933f197a735e4b1659616ff714fc8c3c64a7d3e
+  FTMobileReactNativeSDK: b2dfe5189b237bc33fccf310f467a73a2bfbe24e
+  FTSessionReplayReactNative: 4812a079f76c121bc82005c06997f8a6d1d811cb
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  GuanceSDK: c2e8f6edbc1de23815461038913cb2fcdf3d4e18
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47

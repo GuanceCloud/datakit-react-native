@@ -14,9 +14,9 @@
 
 #import "FTPrivacyViewFabric.h"
 #import <objc/runtime.h>
-#import <FTMobileSDK/FTSessionReplayPrivacyOverrides.h>
-#import <FTMobileSDK/UIView+FTSRPrivacy.h>
-#import <FTMobileSDK/FTSessionReplayPrivacyOverrides+Extension.h>
+#import <GuanceSDK/FTSessionReplayPrivacyOverrides.h>
+#import <GuanceSDK/UIView+FTSRPrivacy.h>
+#import <GuanceSDK/FTSessionReplayPrivacyOverrides+Extension.h>
 using namespace facebook::react;
 
 @implementation FTPrivacyViewFabric

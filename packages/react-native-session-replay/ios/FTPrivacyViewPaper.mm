@@ -6,9 +6,9 @@
  *
  */
 #import "FTPrivacyViewPaper.h"
-#import <FTMobileSDK/FTSessionReplayPrivacyOverrides.h>
-#import <FTMobileSDK/UIView+FTSRPrivacy.h>
-#import <FTMobileSDK/FTSessionReplayPrivacyOverrides+Extension.h>
+#import <GuanceSDK/FTSessionReplayPrivacyOverrides.h>
+#import <GuanceSDK/UIView+FTSRPrivacy.h>
+#import <GuanceSDK/FTSessionReplayPrivacyOverrides+Extension.h>
 
 @interface FTPrivacyView : UIView
 

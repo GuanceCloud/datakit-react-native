@@ -8,12 +8,12 @@
 
 #import "FTReactNativeTrace.h"
 #import "FtMobileAgent.h"
-#import <FTMobileSDK/FTMobileAgent.h>
-#import <FTMobileSDK/FTExternalDataManager.h>
-#import <FTMobileSDK/FTResourceMetricsModel.h>
-#import <FTMobileSDK/FTResourceContentModel.h>
+#import <GuanceSDK/FTMobileAgent.h>
+#import <GuanceSDK/FTExternalDataManager.h>
+#import <GuanceSDK/FTResourceMetricsModel.h>
+#import <GuanceSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
-#import <FTMobileSDK/FTTraceManager.h>
+#import <GuanceSDK/FTTraceManager.h>
 @implementation FTReactNativeTrace
 RCT_EXPORT_MODULE()
 
@@ -58,7 +58,7 @@ RCT_REMAP_METHOD(getTraceHeaderFields,
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FTTraceConfig *trace = [[FTTraceConfig alloc]init];
   if ([context.allKeys containsObject:@"sampleRate"]) {
-      trace.samplerate =[RCTConvert double:context[@"sampleRate"]] * 100;
+      trace.sampleRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
   if ([context.allKeys containsObject:@"traceType"]) {
       int traceType = [RCTConvert int:context[@"traceType"]];
@@ -71,4 +71,3 @@ RCT_REMAP_METHOD(getTraceHeaderFields,
 }
 
 @end
-

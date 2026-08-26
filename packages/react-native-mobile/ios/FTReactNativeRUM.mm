@@ -7,10 +7,10 @@
 //
 
 #import "FTReactNativeRUM.h"
-#import <FTMobileSDK/FTMobileAgent.h>
-#import <FTMobileSDK/FTExternalDataManager.h>
-#import <FTMobileSDK/FTResourceMetricsModel.h>
-#import <FTMobileSDK/FTResourceContentModel.h>
+#import <GuanceSDK/FTMobileAgent.h>
+#import <GuanceSDK/FTExternalDataManager.h>
+#import <GuanceSDK/FTResourceMetricsModel.h>
+#import <GuanceSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
 #import "FTReactNativeUtils.h"
 
@@ -139,7 +139,7 @@ RCT_REMAP_METHOD(addResource,
   NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
   if ([context.allKeys containsObject:@"sampleRate"]) {
-    rumConfig.samplerate  = [RCTConvert double:context[@"sampleRate"]]*100;
+    rumConfig.sampleRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
   if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
     rumConfig.sessionOnErrorSampleRate  = [RCTConvert double:context[@"sessionOnErrorSampleRate"]]*100;

@@ -8,12 +8,12 @@
 
 #import "FTMobileReactNative.h"
 #import <React/RCTConvert.h>
-#import <FTMobileSDK/FTMobileAgent.h>
-#import <FTMobileSDK/FTMobileConfig+Private.h>
-#import <FTMobileSDK/FTThreadDispatchManager.h>
-#import <FTMobileSDK/FTConstants.h>
-#import <FTMobileSDK/FTJSONUtil.h>
-#import <FTMobileSDK/FTRemoteConfigModel+Private.h>
+#import <GuanceSDK/FTMobileAgent.h>
+#import <GuanceSDK/FTSDKConfig+Private.h>
+#import <GuanceSDK/FTThreadDispatchManager.h>
+#import <GuanceSDK/FTConstants.h>
+#import <GuanceSDK/FTJSONUtil.h>
+#import <GuanceSDK/FTRemoteConfigModel+Private.h>
 
 static NSString *const FTRemoteConfigCallbackEvent = @"ft_remote_config_callback";
 
@@ -373,14 +373,14 @@ RCT_REMAP_METHOD(clearAllData,
 #endif
 - (void)sdkConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [FTThreadDispatchManager performBlockDispatchMainSyncSafe:^{
-    FTMobileConfig *config;
+    FTSDKConfig *config;
     NSString *datakitUrl = [RCTConvert NSString:context[@"datakitUrl"]];
     NSString *dataWayUrl = [RCTConvert NSString:context[@"datawayUrl"]];
     NSString *clientToken = [RCTConvert NSString:context[@"clientToken"]];
     if(dataWayUrl && dataWayUrl.length>0 && clientToken && clientToken.length>0){
-      config = [[FTMobileConfig alloc]initWithDatawayUrl:dataWayUrl clientToken:clientToken];
+      config = [[FTSDKConfig alloc]initWithDatawayUrl:dataWayUrl clientToken:clientToken];
     }else if(datakitUrl && datakitUrl.length>0){
-      config = [[FTMobileConfig alloc]initWithDatakitUrl:datakitUrl];
+      config = [[FTSDKConfig alloc]initWithDatakitUrl:datakitUrl];
     }else{
       resolve(nil);
       return;

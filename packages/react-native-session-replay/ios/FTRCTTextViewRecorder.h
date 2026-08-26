@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <FTMobileSDK/FTSRNodeWireframesBuilder.h>
+#import <GuanceSDK/FTSRNodeWireframesBuilder.h>
 #import <React/RCTUIManager.h>
 @class FTViewAttributes,FTViewTreeRecorder,FTSRColorSnapshot;
 NS_ASSUME_NONNULL_BEGIN

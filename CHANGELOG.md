@@ -2,6 +2,11 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# Unreleased
+
+* Adapted the React Native bridges to iOS `GuanceSDK 1.6.7`, Android `ft-sdk 1.7.5`, and Android `ft-session-replay 0.1.8`, including the current iOS sampling APIs and Android shared WebView host configuration.
+
+---
 # 0.4.2
 * Added `FTMobileConfig.enableDataFilter` and `FTMobileConfig.dataFilters` to support SDK-side local blocklist data filtering.
 * Upgraded compatibility to iOS `FTMobileSDK 1.6.5`, Android `ft-sdk 1.7.2`, and Android `ft-session-replay 0.1.5`.
