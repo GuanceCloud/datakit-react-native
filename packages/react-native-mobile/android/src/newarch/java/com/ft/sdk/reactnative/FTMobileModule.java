@@ -81,23 +81,27 @@ public class FTMobileModule extends NativeFTMobileReactNativeSpec {
   }
 
   @ReactMethod
+  @Override
   public void updateRemoteConfig(Promise promise) {
-    impl.updateRemoteConfig(promise); 
+    impl.updateRemoteConfig(promise);
   }
 
   @ReactMethod
-  public void updateRemoteConfigWithMiniUpdateInterval(int interval, @Nullable ReadableArray rules, Promise promise) {
-    impl.updateRemoteConfigWithMiniUpdateInterval(interval, rules, promise);
+  @Override
+  public void updateRemoteConfigWithMiniUpdateInterval(double interval, @Nullable ReadableArray rules, Promise promise) {
+    impl.updateRemoteConfigWithMiniUpdateInterval((int) interval, rules, promise);
   }
 
   @ReactMethod
+  @Override
   public void addListener(String eventName) {
-    impl.addListener(eventName);
+    // Required by NativeEventEmitter; Android does not need listener bookkeeping.
   }
 
   @ReactMethod
+  @Override
   public void removeListeners(double count) {
-    impl.removeListeners(count);
+    // Required by NativeEventEmitter; Android does not need listener bookkeeping.
   }
 
 }

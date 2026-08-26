@@ -3,6 +3,7 @@ import {
   NativeEventEmitter,
   NativeModules,
 } from 'react-native';
+import type { Spec as NativeFTMobileReactNativeSpec } from './specs/NativeFTMobileReactNative';
 import { version as sdkVersion } from './version';
 
 /**
@@ -361,7 +362,7 @@ type FTMobileReactNativeType = {
 
 class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
   /* eslint-disable @typescript-eslint/no-var-requires */
-  private sdk: FTMobileReactNativeType =
+  private sdk: NativeFTMobileReactNativeSpec =
     require('./specs/NativeFTMobileReactNative').default;
   /* eslint-enable @typescript-eslint/no-var-requires */
 
@@ -430,13 +431,16 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
     bridgeContextManager.appendBridgeContext(properties);
   }
   updateRemoteConfig(): Promise<FTRemoteConfigResult> {
-    return this.sdk.updateRemoteConfig();
+    return this.sdk.updateRemoteConfig() as Promise<FTRemoteConfigResult>;
   }
   updateRemoteConfigWithMiniUpdateInterval(
     interval: number,
     rules?: Array<FTRemoteConfigOverrideRule>
   ): Promise<FTRemoteConfigResult> {
-    return this.sdk.updateRemoteConfigWithMiniUpdateInterval(interval, rules);
+    return this.sdk.updateRemoteConfigWithMiniUpdateInterval(
+      interval,
+      rules
+    ) as Promise<FTRemoteConfigResult>;
   }
   addRemoteConfigListener(
     listener: (result: FTRemoteConfigResult) => void

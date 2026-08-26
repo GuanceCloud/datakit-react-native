@@ -57,6 +57,10 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     let mounted = true;
+    const remoteConfigSubscription =
+      FTMobileReactNative.addRemoteConfigListener(result => {
+        console.log('Automatic remote config result', result);
+      });
 
     const initializeSdk = async () => {
       const datawayUrl = Config.DATAWAY_URL;
@@ -78,6 +82,8 @@ function App(): React.JSX.Element {
           debug: true,
           env: 'test',
           dbDiscardStrategy: FTDBCacheDiscard.discard,
+          remoteConfiguration: true,
+          remoteConfigMiniUpdateInterval: 0,
         });
 
         await FTReactNativeLog.logConfig({
@@ -126,6 +132,7 @@ function App(): React.JSX.Element {
 
     return () => {
       mounted = false;
+      remoteConfigSubscription.remove();
     };
   }, []);
 
@@ -151,6 +158,18 @@ function App(): React.JSX.Element {
     })
       .then(res => Alert.alert('Trace', `Status: ${res.status}`))
       .catch(err => Alert.alert('Trace Error', err.message));
+  };
+
+  const handleRemoteConfigUpdate = async () => {
+    try {
+      const result =
+        await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(0);
+      Alert.alert('Remote Config Updated', JSON.stringify(result));
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Remote config update failed';
+      Alert.alert('Remote Config Error', message);
+    }
   };
 
   const handleStartAction = async () => {
@@ -285,6 +304,16 @@ function App(): React.JSX.Element {
           <Text style={styles.sectionTitle}>Trace Test</Text>
           <TouchableOpacity style={styles.button} onPress={handleTrace}>
             <Text style={styles.buttonText}>Send HTTP Request with Trace</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Remote Configuration Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Remote Configuration Test</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleRemoteConfigUpdate}>
+            <Text style={styles.buttonText}>Update Remote Configuration</Text>
           </TouchableOpacity>
         </View>
 

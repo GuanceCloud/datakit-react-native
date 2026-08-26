@@ -79,5 +79,22 @@ export interface Spec extends TurboModule {
    * Clear all data that has not yet been uploaded to the server.
    */
   clearAllData(): Promise<void>;
+  /**
+   * Update remote configuration using the configured minimum update interval.
+   */
+  updateRemoteConfig(): Promise<Object>;
+  /**
+   * Update remote configuration using a custom minimum update interval and
+   * optional override rules.
+   */
+  updateRemoteConfigWithMiniUpdateInterval(
+    interval: number,
+    rules?: Array<Object>
+  ): Promise<Object>;
+  /**
+   * Required by NativeEventEmitter for remote configuration callbacks.
+   */
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
 }
 export default TurboModuleRegistry.get<Spec>('FTMobileReactNative');

@@ -655,11 +655,4 @@ public class FTMobileImpl {
         });
     }
 
-    public void addListener(String eventName) {
-        // Required for NativeEventEmitter. No-op because native does not need listener bookkeeping.
-    }
-
-    public void removeListeners(double count) {
-        // Required for NativeEventEmitter. No-op because native does not need listener bookkeeping.
-    }
 }

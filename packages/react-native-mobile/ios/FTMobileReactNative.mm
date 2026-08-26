@@ -553,9 +553,8 @@ RCT_REMAP_METHOD(clearAllData,
 
   }];
 }
-RCT_REMAP_METHOD(updateRemoteConfig,
-                 updateRemoteConfig_findEventsWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject){
+RCT_EXPORT_METHOD(updateRemoteConfig:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject){
     if (!_remoteConfigurationEnabled) {
       reject(@"E_REMOTE_CONFIG_DISABLED", @"Remote configuration is not enabled.", nil);
       return;
@@ -580,11 +579,10 @@ RCT_REMAP_METHOD(updateRemoteConfig,
       return nil;
     }];
 }
-RCT_REMAP_METHOD(updateRemoteConfigWithMiniUpdateInterval,
-                  interval:(int)interval
+RCT_EXPORT_METHOD(updateRemoteConfigWithMiniUpdateInterval:(double)interval
                   rules:(NSArray *)rules
-                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject){
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject){
   if (!_remoteConfigurationEnabled) {
     reject(@"E_REMOTE_CONFIG_DISABLED", @"Remote configuration is not enabled.", nil);
     return;

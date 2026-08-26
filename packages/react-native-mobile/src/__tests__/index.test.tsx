@@ -1,3 +1,5 @@
+const mockNativeEventEmitterAddListener = jest.fn();
+
 const mockFTMobileReactNative = {
   sdkConfig: jest.fn().mockResolvedValue(undefined),
   setDatakitURL: jest.fn().mockResolvedValue(undefined),
@@ -41,7 +43,7 @@ const mockNativeModules = {
 jest.mock('react-native', () => ({
   NativeModules: mockNativeModules,
   NativeEventEmitter: jest.fn().mockImplementation(() => ({
-    addListener: jest.fn(),
+    addListener: mockNativeEventEmitterAddListener,
   })),
   TurboModuleRegistry: {
     get: jest.fn(
@@ -104,6 +106,88 @@ describe('FTMobileReactNative upload endpoint APIs', () => {
 
     expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledTimes(1);
     expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledWith(config);
+  });
+});
+
+describe('FTMobileReactNative remote configuration APIs', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('forwards manual remote configuration updates to the native module', async () => {
+    await FTMobileReactNative.updateRemoteConfig();
+
+    expect(mockFTMobileReactNative.updateRemoteConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('forwards the update interval and override rules to the native module', async () => {
+    const rules = [
+      {
+        id: 'force-log-sampling',
+        match: { customKeys: { user_tier: 'internal' } },
+        override: { logSampleRate: 1 },
+      },
+    ];
+
+    await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(
+      0,
+      rules
+    );
+
+    expect(
+      mockFTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval
+    ).toHaveBeenCalledWith(0, rules);
+  });
+
+  it('subscribes to automatic remote configuration callbacks', () => {
+    const listener = jest.fn();
+
+    FTMobileReactNative.addRemoteConfigListener(listener);
+
+    expect(mockNativeEventEmitterAddListener).toHaveBeenCalledWith(
+      'ft_remote_config_callback',
+      listener
+    );
+  });
+});
+
+describe('NativeFTMobileReactNative TurboModule contract', () => {
+  it('declares every method required by remote configuration', () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const path = require('path');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const ts = require('typescript');
+    const specPath = path.resolve(
+      __dirname,
+      '../specs/NativeFTMobileReactNative.ts'
+    );
+    const source = ts.createSourceFile(
+      specPath,
+      fs.readFileSync(specPath, 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS
+    );
+    const spec = source.statements.find(
+      (statement: { name?: { text?: string } }) =>
+        ts.isInterfaceDeclaration(statement) && statement.name.text === 'Spec'
+    );
+    const methodNames = spec.members
+      .filter((member: unknown) => ts.isMethodSignature(member))
+      .map((member: { name: { getText: (sourceFile: unknown) => string } }) =>
+        member.name.getText(source)
+      );
+
+    expect(methodNames).toEqual(
+      expect.arrayContaining([
+        'updateRemoteConfig',
+        'updateRemoteConfigWithMiniUpdateInterval',
+        'addListener',
+        'removeListeners',
+      ])
+    );
   });
 });
 

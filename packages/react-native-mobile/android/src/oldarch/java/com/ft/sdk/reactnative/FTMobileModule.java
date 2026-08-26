@@ -85,12 +85,12 @@ public class FTMobileModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void addListener(String eventName) {
-    impl.addListener(eventName);
+    // Required by NativeEventEmitter; Android does not need listener bookkeeping.
   }
 
   @ReactMethod
   public void removeListeners(double count) {
-    impl.removeListeners(count);
+    // Required by NativeEventEmitter; Android does not need listener bookkeeping.
   }
 
   @NonNull
