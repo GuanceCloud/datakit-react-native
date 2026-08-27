@@ -36,5 +36,15 @@ target 'FTSdkReactNativeExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # fmt 11.0.2 fails to compile as C++20 with Apple Clang 21 (Xcode 26).
+    # Keep the workaround scoped to fmt while this example remains on RN 0.76.9.
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |build_configuration|
+        build_configuration.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
   end
 end
