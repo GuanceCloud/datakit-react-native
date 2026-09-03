@@ -12,15 +12,28 @@
 #import <GuanceSDK/FTResourceMetricsModel.h>
 #import <GuanceSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
+#import <React/RCTBridge.h>
+#import <UIKit/UIKit.h>
 #import "FTReactNativeUtils.h"
+#import "FTJSLongTaskMonitor.h"
+
+@interface FTReactNativeRUM ()
+@property (nonatomic, strong, nullable) FTJSLongTaskMonitor *jsLongTaskMonitor;
+@end
 
 @implementation FTReactNativeRUM
+@synthesize bridge = _bridge;
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(setConfig,
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
   [self setConfig:context resolve:resolve reject:reject];
+}
+RCT_REMAP_METHOD(stopLongTaskTracking,
+                 stopLongTaskTrackingWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject){
+  [self stopLongTaskTracking:resolve reject:reject];
 }
 RCT_REMAP_METHOD(startAction,
                  actionName:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property
@@ -87,6 +100,33 @@ RCT_REMAP_METHOD(addResource,
   return std::make_shared<facebook::react::NativeFTReactNativeRUMSpecJSI>(params);
 }
 #endif
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    [[NSNotificationCenter defaultCenter]
+      addObserver:self
+      selector:@selector(applicationDidBecomeActive:)
+      name:UIApplicationDidBecomeActiveNotification
+      object:nil];
+    [[NSNotificationCenter defaultCenter]
+      addObserver:self
+      selector:@selector(applicationWillResignActive:)
+      name:UIApplicationWillResignActiveNotification
+      object:nil];
+  }
+  return self;
+}
+
+- (void)invalidate {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.jsLongTaskMonitor stop];
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self.jsLongTaskMonitor stop];
+}
 
 - (void)addAction:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
   [[FTExternalDataManager sharedManager] addAction:actionName actionType:actionType property:property];
@@ -177,6 +217,11 @@ RCT_REMAP_METHOD(addResource,
   if ([context.allKeys containsObject:@"nativeFreezeDurationMs"]){
     rumConfig.freezeDurationMs = [RCTConvert double:context[@"nativeFreezeDurationMs"]];
   }
+  BOOL enableLongTask = [RCTConvert BOOL:context[@"enableLongTask"]];
+  double configuredLongTaskThresholdMs = [context.allKeys containsObject:@"longTaskThresholdMs"]
+    ? [RCTConvert double:context[@"longTaskThresholdMs"]]
+    : 100;
+  double longTaskThresholdMs = enableLongTask ? configuredLongTaskThresholdMs : 0;
   if ([context.allKeys containsObject:@"globalContext"]) {
     rumConfig.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];
   }
@@ -201,7 +246,47 @@ RCT_REMAP_METHOD(addResource,
   };
 #endif
   [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
+  if (self.jsLongTaskMonitor == nil) {
+    self.jsLongTaskMonitor = [FTJSLongTaskMonitor monitorWithBridge:self.bridge];
+  }
+  [self.jsLongTaskMonitor setThresholdMilliseconds:longTaskThresholdMs];
+  if (longTaskThresholdMs > 0 && [self applicationIsActive]) {
+    [self.jsLongTaskMonitor start];
+  } else {
+    [self.jsLongTaskMonitor stop];
+  }
   resolve(nil);
+}
+
+- (void)stopLongTaskTracking:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  if (self.jsLongTaskMonitor == nil) {
+    resolve(nil);
+    return;
+  }
+  [self.jsLongTaskMonitor stopWithCompletion:^{
+    resolve(nil);
+  }];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+  [self.jsLongTaskMonitor start];
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification {
+  [self.jsLongTaskMonitor stop];
+}
+
+- (BOOL)applicationIsActive {
+  __block BOOL active = NO;
+  dispatch_block_t readState = ^{
+    active = UIApplication.sharedApplication.applicationState == UIApplicationStateActive;
+  };
+  if (NSThread.isMainThread) {
+    readState();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), readState);
+  }
+  return active;
 }
 
 - (void)startAction:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 

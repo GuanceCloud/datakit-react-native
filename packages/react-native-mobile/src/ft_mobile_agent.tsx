@@ -4,6 +4,7 @@ import {
   NativeModules,
 } from 'react-native';
 import type { Spec as NativeFTMobileReactNativeSpec } from './specs/NativeFTMobileReactNative';
+import type { Spec as NativeFTReactNativeRUMSpec } from './specs/NativeFTReactNativeRUM';
 import { version as sdkVersion } from './version';
 
 /**
@@ -364,6 +365,8 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
   /* eslint-disable @typescript-eslint/no-var-requires */
   private sdk: NativeFTMobileReactNativeSpec =
     require('./specs/NativeFTMobileReactNative').default;
+  private rum: NativeFTReactNativeRUMSpec =
+    require('./specs/NativeFTReactNativeRUM').default;
   /* eslint-enable @typescript-eslint/no-var-requires */
 
   private emitter: NativeEventEmitter | null = null;
@@ -420,8 +423,12 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
   flushSyncData(): Promise<void> {
     return this.sdk.flushSyncData();
   }
-  shutDown(): Promise<void> {
-    return this.sdk.shutDown();
+  async shutDown(): Promise<void> {
+    try {
+      await this.rum.stopLongTaskTracking();
+    } finally {
+      await this.sdk.shutDown();
+    }
   }
   clearAllData(): Promise<void> {
     return this.sdk.clearAllData();

@@ -104,6 +104,8 @@ function App(): React.JSX.Element {
             sampleRate: 1,
             enableAutoTrackUserAction: true,
             enableAutoTrackError: true,
+            enableLongTask: true,
+            longTaskThresholdMs: 200,
           });
           await FTReactNativeRUM.startView('App_FirstView');
         }

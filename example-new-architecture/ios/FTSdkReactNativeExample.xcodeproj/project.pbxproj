@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-FTSdkReactNativeExample-FTSdkReactNativeExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-FTSdkReactNativeExample-FTSdkReactNativeExampleTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		A17B5E122F51100000A00001 /* FTJSLongTaskMonitorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A17B5E122F51100000A00002 /* FTJSLongTaskMonitorTests.m */; };
 		E6B89775F43FDA20293DC82B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-FTSdkReactNativeExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FTSdkReactNativeExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FTSdkReactNativeExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-FTSdkReactNativeExample-FTSdkReactNativeExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FTSdkReactNativeExample-FTSdkReactNativeExampleTests.release.xcconfig"; path = "Target Support Files/Pods-FTSdkReactNativeExample-FTSdkReactNativeExampleTests/Pods-FTSdkReactNativeExample-FTSdkReactNativeExampleTests.release.xcconfig"; sourceTree = "<group>"; };
+		A17B5E122F51100000A00002 /* FTJSLongTaskMonitorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTJSLongTaskMonitorTests.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -72,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				00E356F21AD99517003FC87E /* FTSdkReactNativeExampleTests.m */,
+				A17B5E122F51100000A00002 /* FTJSLongTaskMonitorTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
 			path = FTSdkReactNativeExampleTests;
@@ -389,6 +392,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* FTSdkReactNativeExampleTests.m in Sources */,
+				A17B5E122F51100000A00001 /* FTJSLongTaskMonitorTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

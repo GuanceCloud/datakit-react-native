@@ -9,16 +9,29 @@ import com.facebook.react.bridge.ReadableMap;
 
 public class FTRUMModule extends NativeFTReactNativeRUMSpec {
 
-  private final FTRUMImpl impl = new FTRUMImpl();
+  private final FTRUMImpl impl;
 
   public FTRUMModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    impl = new FTRUMImpl(reactContext);
   }
 
   @Override
   @ReactMethod
   public void setConfig(ReadableMap context, Promise promise) {
     impl.setConfig(context, promise);
+  }
+
+  @Override
+  @ReactMethod
+  public void stopLongTaskTracking(Promise promise) {
+    impl.stopLongTaskTracking(promise);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    impl.destroy();
+    super.onCatalystInstanceDestroy();
   }
 
   @Override

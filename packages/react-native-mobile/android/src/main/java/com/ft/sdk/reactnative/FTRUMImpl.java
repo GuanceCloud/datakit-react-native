@@ -2,8 +2,11 @@ package com.ft.sdk.reactnative;
 
 import com.ft.sdk.reactnative.BuildConfig;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.LifecycleState;
 import com.ft.sdk.DetectFrequency;
 import com.ft.sdk.FTInTakeUrlHandler;
 import com.ft.sdk.FTRUMConfig;
@@ -19,10 +22,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FTRUMImpl {
+public class FTRUMImpl implements LifecycleEventListener {
 
   private static final String DEFAULT_ERROR_TYPE = "reactnative_crash";
   public static final String NAME = "FTReactNativeRUM";
+  private final ReactApplicationContext reactContext;
+  private final JsLongTaskMonitor jsLongTaskMonitor;
+
+  public FTRUMImpl(ReactApplicationContext reactContext) {
+    this(reactContext, JsLongTaskMonitor.create(reactContext));
+  }
+
+  FTRUMImpl(
+    ReactApplicationContext reactContext,
+    JsLongTaskMonitor jsLongTaskMonitor
+  ) {
+    this.reactContext = reactContext;
+    this.jsLongTaskMonitor = jsLongTaskMonitor;
+    reactContext.addLifecycleEventListener(this);
+  }
 
   @ReactMethod
   public void setConfig(ReadableMap context, Promise promise) {
@@ -39,6 +57,8 @@ public class FTRUMImpl {
     Boolean enableTrackNativeAppANR = (Boolean) map.get("enableTrackNativeAppANR");
     Boolean enableTrackNativeFreeze = (Boolean) map.get("enableTrackNativeFreeze");
     Double nativeFreezeDurationMs = (Double) map.get("nativeFreezeDurationMs");
+    Boolean enableLongTask = (Boolean) map.get("enableLongTask");
+    Double longTaskThresholdMs = (Double) map.get("longTaskThresholdMs");
     Integer monitorType = ReactNativeUtils.convertToNativeInt(map.get("errorMonitorType"));
     Integer deviceMonitorType = ReactNativeUtils.convertToNativeInt(map.get("deviceMonitorType"));
     Integer detectFrequency = ReactNativeUtils.convertToNativeInt(map.get("detectFrequency"));
@@ -138,8 +158,53 @@ public class FTRUMImpl {
     }
 
     FTSdk.initRUMWithConfig(rumConfig);
+    double configuredThresholdMilliseconds = longTaskThresholdMs != null
+      ? longTaskThresholdMs
+      : 100;
+    double thresholdMilliseconds = Boolean.TRUE.equals(enableLongTask)
+      ? configuredThresholdMilliseconds
+      : 0;
+    jsLongTaskMonitor.setThresholdMilliseconds(thresholdMilliseconds);
+    if (
+      thresholdMilliseconds > 0 &&
+      reactContext.getLifecycleState() == LifecycleState.RESUMED
+    ) {
+      jsLongTaskMonitor.start();
+    } else {
+      jsLongTaskMonitor.stop();
+    }
     //LogUtils.d("configCheck","rumConfig:"+new Gson().toJson(rumConfig));
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void stopLongTaskTracking(final Promise promise) {
+    jsLongTaskMonitor.stop(new Runnable() {
+      @Override
+      public void run() {
+        promise.resolve(null);
+      }
+    });
+  }
+
+  public void destroy() {
+    reactContext.removeLifecycleEventListener(this);
+    jsLongTaskMonitor.stop();
+  }
+
+  @Override
+  public void onHostResume() {
+    jsLongTaskMonitor.start();
+  }
+
+  @Override
+  public void onHostPause() {
+    jsLongTaskMonitor.stop();
+  }
+
+  @Override
+  public void onHostDestroy() {
+    jsLongTaskMonitor.stop();
   }
 
   @ReactMethod
