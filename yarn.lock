@@ -1635,6 +1635,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cloudcare/react-native-mobile-babel-plugin@workspace:packages/react-native-babel-plugin":
+  version: 0.0.0-use.local
+  resolution: "@cloudcare/react-native-mobile-babel-plugin@workspace:packages/react-native-babel-plugin"
+  dependencies:
+    "@babel/core": ^7.20.0
+    "@babel/helper-plugin-utils": ^7.20.2
+    "@babel/plugin-transform-modules-commonjs": ^7.28.6
+    "@babel/plugin-transform-react-jsx": ^7.25.2
+  peerDependencies:
+    "@babel/core": ^7.0.0
+    "@cloudcare/react-native-mobile": ^0.4.3
+    react: ">=16.13.1"
+    react-native: ">=0.63.4 <1.0"
+  languageName: unknown
+  linkType: soft
+
 "@cloudcare/react-native-mobile-cli@file:../ft-react-native-mobile-cli-v1.0.0.tgz::locator=react-native-mobile-example%40workspace%3Aexample":
   version: 1.0.0
   resolution: "@cloudcare/react-native-mobile-cli@file:../ft-react-native-mobile-cli-v1.0.0.tgz::locator=react-native-mobile-example%40workspace%3Aexample"
@@ -5467,6 +5483,7 @@ __metadata:
     "@babel/preset-env": ^7.25.3
     "@babel/runtime": ^7.25.0
     "@cloudcare/react-native-mobile": "workspace:packages/react-native-mobile"
+    "@cloudcare/react-native-mobile-babel-plugin": "workspace:packages/react-native-babel-plugin"
     "@cloudcare/react-native-session-replay": "workspace:packages/react-native-session-replay"
     "@react-native-community/cli": 15.0.1
     "@react-native-community/cli-platform-android": 15.0.1
@@ -15727,6 +15744,7 @@ __metadata:
     "@babel/preset-env": ^7.1.6
     "@babel/runtime": ^7.20.0
     "@cloudcare/react-native-mobile": "workspace:packages/react-native-mobile"
+    "@cloudcare/react-native-mobile-babel-plugin": "workspace:packages/react-native-babel-plugin"
     "@cloudcare/react-native-mobile-cli": "file:../ft-react-native-mobile-cli-v1.0.0.tgz"
     "@cloudcare/react-native-session-replay": "workspace:packages/react-native-session-replay"
     "@react-native-async-storage/async-storage": ^1.24.0

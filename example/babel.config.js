@@ -5,6 +5,7 @@ const sessionReplayPackage = require('../packages/react-native-session-replay/pa
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
   plugins: [
+    '@cloudcare/react-native-mobile-babel-plugin',
     [
       'module-resolver',
       {

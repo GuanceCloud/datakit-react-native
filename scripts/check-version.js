@@ -42,6 +42,7 @@ const lernaVersion = readJson('lerna.json').version;
 const packagePaths = [
   'packages/react-native-mobile/package.json',
   'packages/react-native-session-replay/package.json',
+  'packages/react-native-babel-plugin/package.json',
 ];
 
 for (const packagePath of packagePaths) {

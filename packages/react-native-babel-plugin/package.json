@@ -1,0 +1,67 @@
+{
+  "name": "@cloudcare/react-native-mobile-babel-plugin",
+  "version": "0.4.3",
+  "description": "Babel plugin for automatic CloudCare React Native RUM action naming.",
+  "keywords": [
+    "babel",
+    "cloudcare",
+    "react-native",
+    "rum"
+  ],
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
+  "source": "src/index",
+  "files": [
+    "src/**",
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "lint": "yarn run -T eslint \"src/**/*.{ts,tsx}\" \"test/**/*.js\"",
+    "prepare": "yarn run -T bob build",
+    "prepack": "yarn run -T check-version && yarn prepare",
+    "test": "yarn run -T jest",
+    "typescript": "yarn run -T tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuanceCloud/datakit-react-native.git"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0",
+    "@cloudcare/react-native-mobile": "^0.4.3",
+    "react": ">=16.13.1",
+    "react-native": ">=0.63.4 <1.0"
+  },
+  "dependencies": {
+    "@babel/helper-plugin-utils": "^7.20.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.28.6",
+    "@babel/plugin-transform-react-jsx": "^7.25.2"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

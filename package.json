@@ -28,9 +28,9 @@
     "update-version": "./update-version.sh",
     "check-version": "node scripts/check-version.js",
     "pods": "cd example && pod-install --quiet",
-    "lint": "yarn workspace @cloudcare/react-native-mobile lint && yarn workspace @cloudcare/react-native-session-replay lint",
-    "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript",
-    "test": "yarn workspace @cloudcare/react-native-mobile test"
+    "lint": "yarn workspace @cloudcare/react-native-mobile lint && yarn workspace @cloudcare/react-native-session-replay lint && yarn workspace @cloudcare/react-native-mobile-babel-plugin lint",
+    "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript && yarn workspace @cloudcare/react-native-mobile-babel-plugin typescript",
+    "test": "yarn workspace @cloudcare/react-native-mobile test && yarn workspace @cloudcare/react-native-mobile-babel-plugin test"
   },
   "prettier": {
     "quoteProps": "consistent",

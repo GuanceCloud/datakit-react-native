@@ -1,6 +1,7 @@
 // import { NativeModules } from 'react-native';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
 import { FTRumActionTracking } from './rum/FTRumActionTracking';
+import { FTBabelInteractionTracking } from './rum/FTBabelInteractionTracking';
 import { bridgeContextManager } from './ft_mobile_agent';
 
 /**
@@ -269,8 +270,18 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     if (config.enableAutoTrackError) {
       FTRumErrorTracking.startTracking();
     }
-    if (config.enableAutoTrackUserAction) {
+    const babelPluginEnabled =
+      globalThis.__FT_RN_BABEL_PLUGIN_ENABLED__ === true;
+    FTBabelInteractionTracking.configure({
+      trackInteractions:
+        babelPluginEnabled && Boolean(config.enableAutoTrackUserAction),
+      actionReporter: (actionName, actionType, property) =>
+        this.startAction(actionName, actionType, property),
+    });
+    if (config.enableAutoTrackUserAction && !babelPluginEnabled) {
       FTRumActionTracking.startTracking();
+    } else {
+      FTRumActionTracking.stopTracking();
     }
     return this.rum.setConfig(config);
   }

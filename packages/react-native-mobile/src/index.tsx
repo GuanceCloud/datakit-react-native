@@ -28,6 +28,8 @@ import {
 import { FTTraceConfig, FTReactNativeTrace, TraceType } from './ft_tracing';
 import { FTRumActionTracking } from './rum/FTRumActionTracking';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
+import { FTBabelInteractionTracking } from './rum/FTBabelInteractionTracking';
+import { __ftExtractText } from './rum/FTBabelUtils';
 
 export {
   FTMobileReactNative,
@@ -56,4 +58,6 @@ export {
   TraceType,
   FTRumActionTracking,
   FTRumErrorTracking,
+  FTBabelInteractionTracking,
+  __ftExtractText,
 };
