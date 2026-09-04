@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 
 public class FTTraceModule extends NativeFTReactNativeTraceSpec {
   private final FTTraceImpl impl = new FTTraceImpl();
@@ -28,5 +29,11 @@ public class FTTraceModule extends NativeFTReactNativeTraceSpec {
   @ReactMethod
   public void getTraceHeaderFields(String url, String key, Promise promise) {
     impl.getTraceHeaderFields(url, key, promise);
+  }
+
+  @Override
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getTraceHeaderFieldsSync(String url, String key) {
+    return impl.getTraceHeaderFieldsSync(url, key);
   }
 }

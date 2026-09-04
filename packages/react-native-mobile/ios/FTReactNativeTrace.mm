@@ -14,6 +14,11 @@
 #import <GuanceSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
 #import <GuanceSDK/FTTraceManager.h>
+
+@interface FTReactNativeTrace ()
+- (nullable NSDictionary *)traceHeaderFieldsForURL:(NSString *)url key:(nullable NSString *)key;
+@end
+
 @implementation FTReactNativeTrace
 RCT_EXPORT_MODULE()
 
@@ -32,6 +37,11 @@ RCT_REMAP_METHOD(getTraceHeaderFields,
   [self getTraceHeaderFields:url key:key resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getTraceHeaderFieldsSync:(NSString *)url
+                                       key:(NSString *)key) {
+  return [self traceHeaderFieldsForURL:url key:key];
+}
+
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
   return std::make_shared<facebook::react::NativeFTReactNativeTraceSpecJSI>(params);
@@ -42,17 +52,23 @@ RCT_REMAP_METHOD(getTraceHeaderFields,
 }
 
 - (void)getTraceHeaderFields:(NSString *)url key:(NSString *)key resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
-  NSDictionary *traceHeader = nil;
-  if(key&&key.length>0){
-      traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:[NSURL URLWithString:url]];
-  }else{
-      traceHeader = [[FTExternalDataManager sharedManager] getTraceHeaderWithUrl:[NSURL URLWithString:url]];
-  }
+  NSDictionary *traceHeader = [self traceHeaderFieldsForURL:url key:key];
   if (traceHeader) {
       resolve(traceHeader);
   }else{
       resolve(nil);
   }
+}
+
+- (nullable NSDictionary *)traceHeaderFieldsForURL:(NSString *)url key:(nullable NSString *)key {
+  NSURL *requestURL = [NSURL URLWithString:url];
+  if (!requestURL) {
+    return nil;
+  }
+  if (key.length > 0) {
+    return [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:requestURL];
+  }
+  return [[FTExternalDataManager sharedManager] getTraceHeaderWithUrl:requestURL];
 }
 
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {

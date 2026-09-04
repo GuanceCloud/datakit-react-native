@@ -11,6 +11,7 @@ import TraceScreen from './tracing';
 import WebViewScreen from './webView';
 import LocalWebViewScreen from './localWebView';
 import SessionReplayScreen from './sessionReplay';
+import WebSocketScreen from './webSocket';
 import { FTRumReactNativeNavigationTracking } from './FTRumReactNativeNavigationTracking';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -44,6 +45,7 @@ function registerScreens() {
   Navigation.registerComponent('Trace', () => TraceScreen);
   Navigation.registerComponent('WebView', () => WebViewScreen);
   Navigation.registerComponent('LocalWebView', () => LocalWebViewScreen);
+  Navigation.registerComponent('WebSocket', () => WebSocketScreen);
   Navigation.registerComponent('SessionReplay', () => SessionReplayScreen);
   console.log("registerScreens end");
 
@@ -193,6 +195,7 @@ const HomeScreen = (props) => {
       {renderButton('RUM Data Collection', () => Navigation.push(props.componentId, { component: { name: 'RUM' } }))}
       {renderButton('WebView', () => Navigation.push(props.componentId, { component: { name: 'WebView' } }))}
       {renderButton('Local WebView', () => Navigation.push(props.componentId, { component: { name: 'LocalWebView' } }))}
+      {renderButton('WebSocket', () => Navigation.push(props.componentId, { component: { name: 'WebSocket' } }))}
       {renderButton('Session Replay', () => Navigation.push(props.componentId, { component: { name: 'SessionReplay' } }))}
     </ScrollView>
   );

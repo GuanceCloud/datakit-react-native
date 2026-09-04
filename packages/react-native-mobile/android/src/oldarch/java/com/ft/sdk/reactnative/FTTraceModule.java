@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 
 public class FTTraceModule extends ReactContextBaseJavaModule {
   private final FTTraceImpl impl = new FTTraceImpl();
@@ -26,5 +27,10 @@ public class FTTraceModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getTraceHeaderFields(String url, String key, Promise promise) {
     impl.getTraceHeaderFields(url, key, promise);
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getTraceHeaderFieldsSync(String url, String key) {
+    return impl.getTraceHeaderFieldsSync(url, key);
   }
 }

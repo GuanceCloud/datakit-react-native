@@ -22,5 +22,11 @@ export interface Spec extends TurboModule {
    * @returns trace request header parameters
    */
   getTraceHeaderFields(url: string, key?: string): Promise<Object>;
+  /**
+   * Get trace HTTP request headers synchronously for APIs whose construction
+   * cannot wait for a Promise, such as React Native WebSocket.
+   * @internal
+   */
+  getTraceHeaderFieldsSync(url: string, key: string): Object | null;
 }
 export default TurboModuleRegistry.get<Spec>('FTReactNativeTrace');

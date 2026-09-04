@@ -1,6 +1,8 @@
 // import { NativeModules } from 'react-native';
+import { Platform } from 'react-native';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
 import { FTRumActionTracking } from './rum/FTRumActionTracking';
+import { FTRumWebSocketTracking } from './rum/FTRumWebSocketTracking';
 import { bridgeContextManager } from './ft_mobile_agent';
 
 /**
@@ -272,7 +274,13 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     if (config.enableAutoTrackUserAction) {
       FTRumActionTracking.startTracking();
     }
-    return this.rum.setConfig(config);
+    return this.rum.setConfig(config).then(() => {
+      if (Platform.OS === 'ios' && config.enableNativeUserResource === true) {
+        FTRumWebSocketTracking.startTracking();
+      } else {
+        FTRumWebSocketTracking.stopTracking();
+      }
+    });
   }
   startAction(
     actionName: string,

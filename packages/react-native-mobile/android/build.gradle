@@ -185,4 +185,5 @@ dependencies {
 //    implementation files('../example/android/app/libs/ft-session-replay-debug.aar')
 
   implementation 'com.google.code.gson:gson:2.8.5'
+  testImplementation 'junit:junit:4.13.2'
 }

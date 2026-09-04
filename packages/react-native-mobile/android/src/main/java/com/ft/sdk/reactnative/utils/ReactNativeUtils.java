@@ -1,14 +1,13 @@
 package com.ft.sdk.reactnative.utils;
 
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class ReactNativeUtils {
 
-    private static final Pattern[] RN_DEV_INNER_URL_REGEX = {
-        Pattern.compile("^http://((10|172|192).[0-9]+.[0-9]+.[0-9]+|localhost|127.0.0.1):808[0-9]/logs$"), // expo
-        Pattern.compile("^http://localhost:808[0-9]/(hot|symbolicate|message|inspector).*$") // rn
-    };
+    private static final Pattern RN_DEV_INNER_URL_PATTERN = Pattern.compile(
+        "^(?:https?|wss?)://(?:(?:10|172|192)(?:\\.[0-9]+){3}|localhost|127\\.0\\.0\\.1|\\[::1\\]):808[0-9]/(?:hot|symbolicate|message|inspector|status|assets|logs|debugger-proxy)(?:[/?#].*)?$",
+        Pattern.CASE_INSENSITIVE
+    );
 
     private ReactNativeUtils() {
         // Private constructor to prevent instantiation
@@ -48,12 +47,6 @@ public class ReactNativeUtils {
      * @return
      */
     public static boolean isReactNativeDevUrl(String url) {
-        for (Pattern pattern : RN_DEV_INNER_URL_REGEX) {
-            Matcher matcher = pattern.matcher(url);
-            if (matcher.matches()) {
-                return true;
-            }
-        }
-        return false;
+        return url != null && RN_DEV_INNER_URL_PATTERN.matcher(url).matches();
     }
 }

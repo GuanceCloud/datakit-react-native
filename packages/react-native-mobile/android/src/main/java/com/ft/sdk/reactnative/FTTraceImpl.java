@@ -71,6 +71,10 @@ public class FTTraceImpl {
 
   @ReactMethod
   public void getTraceHeaderFields(String url, String key, Promise promise) {
+    promise.resolve(getTraceHeaderFieldsSync(url, key));
+  }
+
+  public WritableNativeMap getTraceHeaderFieldsSync(String url, String key) {
     HashMap<String, String> hashMap = null;
     if (key == null) {
       hashMap = FTTraceManager.get().getTraceHeader(url);
@@ -84,6 +88,6 @@ public class FTTraceImpl {
         map.putString(entry.getKey(), entry.getValue());
       }
     }
-    promise.resolve(map);
+    return map;
   }
 }

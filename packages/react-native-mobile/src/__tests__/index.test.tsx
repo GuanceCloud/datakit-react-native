@@ -1,4 +1,5 @@
 const mockNativeEventEmitterAddListener = jest.fn();
+const mockPlatform = { OS: 'ios' };
 
 const mockFTMobileReactNative = {
   sdkConfig: jest.fn().mockResolvedValue(undefined),
@@ -45,6 +46,7 @@ jest.mock('react-native', () => ({
   NativeEventEmitter: jest.fn().mockImplementation(() => ({
     addListener: mockNativeEventEmitterAddListener,
   })),
+  Platform: mockPlatform,
   TurboModuleRegistry: {
     get: jest.fn(
       (name: keyof typeof mockNativeModules) => mockNativeModules[name]
@@ -60,6 +62,8 @@ const { FTReactNativeRUM } = require('../ft_rum');
 const { FTReactNativeLog } = require('../ft_logger');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTReactNativeTrace } = require('../ft_tracing');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { FTRumWebSocketTracking } = require('../rum/FTRumWebSocketTracking');
 
 describe('FTMobileReactNative upload endpoint APIs', () => {
   beforeEach(() => {
@@ -194,6 +198,11 @@ describe('NativeFTMobileReactNative TurboModule contract', () => {
 describe('native adapter config forwarding', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPlatform.OS = 'ios';
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('forwards RUM sampling and WebView hosts to the native module', async () => {
@@ -209,6 +218,49 @@ describe('native adapter config forwarding', () => {
     expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledTimes(1);
     expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(config);
   });
+
+  it('enables iOS WebSocket tracking with native resource collection', async () => {
+    const startTracking = jest
+      .spyOn(FTRumWebSocketTracking, 'startTracking')
+      .mockImplementation();
+    const stopTracking = jest
+      .spyOn(FTRumWebSocketTracking, 'stopTracking')
+      .mockImplementation();
+
+    await FTReactNativeRUM.setConfig({
+      androidAppId: 'android-app-id',
+      iOSAppId: 'ios-app-id',
+      enableNativeUserResource: true,
+    });
+
+    expect(startTracking).toHaveBeenCalledTimes(1);
+    expect(stopTracking).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['the switch is disabled on iOS', 'ios', false],
+    ['native resource collection is enabled on Android', 'android', true],
+  ])(
+    'does not enable JS WebSocket tracking when %s',
+    async (_, os, enabled) => {
+      mockPlatform.OS = os;
+      const startTracking = jest
+        .spyOn(FTRumWebSocketTracking, 'startTracking')
+        .mockImplementation();
+      const stopTracking = jest
+        .spyOn(FTRumWebSocketTracking, 'stopTracking')
+        .mockImplementation();
+
+      await FTReactNativeRUM.setConfig({
+        androidAppId: 'android-app-id',
+        iOSAppId: 'ios-app-id',
+        enableNativeUserResource: enabled,
+      });
+
+      expect(startTracking).not.toHaveBeenCalled();
+      expect(stopTracking).toHaveBeenCalledTimes(1);
+    }
+  );
 
   it('forwards Logger sampling to the native module', async () => {
     const config = {

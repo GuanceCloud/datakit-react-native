@@ -14,6 +14,8 @@
 #import <React/RCTConvert.h>
 #import "FTReactNativeUtils.h"
 
+static NSString * const FTReactNativeWebSocketErrorDomain = @"com.guance.react-native.websocket";
+
 @implementation FTReactNativeRUM
 RCT_EXPORT_MODULE()
 RCT_REMAP_METHOD(setConfig,
@@ -125,6 +127,28 @@ RCT_REMAP_METHOD(addResource,
   contentModel.responseHeader = [RCTConvert NSDictionary:content[@"responseHeader"]];
   contentModel.responseBody = [RCTConvert NSString:content[@"responseBody"]];
   contentModel.httpStatusCode = [RCTConvert int:content[@"resourceStatus"]];
+  if ([content.allKeys containsObject:@"errorMessage"]) {
+    NSString *errorMessage = [RCTConvert NSString:content[@"errorMessage"]];
+    if (errorMessage.length > 0) {
+      NSInteger errorCode = -1;
+      if ([content.allKeys containsObject:@"errorCode"]) {
+        errorCode = [RCTConvert NSInteger:content[@"errorCode"]];
+      }
+      contentModel.errorMessage = errorMessage;
+      contentModel.error = [NSError errorWithDomain:FTReactNativeWebSocketErrorDomain
+                                               code:errorCode
+                                           userInfo:@{NSLocalizedDescriptionKey: errorMessage}];
+    }
+  }
+  if ([content.allKeys containsObject:@"resourceType"]) {
+    contentModel.resourceType = [RCTConvert NSString:content[@"resourceType"]];
+  }
+  if ([content.allKeys containsObject:@"webSocketHandshake"]) {
+    contentModel.webSocketHandshake = [RCTConvert BOOL:content[@"webSocketHandshake"]];
+  }
+  if ([content.allKeys containsObject:@"webSocketHandshakeState"]) {
+    contentModel.webSocketHandshakeState = [RCTConvert NSString:content[@"webSocketHandshakeState"]];
+  }
 
   [[FTExternalDataManager sharedManager] addResourceWithKey:key metrics:metricsModel content:contentModel];
   resolve(nil);

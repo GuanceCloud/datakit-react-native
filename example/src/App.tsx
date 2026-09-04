@@ -16,6 +16,7 @@ import TraceScreen from './tracing';
 import WebViewScreen from './webView';
 import LocalWebViewScreen from './localWebView';
 import SessionReplayScreen from './sessionReplay';
+import WebSocketScreen from './webSocket';
 
 import { FTRumReactNavigationTracking } from './FTRumReactNavigationTracking';
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -141,6 +142,7 @@ class HomeScreen extends React.Component<{ navigation: any }> {
         {renderButton('RUM Data Collection', () => navigation.navigate('RUM'))}
         {renderButton('WebView', () => navigation.navigate('WebView'))}
         {renderButton('Local WebView', () => navigation.navigate('LocalWebView'))}
+        {renderButton('WebSocket', () => navigation.navigate('WebSocket'))}
         {renderButton('Session Replay', () => navigation.navigate('SessionReplay'))}
       </ScrollView>
     );
@@ -247,6 +249,7 @@ function App() {
         <Stack.Screen name="Mine" component={Mine} options={{ title: 'Mine' }} />
         <Stack.Screen name="WebView" component={WebViewScreen} options={{ title: 'WebView' }} />
         <Stack.Screen name="LocalWebView" component={LocalWebViewScreen} options={{ title: 'LocalWebView' }} />
+        <Stack.Screen name="WebSocket" component={WebSocketScreen} options={{ title: 'WebSocket' }} />
         <Stack.Screen name="SessionReplay" component={SessionReplayScreen} options={{ title: 'SessionReplay' }}/>
 
       </Stack.Navigator>
