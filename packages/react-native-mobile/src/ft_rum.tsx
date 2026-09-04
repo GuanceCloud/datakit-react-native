@@ -276,7 +276,7 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     }
     return this.rum.setConfig(config).then(() => {
       if (Platform.OS === 'ios' && config.enableNativeUserResource === true) {
-        FTRumWebSocketTracking.startTracking();
+        FTRumWebSocketTracking.startTracking(this);
       } else {
         FTRumWebSocketTracking.stopTracking();
       }

@@ -11,14 +11,6 @@ jest.mock('react-native', () => ({
   Platform: mockPlatform,
 }));
 
-jest.mock('../ft_rum', () => ({
-  FTReactNativeRUM: {
-    startResource: mockStartResource,
-    stopResource: mockStopResource,
-    addResource: mockAddResource,
-  },
-}));
-
 jest.mock('../specs/NativeFTReactNativeTrace', () => ({
   __esModule: true,
   default: {
@@ -83,6 +75,12 @@ class MockWebSocket {
 const flushResourceReport = () =>
   new Promise<void>((resolve) => setImmediate(resolve));
 
+const resourceReporter = {
+  startResource: mockStartResource,
+  stopResource: mockStopResource,
+  addResource: mockAddResource,
+};
+
 describe('FTRumWebSocketTracking', () => {
   const runtimeGlobal = globalThis as typeof globalThis & {
     WebSocket: typeof WebSocket;
@@ -115,7 +113,7 @@ describe('FTRumWebSocketTracking', () => {
   });
 
   it('injects trace headers and reports a successful opening handshake', async () => {
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
 
     const socket = new runtimeGlobal.WebSocket(
       'wss://example.com/socket',
@@ -173,7 +171,7 @@ describe('FTRumWebSocketTracking', () => {
   });
 
   it('reports a failed handshake once when error and close both fire', async () => {
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
     const socket = new runtimeGlobal.WebSocket(
       'wss://example.com/failure'
     ) as unknown as MockWebSocket;
@@ -196,7 +194,7 @@ describe('FTRumWebSocketTracking', () => {
   });
 
   it('reports an error event message when close does not fire', async () => {
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
     const socket = new runtimeGlobal.WebSocket(
       'wss://example.com/failure'
     ) as unknown as MockWebSocket;
@@ -212,7 +210,7 @@ describe('FTRumWebSocketTracking', () => {
   });
 
   it('does not extend a successful Resource until socket close', async () => {
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
     const socket = new runtimeGlobal.WebSocket(
       'wss://example.com/socket'
     ) as unknown as MockWebSocket;
@@ -226,7 +224,7 @@ describe('FTRumWebSocketTracking', () => {
   });
 
   it('reports constructor failures and preserves the original exception', async () => {
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
 
     expect(() => new runtimeGlobal.WebSocket('wss://throw.example')).toThrow(
       'constructor failed'
@@ -241,18 +239,35 @@ describe('FTRumWebSocketTracking', () => {
   });
 
   it('is idempotent when tracking is started repeatedly', () => {
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
     const instrumentedWebSocket = runtimeGlobal.WebSocket;
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
 
     expect(runtimeGlobal.WebSocket).toBe(instrumentedWebSocket);
     new runtimeGlobal.WebSocket('wss://example.com/socket');
     expect(mockStartResource).toHaveBeenCalledTimes(1);
   });
 
+  it('preserves WebSocket subclass construction semantics', () => {
+    FTRumWebSocketTracking.startTracking(resourceReporter);
+
+    class CustomerWebSocket extends runtimeGlobal.WebSocket {
+      customerMethod(): string {
+        return 'customer';
+      }
+    }
+
+    const socket = new CustomerWebSocket('wss://example.com/socket');
+
+    expect(socket).toBeInstanceOf(CustomerWebSocket);
+    expect(socket).toBeInstanceOf(MockWebSocket);
+    expect(socket.constructor).toBe(CustomerWebSocket);
+    expect(socket.customerMethod()).toBe('customer');
+  });
+
   it('restores the original constructor when tracking stops', () => {
     const originalWebSocket = runtimeGlobal.WebSocket;
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
     FTRumWebSocketTracking.stopTracking();
 
     expect(runtimeGlobal.WebSocket).toBe(originalWebSocket);
@@ -260,22 +275,40 @@ describe('FTRumWebSocketTracking', () => {
     expect(mockStartResource).not.toHaveBeenCalled();
   });
 
+  it('completes an in-flight handshake with its captured reporter after tracking stops', async () => {
+    FTRumWebSocketTracking.startTracking(resourceReporter);
+    const socket = new runtimeGlobal.WebSocket(
+      'wss://example.com/socket'
+    ) as unknown as MockWebSocket;
+
+    FTRumWebSocketTracking.stopTracking();
+    socket.emit('open');
+    await flushResourceReport();
+
+    expect(mockStopResource).toHaveBeenCalledTimes(1);
+    expect(mockAddResource).toHaveBeenCalledTimes(1);
+  });
+
   it('does not install on Android', () => {
     mockPlatform.OS = 'android';
     const originalWebSocket = runtimeGlobal.WebSocket;
 
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
 
     expect(runtimeGlobal.WebSocket).toBe(originalWebSocket);
     new runtimeGlobal.WebSocket('wss://example.com/socket');
     expect(mockStartResource).not.toHaveBeenCalled();
   });
 
-  it('ignores React Native development WebSockets', () => {
+  it.each([
+    'ws://localhost:8081/hot',
+    'ws://192.168.1.20:8081/inspector/device?name=iPhone',
+    'ws://127.0.0.1:8088/debugger-proxy?role=client',
+  ])('ignores React Native development WebSocket %s', (url) => {
     runtimeGlobal.__DEV__ = true;
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
 
-    new runtimeGlobal.WebSocket('ws://localhost:8081/hot');
+    new runtimeGlobal.WebSocket(url);
 
     expect(mockGetTraceHeaderFieldsSync).not.toHaveBeenCalled();
     expect(mockStartResource).not.toHaveBeenCalled();
@@ -286,7 +319,7 @@ describe('FTRumWebSocketTracking', () => {
     mockGetTraceHeaderFieldsSync.mockImplementation(() => {
       throw new Error('synchronous methods unavailable');
     });
-    FTRumWebSocketTracking.startTracking();
+    FTRumWebSocketTracking.startTracking(resourceReporter);
 
     const socket = new runtimeGlobal.WebSocket(
       'wss://example.com/socket'

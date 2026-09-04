@@ -1,7 +1,5 @@
 /* global WebSocket */
 import { Platform } from 'react-native';
-import type { FTRUMResource } from '../ft_rum';
-import { FTReactNativeRUM } from '../ft_rum';
 import NativeFTReactNativeTrace from '../specs/NativeFTReactNativeTrace';
 
 type WebSocketConstructor = typeof WebSocket;
@@ -12,7 +10,11 @@ interface ReactNativeWebSocketOptions {
   [key: string]: unknown;
 }
 
-interface FTRUMWebSocketResource extends FTRUMResource {
+interface FTRUMWebSocketResource {
+  url: string;
+  httpMethod: string;
+  requestHeader: Record<string, unknown>;
+  resourceStatus: number;
   resourceType: 'websocket';
   webSocketHandshake: true;
   webSocketHandshakeState: WebSocketHandshakeState;
@@ -25,27 +27,35 @@ interface WebSocketHandshakeError {
   code?: number;
 }
 
+interface FTRumWebSocketResourceReporter {
+  startResource(key: string): Promise<void>;
+  stopResource(key: string): Promise<void>;
+  addResource(key: string, resource: FTRUMWebSocketResource): Promise<void>;
+}
+
 type RuntimeGlobal = typeof globalThis & {
   WebSocket: WebSocketConstructor;
   __DEV__?: boolean;
 };
 
 const REACT_NATIVE_DEV_WEBSOCKET =
-  /^wss?:\/\/(?:(?:10|172|192)\.[0-9]+\.[0-9]+\.[0-9]+|localhost|127\.0\.0\.1|\[::1\]):808[0-9]\/(?:hot|symbolicate|message|inspector|status|assets|logs)(?:[/?#].*)?$/i;
+  /^wss?:\/\/(?:(?:10|172|192)\.[0-9]+\.[0-9]+\.[0-9]+|localhost|127\.0\.0\.1|\[::1\]):808[0-9]\/(?:hot|symbolicate|message|inspector|status|assets|logs|debugger-proxy)(?:[/?#].*)?$/i;
 
 export class FTRumWebSocketTracking {
   private static enabled = false;
   private static installed = false;
   private static originalWebSocket: WebSocketConstructor | null = null;
   private static instrumentedWebSocket: WebSocketConstructor | null = null;
+  private static resourceReporter: FTRumWebSocketResourceReporter | null = null;
   private static didWarnTraceFailure = false;
 
-  static startTracking(): void {
+  static startTracking(resourceReporter: FTRumWebSocketResourceReporter): void {
     if (Platform.OS !== 'ios') {
       return;
     }
 
     FTRumWebSocketTracking.enabled = true;
+    FTRumWebSocketTracking.resourceReporter = resourceReporter;
     if (FTRumWebSocketTracking.installed) {
       return;
     }
@@ -63,7 +73,11 @@ export class FTRumWebSocketTracking {
       if (!new.target) {
         return Reflect.apply(originalWebSocket, this, args);
       }
-      return FTRumWebSocketTracking.createWebSocket(originalWebSocket, args);
+      return FTRumWebSocketTracking.createWebSocket(
+        originalWebSocket,
+        args,
+        new.target as unknown as WebSocketConstructor
+      );
     } as unknown as WebSocketConstructor;
 
     InstrumentedWebSocket.prototype = originalWebSocket.prototype;
@@ -77,6 +91,7 @@ export class FTRumWebSocketTracking {
 
   static stopTracking(): void {
     FTRumWebSocketTracking.enabled = false;
+    FTRumWebSocketTracking.resourceReporter = null;
     if (!FTRumWebSocketTracking.installed) {
       return;
     }
@@ -96,10 +111,16 @@ export class FTRumWebSocketTracking {
 
   private static createWebSocket(
     OriginalWebSocket: WebSocketConstructor,
-    originalArguments: unknown[]
+    originalArguments: unknown[],
+    newTarget: WebSocketConstructor
   ): WebSocket {
     if (!FTRumWebSocketTracking.enabled) {
-      return Reflect.construct(OriginalWebSocket, originalArguments);
+      return Reflect.construct(OriginalWebSocket, originalArguments, newTarget);
+    }
+
+    const resourceReporter = FTRumWebSocketTracking.resourceReporter;
+    if (!resourceReporter) {
+      return Reflect.construct(OriginalWebSocket, originalArguments, newTarget);
     }
 
     const url = String(originalArguments[0]);
@@ -108,7 +129,7 @@ export class FTRumWebSocketTracking {
       runtimeGlobal.__DEV__ === true &&
       REACT_NATIVE_DEV_WEBSOCKET.test(url)
     ) {
-      return Reflect.construct(OriginalWebSocket, originalArguments);
+      return Reflect.construct(OriginalWebSocket, originalArguments, newTarget);
     }
 
     const resourceKey = FTRumWebSocketTracking.createResourceKey();
@@ -118,13 +139,21 @@ export class FTRumWebSocketTracking {
     );
     const { argumentsWithHeaders, requestHeaders } =
       FTRumWebSocketTracking.mergeTraceHeaders(originalArguments, traceHeaders);
-    const startPromise = FTRumWebSocketTracking.startResource(resourceKey);
+    const startPromise = FTRumWebSocketTracking.startResource(
+      resourceReporter,
+      resourceKey
+    );
 
     let socket: WebSocket;
     try {
-      socket = Reflect.construct(OriginalWebSocket, argumentsWithHeaders);
+      socket = Reflect.construct(
+        OriginalWebSocket,
+        argumentsWithHeaders,
+        newTarget
+      );
     } catch (error) {
       FTRumWebSocketTracking.completeResource(
+        resourceReporter,
         resourceKey,
         startPromise,
         url,
@@ -154,6 +183,7 @@ export class FTRumWebSocketTracking {
       completed = true;
       removeListeners();
       FTRumWebSocketTracking.completeResource(
+        resourceReporter,
         resourceKey,
         startPromise,
         url,
@@ -303,15 +333,19 @@ export class FTRumWebSocketTracking {
     return { message: String(error) };
   }
 
-  private static startResource(resourceKey: string): Promise<void> {
+  private static startResource(
+    resourceReporter: FTRumWebSocketResourceReporter,
+    resourceKey: string
+  ): Promise<void> {
     try {
-      return Promise.resolve(FTReactNativeRUM.startResource(resourceKey));
+      return Promise.resolve(resourceReporter.startResource(resourceKey));
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
   private static completeResource(
+    resourceReporter: FTRumWebSocketResourceReporter,
     resourceKey: string,
     startPromise: Promise<void>,
     url: string,
@@ -338,8 +372,8 @@ export class FTRumWebSocketTracking {
 
     void startPromise
       .catch(() => undefined)
-      .then(() => FTReactNativeRUM.stopResource(resourceKey))
-      .then(() => FTReactNativeRUM.addResource(resourceKey, resource))
+      .then(() => resourceReporter.stopResource(resourceKey))
+      .then(() => resourceReporter.addResource(resourceKey, resource))
       .catch((error) => {
         console.warn(
           '[FT-SDK] Unable to report React Native WebSocket resource.',

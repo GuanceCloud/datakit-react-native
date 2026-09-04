@@ -234,6 +234,7 @@ describe('native adapter config forwarding', () => {
     });
 
     expect(startTracking).toHaveBeenCalledTimes(1);
+    expect(startTracking).toHaveBeenCalledWith(FTReactNativeRUM);
     expect(stopTracking).not.toHaveBeenCalled();
   });
 
