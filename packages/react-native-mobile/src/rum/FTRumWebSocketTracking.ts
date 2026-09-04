@@ -47,7 +47,12 @@ export class FTRumWebSocketTracking {
   private static originalWebSocket: WebSocketConstructor | null = null;
   private static instrumentedWebSocket: WebSocketConstructor | null = null;
   private static resourceReporter: FTRumWebSocketResourceReporter | null = null;
+  private static nativeAutoTraceEnabled = false;
   private static didWarnTraceFailure = false;
+
+  static setNativeAutoTraceEnabled(enabled: boolean): void {
+    FTRumWebSocketTracking.nativeAutoTraceEnabled = enabled;
+  }
 
   static startTracking(resourceReporter: FTRumWebSocketResourceReporter): void {
     if (Platform.OS !== 'ios') {
@@ -133,10 +138,9 @@ export class FTRumWebSocketTracking {
     }
 
     const resourceKey = FTRumWebSocketTracking.createResourceKey();
-    const traceHeaders = FTRumWebSocketTracking.getTraceHeaders(
-      url,
-      resourceKey
-    );
+    const traceHeaders = FTRumWebSocketTracking.nativeAutoTraceEnabled
+      ? FTRumWebSocketTracking.getTraceHeaders(url, resourceKey)
+      : {};
     const { argumentsWithHeaders, requestHeaders } =
       FTRumWebSocketTracking.mergeTraceHeaders(originalArguments, traceHeaders);
     const startPromise = FTRumWebSocketTracking.startResource(

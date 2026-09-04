@@ -285,4 +285,37 @@ describe('native adapter config forwarding', () => {
     expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledTimes(1);
     expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledWith(config);
   });
+
+  it.each([
+    ['enabled', true, true],
+    ['disabled', false, false],
+    ['not configured', undefined, false],
+  ])(
+    'sets WebSocket automatic trace injection to %s',
+    async (_, configuredValue, expectedValue) => {
+      const setNativeAutoTraceEnabled = jest
+        .spyOn(FTRumWebSocketTracking, 'setNativeAutoTraceEnabled')
+        .mockImplementation();
+
+      await FTReactNativeTrace.setConfig({
+        enableNativeAutoTrace: configuredValue,
+      });
+
+      expect(setNativeAutoTraceEnabled).toHaveBeenCalledWith(expectedValue);
+    }
+  );
+
+  it('does not change WebSocket trace injection when native Trace configuration fails', async () => {
+    const configurationError = new Error('Trace configuration failed');
+    mockFTReactNativeTrace.setConfig.mockRejectedValueOnce(configurationError);
+    const setNativeAutoTraceEnabled = jest
+      .spyOn(FTRumWebSocketTracking, 'setNativeAutoTraceEnabled')
+      .mockImplementation();
+
+    await expect(
+      FTReactNativeTrace.setConfig({ enableNativeAutoTrace: true })
+    ).rejects.toBe(configurationError);
+
+    expect(setNativeAutoTraceEnabled).not.toHaveBeenCalled();
+  });
 });

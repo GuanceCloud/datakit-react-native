@@ -1,6 +1,8 @@
 // import { NativeModules } from 'react-native';
 //FTReactNativeTrace
 
+import { FTRumWebSocketTracking } from './rum/FTRumWebSocketTracking';
+
 /**
  * Trace types for use.
  */
@@ -74,7 +76,11 @@ class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
   /* eslint-enable @typescript-eslint/no-var-requires */
 
   setConfig(config: FTTraceConfig): Promise<void> {
-    return this.trace.setConfig(config);
+    return this.trace.setConfig(config).then(() => {
+      FTRumWebSocketTracking.setNativeAutoTraceEnabled(
+        config.enableNativeAutoTrace === true
+      );
+    });
   }
   /**
    * Get trace HTTP request header data.

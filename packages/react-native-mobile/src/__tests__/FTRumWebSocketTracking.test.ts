@@ -90,6 +90,7 @@ describe('FTRumWebSocketTracking', () => {
 
   beforeEach(() => {
     FTRumWebSocketTracking.stopTracking();
+    FTRumWebSocketTracking.setNativeAutoTraceEnabled(true);
     mockPlatform.OS = 'ios';
     MockWebSocket.instances = [];
     runtimeGlobal.WebSocket = MockWebSocket as unknown as typeof WebSocket;
@@ -105,6 +106,7 @@ describe('FTRumWebSocketTracking', () => {
 
   afterEach(() => {
     FTRumWebSocketTracking.stopTracking();
+    FTRumWebSocketTracking.setNativeAutoTraceEnabled(false);
     delete runtimeGlobal.__DEV__;
   });
 
@@ -130,9 +132,7 @@ describe('FTRumWebSocketTracking', () => {
     socket.onopen = applicationOnOpen;
 
     const resourceKey = mockStartResource.mock.calls[0][0];
-    expect(resourceKey).toMatch(
-      /^[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}$/
-    );
+    expect(resourceKey).toMatch(/^[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}$/);
     expect(mockGetTraceHeaderFieldsSync).toHaveBeenCalledWith(
       'wss://example.com/socket',
       resourceKey
@@ -166,6 +166,25 @@ describe('FTRumWebSocketTracking', () => {
       resourceStatus: 101,
       resourceType: 'websocket',
       webSocketHandshake: true,
+      webSocketHandshakeState: 'success',
+    });
+  });
+
+  it('collects the Resource without trace headers when native auto trace is disabled', async () => {
+    FTRumWebSocketTracking.setNativeAutoTraceEnabled(false);
+    FTRumWebSocketTracking.startTracking(resourceReporter);
+
+    const socket = new runtimeGlobal.WebSocket(
+      'wss://example.com/socket'
+    ) as unknown as MockWebSocket;
+    socket.emit('open');
+    await flushResourceReport();
+
+    expect(mockGetTraceHeaderFieldsSync).not.toHaveBeenCalled();
+    expect(socket.constructorArguments).toEqual(['wss://example.com/socket']);
+    expect(mockAddResource.mock.calls[0][1]).toMatchObject({
+      requestHeader: {},
+      resourceStatus: 101,
       webSocketHandshakeState: 'success',
     });
   });

@@ -5,6 +5,8 @@
 # 0.4.3
 * Upgraded compatibility to iOS `GuanceSDK 1.6.7`, Android `ft-sdk 1.7.5`, Android `ft-plugin 1.3.8` and Android `ft-session-replay 0.1.8`.
 * Fixed remote configuration updates and callbacks under React Native New Architecture on iOS and Android.
+* Added automatic React Native WebSocket handshake Resource collection on iOS and Android, including distributed trace correlation and handshake success or failure details.
+* Improved React Native development Resource filtering on iOS and Android to exclude Metro, Inspector, HMR, and debugger WebSocket requests.
 
 ---
 # 0.4.2
