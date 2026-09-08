@@ -94,6 +94,12 @@ android {
       }
 
       if (reactNativeMajorVersion == 0) {
+        if (reactNativeMinorVersion >= 70) {
+          java.srcDirs += ['src/rnpost70/java']
+        } else {
+          java.srcDirs += ['src/rnpre70/java']
+        }
+
         if (reactNativeMinorVersion >= 74) {
           java.srcDirs += ['src/rnpost74/java']
         } else {
@@ -186,4 +192,5 @@ dependencies {
 
   implementation 'com.google.code.gson:gson:2.8.5'
   testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.mockito:mockito-core:4.11.0'
 }

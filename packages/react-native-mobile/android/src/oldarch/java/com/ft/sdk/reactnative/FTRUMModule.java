@@ -7,10 +7,11 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
 public class FTRUMModule extends ReactContextBaseJavaModule {
-  private final FTRUMImpl impl = new FTRUMImpl();
+  private final FTRUMImpl impl;
 
   public FTRUMModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    impl = new FTRUMImpl(reactContext);
   }
 
   @Override
@@ -21,6 +22,23 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setConfig(ReadableMap context, Promise promise) {
     impl.setConfig(context, promise);
+  }
+
+  @ReactMethod
+  public void stopLongTaskTracking(Promise promise) {
+    impl.stopLongTaskTracking(promise);
+  }
+
+  @Override
+  public void invalidate() {
+    impl.destroy();
+    super.invalidate();
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    impl.destroy();
+    super.onCatalystInstanceDestroy();
   }
 
   @ReactMethod

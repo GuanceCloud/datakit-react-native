@@ -5,6 +5,7 @@ import { FTRumActionTracking } from './rum/FTRumActionTracking';
 import { FTBabelInteractionTracking } from './rum/FTBabelInteractionTracking';
 import { FTRumWebSocketTracking } from './rum/FTRumWebSocketTracking';
 import { bridgeContextManager } from './ft_mobile_agent';
+import { normalizeLongTaskThreshold } from './rum/longTasksUtils';
 
 /**
  * Error monitoring type.
@@ -83,6 +84,8 @@ export enum IOSCrashMonitoringType {
  * @param enableTrackNativeAppANR whether to collect Native ANR
  * @param enableTrackNativeFreeze whether to collect Native Freeze
  * @param nativeFreezeDurationMs set the threshold for collecting Native Freeze, value range [100,), unit ms. iOS default 250ms, Android default 1000ms
+ * @param enableLongTask whether to collect React Native JavaScript LongTasks, default false
+ * @param longTaskThresholdMs set the threshold for collecting React Native JavaScript LongTasks, unit ms. Defaults to 100 and is clamped to [100, 5000]
  * @param enableNativeUserAction whether to start Native Action tracking, Button click events, recommended to disable for pure react-native apps
  * @param enableNativeUserView whether to start Native View auto tracking, recommended to disable for pure react-native apps
  * @param enableNativeUserResource whether to automatically collect react-native Resource
@@ -108,6 +111,8 @@ export interface FTRUMConfig {
   enableTrackNativeAppANR?: boolean;
   enableTrackNativeFreeze?: boolean;
   nativeFreezeDurationMs?: number;
+  enableLongTask?: boolean;
+  longTaskThresholdMs?: number;
   enableNativeUserAction?: boolean;
   enableNativeUserView?: boolean;
   enableNativeUserResource?: boolean;
@@ -294,13 +299,21 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     } else {
       FTRumActionTracking.stopTracking();
     }
-    return this.rum.setConfig(config).then(() => {
-      if (Platform.OS === 'ios' && config.enableNativeUserResource === true) {
-        FTRumWebSocketTracking.startTracking(this);
-      } else {
-        FTRumWebSocketTracking.stopTracking();
-      }
-    });
+    return this.rum
+      .setConfig({
+        ...config,
+        enableLongTask: config.enableLongTask === true,
+        longTaskThresholdMs: normalizeLongTaskThreshold(
+          config.longTaskThresholdMs
+        ),
+      })
+      .then(() => {
+        if (Platform.OS === 'ios' && config.enableNativeUserResource === true) {
+          FTRumWebSocketTracking.startTracking(this);
+        } else {
+          FTRumWebSocketTracking.stopTracking();
+        }
+      });
   }
   startAction(
     actionName: string,

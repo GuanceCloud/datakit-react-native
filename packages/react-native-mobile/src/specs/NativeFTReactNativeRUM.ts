@@ -9,6 +9,8 @@ export interface Spec extends TurboModule {
    * @returns a Promise.
    */
   setConfig(config: Object): Promise<void>;
+  /** Stops the internal JavaScript long task monitor before SDK shutdown. */
+  stopLongTaskTracking(): Promise<void>;
   /**
    * Start RUM Action.
    * RUM will bind Resource, Error, LongTask events that may be triggered by this Action.

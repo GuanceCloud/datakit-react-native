@@ -24,6 +24,7 @@ const mockFTMobileReactNative = {
 
 const mockFTReactNativeRUM = {
   setConfig: jest.fn().mockResolvedValue(undefined),
+  stopLongTaskTracking: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockFTReactNativeLog = {
@@ -216,7 +217,11 @@ describe('native adapter config forwarding', () => {
     await FTReactNativeRUM.setConfig(config);
 
     expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledTimes(1);
-    expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(config);
+    expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith({
+      ...config,
+      enableLongTask: false,
+      longTaskThresholdMs: 100,
+    });
   });
 
   it('enables iOS WebSocket tracking with native resource collection', async () => {
@@ -260,6 +265,49 @@ describe('native adapter config forwarding', () => {
 
       expect(startTracking).not.toHaveBeenCalled();
       expect(stopTracking).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it.each([
+    ['disabled defaults', undefined, undefined, false, 100],
+    ['explicitly disabled', false, 250, false, 250],
+    ['enabled default', true, undefined, true, 100],
+    ['enabled zero', true, 0, true, 100],
+    ['enabled NaN', true, Number.NaN, true, 100],
+    ['enabled negative', true, -1, true, 100],
+    ['enabled below minimum', true, 99.9, true, 100],
+    ['enabled minimum', true, 100, true, 100],
+    ['enabled fractional', true, 200.5, true, 200.5],
+    ['enabled maximum', true, 5000, true, 5000],
+    ['enabled above maximum', true, 5000.1, true, 5000],
+    ['enabled infinity', true, Number.POSITIVE_INFINITY, true, 5000],
+  ])(
+    'normalizes the %s JavaScript long task configuration',
+    async (
+      _name,
+      enableLongTask,
+      threshold,
+      expectedEnableLongTask,
+      expectedThreshold
+    ) => {
+      const config = {
+        androidAppId: 'android-app-id',
+        iOSAppId: 'ios-app-id',
+        nativeFreezeDurationMs: 750,
+        enableLongTask,
+        longTaskThresholdMs: threshold,
+      };
+
+      await FTReactNativeRUM.setConfig(config);
+
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith({
+        ...config,
+        enableLongTask: expectedEnableLongTask,
+        longTaskThresholdMs: expectedThreshold,
+      });
+      expect(config.enableLongTask).toBe(enableLongTask);
+      expect(config.longTaskThresholdMs).toBe(threshold);
+      expect(config.nativeFreezeDurationMs).toBe(750);
     }
   );
 
@@ -317,5 +365,37 @@ describe('native adapter config forwarding', () => {
     ).rejects.toBe(configurationError);
 
     expect(setNativeAutoTraceEnabled).not.toHaveBeenCalled();
+  });
+});
+
+describe('FTMobileReactNative shutdown', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('stops JavaScript long task monitoring before shutting down the SDK', async () => {
+    const calls: string[] = [];
+    mockFTReactNativeRUM.stopLongTaskTracking.mockImplementationOnce(
+      async () => {
+        calls.push('stopLongTaskTracking');
+      }
+    );
+    mockFTMobileReactNative.shutDown.mockImplementationOnce(async () => {
+      calls.push('shutDown');
+    });
+
+    await FTMobileReactNative.shutDown();
+
+    expect(calls).toEqual(['stopLongTaskTracking', 'shutDown']);
+  });
+
+  it('still shuts down the SDK when stopping the monitor fails', async () => {
+    mockFTReactNativeRUM.stopLongTaskTracking.mockRejectedValueOnce(
+      new Error('stop failed')
+    );
+
+    await expect(FTMobileReactNative.shutDown()).rejects.toThrow('stop failed');
+
+    expect(mockFTMobileReactNative.shutDown).toHaveBeenCalledTimes(1);
   });
 });
