@@ -36,6 +36,7 @@
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.1.6",
     "@babel/runtime": "^7.20.0",
+    "@cloudcare/react-native-mobile-babel-plugin": "workspace:packages/react-native-babel-plugin",
     "@cloudcare/react-native-mobile-cli": "file:../ft-react-native-mobile-cli-v1.0.0.tgz",
     "@react-native/metro-config": "0.74.85",
     "@react-native/typescript-config": "0.74.85",

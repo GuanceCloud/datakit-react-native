@@ -2,6 +2,7 @@
 import { Platform } from 'react-native';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
 import { FTRumActionTracking } from './rum/FTRumActionTracking';
+import { FTBabelInteractionTracking } from './rum/FTBabelInteractionTracking';
 import { FTRumWebSocketTracking } from './rum/FTRumWebSocketTracking';
 import { bridgeContextManager } from './ft_mobile_agent';
 
@@ -261,6 +262,16 @@ type FTReactNativeRUMType = {
   ): Promise<void>;
 };
 
+function isBabelPluginEnabled(): boolean {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis.__FT_RN_BABEL_PLUGIN_ENABLED__ === true;
+  }
+  if (typeof global !== 'undefined') {
+    return global.__FT_RN_BABEL_PLUGIN_ENABLED__ === true;
+  }
+  return false;
+}
+
 class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
@@ -271,8 +282,17 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     if (config.enableAutoTrackError) {
       FTRumErrorTracking.startTracking();
     }
-    if (config.enableAutoTrackUserAction) {
+    const babelPluginEnabled = isBabelPluginEnabled();
+    FTBabelInteractionTracking.configure({
+      trackInteractions:
+        babelPluginEnabled && Boolean(config.enableAutoTrackUserAction),
+      actionReporter: (actionName, actionType, property) =>
+        this.startAction(actionName, actionType, property),
+    });
+    if (config.enableAutoTrackUserAction && !babelPluginEnabled) {
       FTRumActionTracking.startTracking();
+    } else {
+      FTRumActionTracking.stopTracking();
     }
     return this.rum.setConfig(config).then(() => {
       if (Platform.OS === 'ios' && config.enableNativeUserResource === true) {

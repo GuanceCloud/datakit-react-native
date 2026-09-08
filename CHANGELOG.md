@@ -7,6 +7,7 @@
 * Fixed remote configuration updates and callbacks under React Native New Architecture on iOS and Android.
 * Added automatic React Native WebSocket handshake Resource collection on iOS and Android, including distributed trace correlation and handshake success or failure details.
 * Improved React Native development Resource filtering on iOS and Android to exclude Metro, Inspector, HMR, and debugger WebSocket requests.
+* Added the optional `@cloudcare/react-native-mobile-babel-plugin` package for build-time React Native interaction tracking and readable RUM `action_name` values.
 
 ---
 # 0.4.2

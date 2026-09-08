@@ -1,7 +1,6 @@
 import React from 'react';
 import { FTReactNativeRUM } from '../ft_rum';
-const FT_ENABLE_TRACK = 'ft-enable-track';
-const FT_EXTRA_PROPERTY = 'ft-extra-property';
+import { resolveActionTrackingContextFromTarget } from './FTRumActionTrackingContext';
 export class FTRumActionTracking {
   private static isTracking = false;
   private static preActionTimestamp = Number.MIN_VALUE;
@@ -34,6 +33,7 @@ export class FTRumActionTracking {
       return;
     }
     const original = React.createElement;
+    this.originalCreateElement = original;
     React.createElement = (
       ...args: Parameters<typeof React.createElement>
     ): any => {
@@ -53,6 +53,7 @@ export class FTRumActionTracking {
     }
 
     const originalMemo = React.memo;
+    this.originalMemo = originalMemo;
     React.memo = (
       component: any,
       propsAreEqual?: (prevProps: any, newProps: any) => boolean
@@ -86,6 +87,9 @@ export class FTRumActionTracking {
     FTRumActionTracking.isTracking = true;
   }
   static stopTracking() {
+    if (!FTRumActionTracking.isTracking) {
+      return;
+    }
     React.createElement = this.originalCreateElement;
     React.memo = this.originalMemo;
     FTRumActionTracking.isTracking = false;
@@ -112,26 +116,17 @@ export class FTRumActionTracking {
 
   private static handleTargetEvent(targetNode: any | null) {
     if (targetNode) {
-      const enable = FTRumActionTracking.findActionEnableTrack(targetNode);
-      if (enable) {
-        const extraProperty =
-          FTRumActionTracking.findActionProperty(targetNode);
+      const context = resolveActionTrackingContextFromTarget(targetNode);
+      if (context.enabled) {
         const elementTypeName =
           FTRumActionTracking.resolveActionName(targetNode);
         if (elementTypeName) {
-          let jsonObject = null;
-          if (extraProperty) {
-            try {
-              jsonObject = JSON.parse(extraProperty);
-            } catch (error) {
-              console.warn(
-                `Error parsing JSON string ${extraProperty}:`,
-                error
-              );
-            }
-          }
-          if (jsonObject) {
-            FTReactNativeRUM.startAction(elementTypeName, 'click', jsonObject);
+          if (context.property) {
+            FTReactNativeRUM.startAction(
+              elementTypeName,
+              'click',
+              context.property
+            );
           } else {
             FTReactNativeRUM.startAction(elementTypeName, 'click');
           }
@@ -177,30 +172,6 @@ export class FTRumActionTracking {
       return '[' + elementTypeName + ']' + subTitle;
     }
     return null;
-  }
-  private static findActionProperty(targetNode: any): string | null {
-    let currentNode = targetNode;
-    while (currentNode) {
-      const props = currentNode.memoizedProps;
-      if (props && props[FT_EXTRA_PROPERTY]) {
-        return props[FT_EXTRA_PROPERTY];
-      }
-      currentNode = currentNode.return;
-    }
-    return null;
-  }
-  private static findActionEnableTrack(targetNode: any): boolean {
-    let currentNode = targetNode;
-    let enable = true;
-    while (currentNode) {
-      const props = currentNode.memoizedProps;
-      if (props && props[FT_ENABLE_TRACK]) {
-        enable = props[FT_ENABLE_TRACK] === 'true';
-        break;
-      }
-      currentNode = currentNode.return;
-    }
-    return enable;
   }
 }
 
