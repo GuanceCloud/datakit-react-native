@@ -120,12 +120,12 @@ RCT_REMAP_METHOD(addResource,
 
 - (void)invalidate {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.jsLongTaskMonitor stop];
+  [self.jsLongTaskMonitor disableWithCompletion:nil];
 }
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self.jsLongTaskMonitor stop];
+  [_jsLongTaskMonitor disableWithCompletion:nil];
 }
 
 - (void)addAction:(NSString *)actionName actionType:(NSString *)actionType property:(NSDictionary *)property resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
@@ -263,7 +263,7 @@ RCT_REMAP_METHOD(addResource,
     resolve(nil);
     return;
   }
-  [self.jsLongTaskMonitor stopWithCompletion:^{
+  [self.jsLongTaskMonitor disableWithCompletion:^{
     resolve(nil);
   }];
 }

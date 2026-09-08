@@ -29,6 +29,12 @@ public class FTRUMModule extends NativeFTReactNativeRUMSpec {
   }
 
   @Override
+  public void invalidate() {
+    impl.destroy();
+    super.invalidate();
+  }
+
+  @Override
   public void onCatalystInstanceDestroy() {
     impl.destroy();
     super.onCatalystInstanceDestroy();

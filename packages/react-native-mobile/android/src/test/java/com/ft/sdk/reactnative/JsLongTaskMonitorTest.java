@@ -150,6 +150,66 @@ public class JsLongTaskMonitorTest {
   }
 
   @Test
+  public void rejectedStartDoesNotCreateScheduler() {
+    executor.acceptsTasks = false;
+    monitor.setThresholdMilliseconds(100);
+
+    monitor.start();
+
+    assertEquals(0, schedulerFactory.createCount);
+    assertTrue(executor.runnables.isEmpty());
+  }
+
+  @Test
+  public void rejectedStopCompletesAndSuppressesExistingFrameCallbacks() {
+    startWithThreshold(100);
+    FakeScheduler scheduler = schedulerFactory.scheduler;
+    scheduler.fire(1_000_000_000L);
+    int posts = scheduler.postCount;
+    executor.acceptsTasks = false;
+    final int[] completions = {0};
+
+    monitor.disable(() -> completions[0]++);
+    scheduler.fire(1_500_000_000L);
+    monitor.start();
+
+    assertEquals(1, completions[0]);
+    assertEquals(posts, scheduler.postCount);
+    assertEquals(1, schedulerFactory.createCount);
+    assertTrue(reporter.durations.isEmpty());
+  }
+
+  @Test
+  public void throwingQueueCompletesStopExactlyOnce() {
+    executor.shouldThrow = true;
+    final int[] completions = {0};
+
+    monitor.stop(() -> completions[0]++);
+
+    assertEquals(1, completions[0]);
+  }
+
+  @Test
+  public void inlineCompletionFailureIsNotInvokedTwice() {
+    JsLongTaskMonitor inlineMonitor = new JsLongTaskMonitor(
+      runnable -> {
+        runnable.run();
+        return true;
+      },
+      schedulerFactory,
+      reporter
+    );
+    final int[] completions = {0};
+
+    inlineMonitor.stop(() -> {
+      completions[0]++;
+      throw new IllegalStateException("Promise is already unavailable");
+    });
+
+    assertEquals(1, completions[0]);
+  }
+
+  @Test
   public void framePostFailureDisablesMonitoring() {
     schedulerFactory.throwOnPost = true;
     monitor.setThresholdMilliseconds(100);
@@ -183,6 +243,58 @@ public class JsLongTaskMonitorTest {
   }
 
   @Test
+  public void disablePreventsRestartUntilConfiguredAgain() {
+    startWithThreshold(100);
+    FakeScheduler firstScheduler = schedulerFactory.scheduler;
+    firstScheduler.fire(1_000_000_000L);
+    final int[] completions = {0};
+
+    monitor.disable(() -> completions[0]++);
+    // A foreground event can arrive before the JS queue finishes stopping.
+    monitor.start();
+    firstScheduler.fire(1_500_000_000L);
+    assertEquals(0, completions[0]);
+    executor.runAll();
+
+    assertEquals(1, completions[0]);
+    assertEquals(1, firstScheduler.removeCount);
+    assertTrue(reporter.durations.isEmpty());
+
+    // Further background/foreground transitions must not re-enable monitoring.
+    monitor.stop();
+    monitor.start();
+    executor.runAll();
+    assertEquals(1, schedulerFactory.createCount);
+
+    monitor.setThresholdMilliseconds(200);
+    monitor.start();
+    executor.runAll();
+    assertEquals(2, schedulerFactory.createCount);
+    schedulerFactory.scheduler.fire(10_000_000_000L);
+    schedulerFactory.scheduler.fire(10_150_000_000L);
+    assertTrue(reporter.durations.isEmpty());
+    schedulerFactory.scheduler.fire(10_400_000_000L);
+    assertEquals(1, reporter.durations.size());
+    assertEquals(250_000_000L, reporter.durations.get(0).longValue());
+  }
+
+  @Test
+  public void repeatedDisableCancelsPendingStartAndCompletesEachRequest() {
+    monitor.setThresholdMilliseconds(100);
+    monitor.start();
+    final int[] completions = {0};
+
+    monitor.disable(() -> completions[0]++);
+    monitor.disable(() -> completions[0]++);
+    monitor.start();
+    executor.runAll();
+
+    assertEquals(2, completions[0]);
+    assertEquals(0, schedulerFactory.createCount);
+    assertTrue(reporter.durations.isEmpty());
+  }
+
+  @Test
   public void reporterFailureDoesNotStopFrameCallbacks() {
     reporter.shouldThrow = true;
     startWithThreshold(100);
@@ -203,13 +315,18 @@ public class JsLongTaskMonitorTest {
   private static final class FakeExecutor implements JsLongTaskMonitor.Executor {
     private final List<Runnable> runnables = new ArrayList<>();
     private boolean shouldThrow;
+    private boolean acceptsTasks = true;
 
     @Override
-    public void runOnJsThread(Runnable runnable) {
+    public boolean runOnJsThread(Runnable runnable) {
       if (shouldThrow) {
         throw new IllegalStateException("JavaScript queue unavailable");
       }
+      if (!acceptsTasks) {
+        return false;
+      }
       runnables.add(runnable);
+      return true;
     }
 
     private void runAll() {

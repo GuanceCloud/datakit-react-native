@@ -21,6 +21,7 @@ import com.ft.sdk.reactnative.utils.ReactNativeUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FTRUMImpl implements LifecycleEventListener {
 
@@ -28,6 +29,7 @@ public class FTRUMImpl implements LifecycleEventListener {
   public static final String NAME = "FTReactNativeRUM";
   private final ReactApplicationContext reactContext;
   private final JsLongTaskMonitor jsLongTaskMonitor;
+  private final AtomicBoolean destroyed = new AtomicBoolean();
 
   public FTRUMImpl(ReactApplicationContext reactContext) {
     this(reactContext, JsLongTaskMonitor.create(reactContext));
@@ -179,7 +181,7 @@ public class FTRUMImpl implements LifecycleEventListener {
 
   @ReactMethod
   public void stopLongTaskTracking(final Promise promise) {
-    jsLongTaskMonitor.stop(new Runnable() {
+    jsLongTaskMonitor.disable(new Runnable() {
       @Override
       public void run() {
         promise.resolve(null);
@@ -188,13 +190,18 @@ public class FTRUMImpl implements LifecycleEventListener {
   }
 
   public void destroy() {
+    if (!destroyed.compareAndSet(false, true)) {
+      return;
+    }
     reactContext.removeLifecycleEventListener(this);
-    jsLongTaskMonitor.stop();
+    jsLongTaskMonitor.disable(null);
   }
 
   @Override
   public void onHostResume() {
-    jsLongTaskMonitor.start();
+    if (!destroyed.get()) {
+      jsLongTaskMonitor.start();
+    }
   }
 
   @Override

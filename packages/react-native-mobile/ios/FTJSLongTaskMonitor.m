@@ -27,8 +27,25 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
   if (bridge == nil) {
     return NO;
   }
-  [bridge dispatchBlock:block queue:RCTJSThread];
-  return YES;
+  @try {
+    // RCTBridgeProxy.valid is always NO, including while bridgeless RN is active.
+    [bridge dispatchBlock:block queue:RCTJSThread];
+    return YES;
+  } @catch (NSException *exception) {
+    // Bridge teardown may race a start request. Monitoring must not take down the host.
+    return NO;
+  }
+}
+@end
+
+// The display link retains this callback target, not the scheduler that owns it.
+@interface FTJSLongTaskDisplayLinkTarget : NSObject
+@property (nonatomic, copy) FTJSLongTaskFrameCallback callback;
+@end
+
+@implementation FTJSLongTaskDisplayLinkTarget
+- (void)displayLinkDidFire:(CADisplayLink *)displayLink {
+  self.callback(displayLink.timestamp);
 }
 @end
 
@@ -49,21 +66,21 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
 
 - (void)start {
   [self stop];
-  self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkDidFire:)];
+  FTJSLongTaskDisplayLinkTarget *target = [FTJSLongTaskDisplayLinkTarget new];
+  target.callback = self.callback;
+  self.displayLink = [CADisplayLink displayLinkWithTarget:target selector:@selector(displayLinkDidFire:)];
   [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 }
 
 - (void)stop {
+  // CADisplayLink.invalidate is thread safe and releases its run loop and target
+  // references without requiring a live JS queue.
   [self.displayLink invalidate];
   self.displayLink = nil;
 }
 
-- (void)displayLinkDidFire:(CADisplayLink *)displayLink {
-  self.callback(displayLink.timestamp);
-}
-
 - (void)dealloc {
-  [self stop];
+  [_displayLink invalidate];
 }
 @end
 
@@ -126,14 +143,14 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
 - (void)setThresholdMilliseconds:(double)thresholdMilliseconds {
   @synchronized (self.stateLock) {
     self.thresholdSeconds = thresholdMilliseconds <= 0 ? 0 : thresholdMilliseconds / 1000.0;
-  }
-  if (thresholdMilliseconds <= 0) {
-    [self stop];
+    if (thresholdMilliseconds <= 0) {
+      [self stopLocked];
+    }
   }
 }
 
 - (void)start {
-  __block NSUInteger startGeneration;
+  NSUInteger startGeneration;
   @synchronized (self.stateLock) {
     if (self.thresholdSeconds == 0) {
       return;
@@ -142,23 +159,30 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
     startGeneration = ++self.generation;
   }
 
+  __weak typeof(self) weakSelf = self;
   BOOL dispatched = [self.queue dispatchBlock:^{
-    if (![self isCurrentGeneration:startGeneration running:YES]) {
+    // A pending block must not keep a destroyed monitor (and its queue) alive.
+    typeof(self) strongSelf = weakSelf;
+    if (strongSelf == nil) {
       return;
     }
-    [self.scheduler stop];
-    __weak typeof(self) weakSelf = self;
-    self.scheduler = [self.schedulerFactory createSchedulerWithCallback:^(CFTimeInterval timestamp) {
-      [weakSelf handleFrameTimestamp:timestamp];
-    }];
-    self.activeGeneration = startGeneration;
-    self.lastFrameTimestamp = 0;
-    [self.scheduler start];
+    @synchronized (strongSelf.stateLock) {
+      if (strongSelf.generation != startGeneration || !strongSelf.requestedRunning) {
+        return;
+      }
+      [strongSelf.scheduler stop];
+      strongSelf.scheduler = [strongSelf.schedulerFactory createSchedulerWithCallback:^(CFTimeInterval timestamp) {
+        [weakSelf handleFrameTimestamp:timestamp generation:startGeneration];
+      }];
+      strongSelf.activeGeneration = startGeneration;
+      strongSelf.lastFrameTimestamp = 0;
+      [strongSelf.scheduler start];
+    }
   }];
   if (!dispatched) {
     @synchronized (self.stateLock) {
       if (self.generation == startGeneration) {
-        self.requestedRunning = NO;
+        [self stopLocked];
       }
     }
   }
@@ -168,52 +192,55 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
   [self stopWithCompletion:nil];
 }
 
-- (void)stopWithCompletion:(dispatch_block_t)completion {
-  __block NSUInteger stopGeneration;
+- (void)disableWithCompletion:(dispatch_block_t)completion {
   @synchronized (self.stateLock) {
-    self.requestedRunning = NO;
-    stopGeneration = ++self.generation;
+    self.thresholdSeconds = 0;
+    [self stopLocked];
   }
-
-  BOOL dispatched = [self.queue dispatchBlock:^{
-    if ([self isCurrentGeneration:stopGeneration running:NO]) {
-      [self.scheduler stop];
-      self.scheduler = nil;
-      self.activeGeneration = 0;
-      self.lastFrameTimestamp = 0;
-    }
-    if (completion != nil) {
-      completion();
-    }
-  }];
-  if (!dispatched && completion != nil) {
+  if (completion != nil) {
     completion();
   }
 }
 
-- (BOOL)isCurrentGeneration:(NSUInteger)generation running:(BOOL)running {
+- (void)stopWithCompletion:(dispatch_block_t)completion {
   @synchronized (self.stateLock) {
-    return self.generation == generation && self.requestedRunning == running;
+    [self stopLocked];
+  }
+  if (completion != nil) {
+    completion();
   }
 }
 
-- (void)handleFrameTimestamp:(CFTimeInterval)timestamp {
-  if (![self isCurrentGeneration:self.activeGeneration running:YES] || self.scheduler == nil) {
-    return;
-  }
+// Caller holds stateLock, also used by scheduler installation and frame callbacks.
+// Cleanup deliberately never dispatches to RN: an invalid proxy may silently drop it.
+- (void)stopLocked {
+  self.requestedRunning = NO;
+  self.generation++;
+  [self.scheduler stop];
+  self.scheduler = nil;
+  self.activeGeneration = 0;
+  self.lastFrameTimestamp = 0;
+}
 
-  __block NSTimeInterval thresholdSeconds;
+- (void)handleFrameTimestamp:(CFTimeInterval)timestamp generation:(NSUInteger)generation {
   @synchronized (self.stateLock) {
-    thresholdSeconds = self.thresholdSeconds;
-  }
-  if (self.lastFrameTimestamp != 0) {
-    NSTimeInterval duration = timestamp - self.lastFrameTimestamp;
-    if (duration > thresholdSeconds) {
-      int64_t durationNanoseconds = (int64_t)(duration * FTNanosecondsPerSecond);
-      [self.reporter reportLongTaskWithDurationNanoseconds:durationNanoseconds];
+    if (!self.requestedRunning || self.generation != generation ||
+        self.activeGeneration != generation || self.scheduler == nil) {
+      return;
     }
+    if (self.lastFrameTimestamp != 0) {
+      NSTimeInterval duration = timestamp - self.lastFrameTimestamp;
+      if (duration > self.thresholdSeconds) {
+        int64_t durationNanoseconds = (int64_t)(duration * FTNanosecondsPerSecond);
+        [self.reporter reportLongTaskWithDurationNanoseconds:durationNanoseconds];
+      }
+    }
+    self.lastFrameTimestamp = timestamp;
   }
-  self.lastFrameTimestamp = timestamp;
+}
+
+- (void)dealloc {
+  [_scheduler stop];
 }
 
 @end

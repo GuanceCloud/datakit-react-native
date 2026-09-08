@@ -9,6 +9,8 @@ typedef void (^FTJSLongTaskFrameCallback)(CFTimeInterval timestamp);
 @end
 
 @protocol FTJSLongTaskFrameScheduler <NSObject>
+// The monitor serializes start/stop; start runs on the JS thread, while stop
+// must release resources synchronously even when that thread is unavailable.
 - (void)start;
 - (void)stop;
 @end
@@ -31,7 +33,10 @@ typedef void (^FTJSLongTaskFrameCallback)(CFTimeInterval timestamp);
 - (void)setThresholdMilliseconds:(double)thresholdMilliseconds;
 - (void)start;
 - (void)stop;
+// Completion runs on the calling thread after resources have been released.
 - (void)stopWithCompletion:(nullable dispatch_block_t)completion;
+// Prevents automatic restarts until a nonzero threshold is configured again.
+- (void)disableWithCompletion:(nullable dispatch_block_t)completion;
 
 @end
 

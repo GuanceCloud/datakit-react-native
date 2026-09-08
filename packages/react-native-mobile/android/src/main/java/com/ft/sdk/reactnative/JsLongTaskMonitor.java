@@ -6,13 +6,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.ft.sdk.FTRUMGlobalManager;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 final class JsLongTaskMonitor {
 
   private static final double NANOS_PER_MILLISECOND = 1_000_000d;
 
   interface Executor {
-    void runOnJsThread(Runnable runnable);
+    boolean runOnJsThread(Runnable runnable);
   }
 
   interface FrameCallback {
@@ -91,7 +92,7 @@ final class JsLongTaskMonitor {
       startGeneration = ++generation;
     }
     try {
-      executor.runOnJsThread(new Runnable() {
+      boolean accepted = executor.runOnJsThread(new Runnable() {
         @Override
         public void run() {
           if (!isCurrentRequest(startGeneration, true)) {
@@ -110,6 +111,9 @@ final class JsLongTaskMonitor {
           }
         }
       });
+      if (!accepted) {
+        markRequestDisabled(startGeneration);
+      }
     } catch (IllegalStateException ignored) {
       markRequestDisabled(startGeneration);
     }
@@ -119,14 +123,21 @@ final class JsLongTaskMonitor {
     stop(null);
   }
 
+  // Unlike a lifecycle pause, SDK shutdown must prevent automatic restarts.
+  void disable(final Runnable completion) {
+    thresholdNanos = 0;
+    stop(completion);
+  }
+
   void stop(final Runnable completion) {
+    final Runnable completeOnce = once(completion);
     final int stopGeneration;
     synchronized (stateLock) {
       requestedRunning = false;
       stopGeneration = ++generation;
     }
     try {
-      executor.runOnJsThread(new Runnable() {
+      boolean accepted = executor.runOnJsThread(new Runnable() {
         @Override
         public void run() {
           if (isCurrentRequest(stopGeneration, false)) {
@@ -141,12 +152,15 @@ final class JsLongTaskMonitor {
             activeGeneration = 0;
             lastFrameTimeNanos = 0;
           }
-          runCompletion(completion);
+          completeOnce.run();
         }
       });
+      if (!accepted) {
+        completeOnce.run();
+      }
     } catch (IllegalStateException ignored) {
       // The JavaScript queue may already be unavailable during teardown.
-      runCompletion(completion);
+      completeOnce.run();
     }
   }
 
@@ -171,10 +185,16 @@ final class JsLongTaskMonitor {
     lastFrameTimeNanos = 0;
   }
 
-  private static void runCompletion(Runnable completion) {
-    if (completion != null) {
-      completion.run();
-    }
+  private static Runnable once(final Runnable completion) {
+    final AtomicBoolean completed = new AtomicBoolean();
+    return new Runnable() {
+      @Override
+      public void run() {
+        if (completed.compareAndSet(false, true) && completion != null) {
+          completion.run();
+        }
+      }
+    };
   }
 
   private void handleFrame(long frameTimeNanos) {
@@ -200,19 +220,6 @@ final class JsLongTaskMonitor {
       } catch (IllegalStateException ignored) {
         disableRequestOnJsThread(activeGeneration);
       }
-    }
-  }
-
-  private static final class ReactJsThreadExecutor implements Executor {
-    private final ReactApplicationContext reactContext;
-
-    private ReactJsThreadExecutor(ReactApplicationContext reactContext) {
-      this.reactContext = reactContext;
-    }
-
-    @Override
-    public void runOnJsThread(Runnable runnable) {
-      reactContext.runOnJSQueueThread(runnable);
     }
   }
 
