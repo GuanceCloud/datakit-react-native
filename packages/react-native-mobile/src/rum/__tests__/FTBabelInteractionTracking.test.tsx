@@ -249,6 +249,49 @@ describe('FTRumActionTrackingContext', () => {
 });
 
 describe('__ftExtractText', () => {
+  it('normalizes each text leaf once instead of re-extracting intermediate results', () => {
+    const labels = Array.from({ length: 100 }, (_, index) => `Label ${index}`);
+    const node = React.createElement(
+      React.Fragment,
+      null,
+      ...labels.map((label) =>
+        React.createElement('Text', null, `  ${label}\n `)
+      )
+    );
+    const replace = jest.spyOn(String.prototype, 'replace');
+    let result: string[] = [];
+    let normalizations = 0;
+    try {
+      result = __ftExtractText(node);
+      normalizations = replace.mock.calls.filter(
+        ([pattern]) => pattern instanceof RegExp && pattern.source === '\\s+'
+      ).length;
+    } finally {
+      replace.mockRestore();
+    }
+    expect(result).toEqual(labels);
+    expect(normalizations).toBe(labels.length);
+  });
+
+  it('preserves joining, deduplication, and empty filtering for nested text results', () => {
+    expect(__ftExtractText([' ', null, [' A\n B ', false, 0]])).toEqual([
+      'A B',
+      '0',
+    ]);
+    const nested = React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement('Text', null, ' A '),
+        React.createElement('Text', null, ' B '),
+        React.createElement('Text', null, ' A ')
+      )
+    );
+    expect(__ftExtractText(nested)).toEqual(['A B']);
+  });
+
   it('prefers props and normalizes primitive, array, and iterable values', () => {
     const node = React.createElement('Text', null, 'ignored');
     expect(__ftExtractText(node, ['  Pay\n now  ', 2])).toEqual([

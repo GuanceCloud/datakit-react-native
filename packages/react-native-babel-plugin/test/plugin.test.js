@@ -24,8 +24,8 @@ function transform(
   }).code;
 }
 
-function execute(code) {
-  const transformed = transform(code);
+function execute(code, options = {}) {
+  const transformed = transform(code, options);
   const commonJs = transformSync(transformed, {
     babelrc: false,
     configFile: false,
@@ -42,7 +42,11 @@ function execute(code) {
     FTBabelInteractionTracking: {
       getInstance: () => ({
         wrapRumAction: (handler, action, target) => {
-          trackingCalls.push({ action, target });
+          trackingCalls.push({
+            action,
+            target,
+            content: target.getContent?.(),
+          });
           return (...args) => handler(...args);
         },
       }),
@@ -64,7 +68,7 @@ function execute(code) {
       };
     }
     if (request === 'react-native') {
-      return { Button: 'Button', Pressable: 'Pressable' };
+      return { Button: 'Button', Pressable: 'Pressable', Text: 'Text' };
     }
     throw new Error(`Unexpected module: ${request}`);
   };
@@ -87,6 +91,16 @@ describe('CloudCare React Native Babel plugin', () => {
     expect(
       transform('const value = 1;', {}, { name: 'metro', platform: 'web' })
     ).not.toContain('__FT_RN_BABEL_PLUGIN_ENABLED__');
+  });
+
+  it('writes the plugin flag through the React Native global fallback', () => {
+    const output = transform('const value = 1;');
+    const runtimeGlobal = {};
+
+    // eslint-disable-next-line no-new-func
+    new Function('globalThis', 'global', output)(undefined, runtimeGlobal);
+
+    expect(runtimeGlobal.__FT_RN_BABEL_PLUGIN_ENABLED__).toBe(true);
   });
 
   it('skips files under node_modules', () => {
@@ -122,6 +136,17 @@ describe('CloudCare React Native Babel plugin', () => {
     expect(output).not.toContain('@cloudcare/react-native-mobile"');
   });
 
+  it('leaves handlers supplied through spread props unchanged', () => {
+    const output = transform(`
+      import { Pressable } from 'react-native';
+      const props = { onPress: handler };
+      <Pressable {...props} />;
+    `);
+
+    expect(output).not.toContain('wrapRumAction');
+    expect(output).not.toContain('@cloudcare/react-native-mobile"');
+  });
+
   it('collects action name candidates in priority fields', () => {
     const output = transform(
       `
@@ -143,10 +168,11 @@ describe('CloudCare React Native Babel plugin', () => {
     expect(output).toContain('"Pay now"');
   });
 
-  it('turns nested JSX content into plain JavaScript runtime calls', () => {
+  it('extracts static JSX text without adding runtime element construction', () => {
     const output = transform(
       `
         <Menu.Item onSelect={handler}>
+          <Text>Open</Text>
           {visible && <Text aria-hidden="true">Open</Text>}
           {selected ? <Text>Selected</Text> : <Text>Choose</Text>}
         </Menu.Item>;
@@ -163,9 +189,179 @@ describe('CloudCare React Native Babel plugin', () => {
       }
     );
 
-    expect(output).toContain('_FTReact.createElement');
+    expect(output).toContain('getContent: () => ["Open"]');
+    expect(output).not.toContain('_FTReact');
+    expect(output).not.toContain('__ftExtractText');
     expect(output).toContain('"aria-hidden": "true"');
     expect(output).not.toMatch(/<Text|<Menu/);
+  });
+
+  it('does not replay dynamic content, nested spreads, getters, or render props', () => {
+    const { exports, trackingCalls } = execute(`
+      import { Pressable, Text } from 'react-native';
+      export const calls = { title: 0, label: 0, style: 0, spread: 0, getter: 0, condition: 0, render: 0, handler: 0 };
+      const getTitle = () => { calls.title++; return 'Dynamic title'; };
+      const getLabel = () => { calls.label++; return 'Dynamic label'; };
+      const getStyle = () => { calls.style++; return {}; };
+      const getProps = () => { calls.spread++; return { get title() { calls.getter++; return 'Spread title'; } }; };
+      const visible = () => { calls.condition++; return true; };
+      const render = () => { calls.render++; return 'Render prop'; };
+      export const element = (
+        <Pressable title={getTitle()} onPress={() => ++calls.handler}>
+          <Text style={getStyle()} {...getProps()}>{getLabel()}</Text>
+          {visible() && <Text>Conditional</Text>}
+          {visible() ? <Text>First</Text> : <Text>Second</Text>}
+          {render}
+          <Text>Static</Text>
+        </Pressable>
+      );
+    `);
+    const atRender = { ...exports.calls };
+
+    expect(atRender).toEqual({
+      title: 1,
+      label: 1,
+      style: 1,
+      spread: 1,
+      getter: 1,
+      condition: 2,
+      render: 0,
+      handler: 0,
+    });
+    expect(exports.element.props.onPress()).toBe(1);
+    expect(exports.calls).toEqual({ ...atRender, handler: 1 });
+    expect(trackingCalls[0].content).toEqual(['Static']);
+  });
+
+  it('omits content getters for dynamic-only content and explicit static names', () => {
+    for (const props of [
+      'title={getTitle()}',
+      'ft-action-name="Pay"',
+      'accessibilityLabel="Pay"',
+    ]) {
+      const output = transform(`
+        import { Button } from 'react-native';
+        <Button ${props} onPress={handler}>{getLabel()}</Button>;
+      `);
+      expect(output).toContain('wrapRumAction');
+      expect(output).not.toContain('getContent:');
+      expect(output).not.toContain('__ftExtractText');
+      expect(output).not.toContain('_FTReact');
+    }
+  });
+
+  it.each([
+    ['title="  Pay now  "', '<Text>Ignored</Text>', ['Pay now']],
+    [
+      '',
+      '<Text>Home</Text><Text>Settings</Text><Text>Home</Text>',
+      ['Home', 'Settings'],
+    ],
+    [
+      '',
+      '<><Text label="Label">Ignored</Text><Text>{123}</Text></>',
+      ['Label 123'],
+    ],
+    ['', '<Text>{" Literal "}</Text>', ['Literal']],
+    ['', '<Text children="Prop child" />', ['Prop child']],
+    ['title=" "', '<Text>Fallback</Text>', ['Fallback']],
+    ['ft-action-name=" "', '<Text>Fallback</Text>', ['Fallback']],
+  ])(
+    'preserves static content extraction for %s / %s',
+    (props, children, expected) => {
+      const { exports, trackingCalls } = execute(`
+      import { Pressable, Text } from 'react-native';
+      export const element = <Pressable ${props} onPress={() => 'handled'}>${children}</Pressable>;
+    `);
+      expect(exports.element.props.onPress()).toBe('handled');
+      expect(trackingCalls[0].content).toEqual(expected);
+    }
+  );
+
+  it('honors custom static content props and disabled content extraction', () => {
+    const code =
+      'const CustomButton = "Custom"; export const element = <CustomButton caption="Caption" onTap={() => 1}>Child</CustomButton>;';
+    const component = {
+      name: 'CustomButton',
+      contentProp: 'caption',
+      handlers: [{ event: 'onTap', action: 'TAP' }],
+    };
+    const enabled = execute(code, { components: { tracked: [component] } });
+    enabled.exports.element.props.onTap();
+    expect(enabled.trackingCalls[0].content).toEqual(['Caption']);
+
+    const disabled = execute(code, {
+      components: { useContent: false, tracked: [component] },
+    });
+    disabled.exports.element.props.onTap();
+    expect(disabled.trackingCalls[0].target.getContent).toBeUndefined();
+  });
+
+  it('builds metadata only for supported handlers and shares it across events', () => {
+    const metadata = require('../src/actions/rum/metadata');
+    const buildMetadata = jest.spyOn(metadata, 'buildMetadata');
+    try {
+      transform(
+        `import { Pressable } from 'react-native'; <Pressable {...props}/>; <Pressable onPress={false}/>;`
+      );
+      expect(buildMetadata.mock.calls.length).toBe(0);
+      transform(
+        `import { Pressable } from 'react-native'; <Pressable onPress={handler} onLongPress={handler}>Static</Pressable>;`
+      );
+      expect(buildMetadata).toHaveBeenCalledTimes(1);
+    } finally {
+      buildMetadata.mockRestore();
+    }
+  });
+
+  it('collects all naming attributes in one subtree scan', () => {
+    const { NodePath } = require('@babel/traverse');
+    const originalTraverse = NodePath.prototype.traverse;
+    let scans = 0;
+    const traverse = jest
+      .spyOn(NodePath.prototype, 'traverse')
+      .mockImplementation(function (visitor, state) {
+        if (visitor.JSXAttribute) {
+          scans++;
+        }
+        return originalTraverse.call(this, visitor, state);
+      });
+    let output;
+    try {
+      output = transform(
+        `
+        import { Pressable, Text } from 'react-native';
+        <Pressable ft-action-name="Action" onPress={handler}>
+          <Text analytics-name="Custom" accessibilityLabel="Accessible">Content</Text>
+        </Pressable>;
+      `,
+        { actionNameAttribute: 'analytics-name' }
+      );
+    } finally {
+      traverse.mockRestore();
+    }
+    expect(scans).toBe(1);
+    expect(output).toContain('"ft-action-name": ["Action"]');
+    expect(output).toContain('customActionName: ["Custom"]');
+    expect(output).toContain('accessibilityLabel: ["Accessible"]');
+  });
+
+  it('does not use static content props that a later spread or dynamic prop can override', () => {
+    const code = `
+      import { Pressable, Text } from 'react-native';
+      const props = { title: 'Dynamic' };
+      export const element = <Pressable title="Old" {...props} onPress={() => 1}>
+        <Text title="Old" {...props}>Fallback</Text>
+      </Pressable>;
+    `;
+    const { exports, trackingCalls } = execute(code);
+    exports.element.props.onPress();
+    expect(trackingCalls[0].content).toEqual(['Fallback']);
+    const afterSpread = execute(
+      code.replace('title="Old" {...props}', '{...props} title="Static"')
+    );
+    afterSpread.exports.element.props.onPress();
+    expect(afterSpread.trackingCalls[0].content).toEqual(['Static']);
   });
 
   it('adds TextInput onFocus only when it is statically safe', () => {
@@ -257,6 +453,41 @@ describe('CloudCare React Native Babel plugin', () => {
     expect(output).toMatch(
       /controller\.submit\?\.\(\.\.\._ftOriginalArgs\d*\)/
     );
+  });
+
+  it('wraps conditional and function expression handlers', () => {
+    const { exports, trackingCalls } = execute(`
+      import { Pressable } from 'react-native';
+      const primary = value => \`primary:\${value}\`;
+      const secondary = value => \`secondary:\${value}\`;
+      export const conditional = (
+        <Pressable onPress={true ? primary : secondary} />
+      );
+      export const conditionalWithoutHandler = (
+        <Pressable onPress={false ? primary : undefined} />
+      );
+      export const functionExpression = (
+        <Pressable onPress={function (value) { return value + 1; }} />
+      );
+    `);
+
+    expect(exports.conditional.props.onPress('submit')).toBe('primary:submit');
+    expect(exports.conditionalWithoutHandler.props.onPress).toBeUndefined();
+    expect(exports.functionExpression.props.onPress(2)).toBe(3);
+    expect(trackingCalls).toHaveLength(2);
+    expect(trackingCalls[0].target.handlerArgs).toEqual(['submit']);
+    expect(trackingCalls[1].target.handlerArgs).toEqual([2]);
+  });
+
+  it('preserves exceptions thrown by the original business handler', () => {
+    const { exports } = execute(`
+      import { Pressable } from 'react-native';
+      export const element = (
+        <Pressable onPress={function () { throw new Error('business failure'); }} />
+      );
+    `);
+
+    expect(() => exports.element.props.onPress()).toThrow('business failure');
   });
 
   it('keeps external memoized callbacks unchanged', () => {

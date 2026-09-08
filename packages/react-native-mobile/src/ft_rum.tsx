@@ -260,6 +260,16 @@ type FTReactNativeRUMType = {
   ): Promise<void>;
 };
 
+function isBabelPluginEnabled(): boolean {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis.__FT_RN_BABEL_PLUGIN_ENABLED__ === true;
+  }
+  if (typeof global !== 'undefined') {
+    return global.__FT_RN_BABEL_PLUGIN_ENABLED__ === true;
+  }
+  return false;
+}
+
 class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
@@ -270,8 +280,7 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     if (config.enableAutoTrackError) {
       FTRumErrorTracking.startTracking();
     }
-    const babelPluginEnabled =
-      globalThis.__FT_RN_BABEL_PLUGIN_ENABLED__ === true;
+    const babelPluginEnabled = isBabelPluginEnabled();
     FTBabelInteractionTracking.configure({
       trackInteractions:
         babelPluginEnabled && Boolean(config.enableAutoTrackUserAction),

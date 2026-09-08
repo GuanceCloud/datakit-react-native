@@ -59,6 +59,33 @@ describe('FTReactNativeRUM Babel tracker selection', () => {
     expect(mockNativeRum.setConfig).toHaveBeenCalledWith(config);
   });
 
+  it('keeps the legacy tracker when globalThis is unavailable', async () => {
+    const runtimeGlobal = globalThis as unknown as Record<string, unknown>;
+    const globalThisDescriptor = Object.getOwnPropertyDescriptor(
+      runtimeGlobal,
+      'globalThis'
+    );
+    let configPromise: Promise<void> | undefined;
+
+    try {
+      Reflect.deleteProperty(runtimeGlobal, 'globalThis');
+      configPromise = FTReactNativeRUM.setConfig(config);
+    } finally {
+      if (globalThisDescriptor) {
+        Object.defineProperty(
+          runtimeGlobal,
+          'globalThis',
+          globalThisDescriptor
+        );
+      }
+    }
+
+    await configPromise;
+    expect(startTracking).toHaveBeenCalledTimes(1);
+    expect(stopTracking).not.toHaveBeenCalled();
+    expect(mockNativeRum.setConfig).toHaveBeenCalledWith(config);
+  });
+
   it('uses only Babel tracking when the plugin flag is present', async () => {
     globalThis.__FT_RN_BABEL_PLUGIN_ENABLED__ = true;
     await FTReactNativeRUM.setConfig(config);

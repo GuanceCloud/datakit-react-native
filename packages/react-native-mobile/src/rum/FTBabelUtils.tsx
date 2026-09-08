@@ -7,9 +7,11 @@ const normalize = (value: string): string => value.replace(/\s+/g, ' ').trim();
 function flattenText(values: unknown[]): string[] {
   const output: string[] = [];
   for (const value of values) {
-    output.push(...__ftExtractText(value));
+    for (const text of __ftExtractText(value)) {
+      output.push(text);
+    }
   }
-  return output.map(normalize).filter(Boolean);
+  return output;
 }
 
 export function __ftExtractText(node: any, prefer?: any[]): string[] {
@@ -82,10 +84,16 @@ export function __ftExtractText(node: any, prefer?: any[]): string[] {
     }
   });
 
-  const flattened = flattenText(perChild);
+  // Each child has already been extracted and normalized. Only merge its text.
+  const flattened: string[] = [];
+  for (const values of perChild) {
+    for (const value of values) {
+      flattened.push(value);
+    }
+  }
   if (labeledChildCount > 1) {
     return Array.from(new Set(flattened));
   }
-  const joined = normalize(flattened.join(' '));
+  const joined = flattened.join(' ');
   return joined ? [joined] : [];
 }
