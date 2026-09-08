@@ -1,0 +1,47 @@
+name: Publish npm packages
+
+on:
+  push:
+    tags:
+      - 'agent_*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'GuanceCloud/datakit-react-native' && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Check release identity
+        run: node scripts/publish-npm.cjs check
+      - name: Install dependencies
+        run: |
+          corepack enable
+          yarn install --immutable
+      - name: Validate versions
+        run: yarn check-version
+      - name: Test beta releases
+        if: contains(github.ref_name, '-beta')
+        run: yarn test --runInBand
+      - name: Build, pack and publish with OIDC
+        run: node scripts/publish-npm.cjs publish
