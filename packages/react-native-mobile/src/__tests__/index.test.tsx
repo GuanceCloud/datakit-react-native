@@ -24,6 +24,7 @@ const mockFTMobileReactNative = {
 
 const mockFTReactNativeRUM = {
   setConfig: jest.fn().mockResolvedValue(undefined),
+  setLongTaskContext: jest.fn().mockReturnValue(true),
   stopLongTaskTracking: jest.fn().mockResolvedValue(undefined),
 };
 

@@ -20,7 +20,7 @@ typedef void (^FTJSLongTaskFrameCallback)(CFTimeInterval timestamp);
 @end
 
 @protocol FTJSLongTaskReporter <NSObject>
-- (void)reportLongTaskWithDurationNanoseconds:(int64_t)durationNanoseconds;
+- (void)reportLongTaskWithDurationNanoseconds:(int64_t)durationNanoseconds property:(NSDictionary *)property;
 @end
 
 @interface FTJSLongTaskMonitor : NSObject
@@ -31,6 +31,8 @@ typedef void (^FTJSLongTaskFrameCallback)(CFTimeInterval timestamp);
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)setThresholdMilliseconds:(double)thresholdMilliseconds;
+// Replaces the snapshot for future detections; does not change monitor lifecycle.
+- (void)setBridgeContext:(NSDictionary *)context;
 - (void)start;
 - (void)stop;
 // Completion runs on the calling thread after resources have been released.

@@ -15,6 +15,7 @@ import { version as sdkVersion } from './version';
 class BridgeContextManager {
   private static instance: BridgeContextManager;
   private properties: Map<string, any> = new Map();
+  private longTaskContextEnabled = false;
 
   private constructor() {
     // Initialize with SDK version information
@@ -57,8 +58,32 @@ class BridgeContextManager {
       Object.entries(properties).forEach(([key, value]) => {
         this.properties.set(key, value);
       });
+      if (this.longTaskContextEnabled) {
+        this.syncLongTaskContext();
+      }
     } catch (error) {
       console.warn('Failed to append bridge context:', error);
+    }
+  }
+
+  public configureLongTaskContext(enabled: boolean): void {
+    this.longTaskContextEnabled = enabled;
+    if (enabled) {
+      this.syncLongTaskContext();
+    }
+  }
+
+  private syncLongTaskContext(): void {
+    try {
+      // Apply the snapshot before JS can block. An async native call may run after
+      // the frame that detects the long task and attach stale context to it.
+      const rum: NativeFTReactNativeRUMSpec =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('./specs/NativeFTReactNativeRUM').default;
+      rum.setLongTaskContext(this.mergeWithLocalPropertiesSync());
+    } catch (error) {
+      // Context synchronization must not make a destroyed/older bridge crash the host.
+      console.warn('Failed to sync JS long task bridge context:', error);
     }
   }
 
@@ -424,6 +449,7 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
     return this.sdk.flushSyncData();
   }
   async shutDown(): Promise<void> {
+    bridgeContextManager.configureLongTaskContext(false);
     try {
       await this.rum.stopLongTaskTracking();
     } finally {
@@ -434,7 +460,7 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
     return this.sdk.clearAllData();
   }
   appendBridgeContext(properties: Record<string, any>): void {
-    // Use bridgeContextManager to store properties in JavaScript and send to native SDK
+    // Store properties in JS and update the native long task snapshot when enabled.
     bridgeContextManager.appendBridgeContext(properties);
   }
   updateRemoteConfig(): Promise<FTRemoteConfigResult> {

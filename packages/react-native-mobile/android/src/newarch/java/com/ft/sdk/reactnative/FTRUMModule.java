@@ -29,6 +29,12 @@ public class FTRUMModule extends NativeFTReactNativeRUMSpec {
   }
 
   @Override
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean setLongTaskContext(ReadableMap context) {
+    return impl.setLongTaskContext(context);
+  }
+
+  @Override
   public void invalidate() {
     impl.destroy();
     super.invalidate();

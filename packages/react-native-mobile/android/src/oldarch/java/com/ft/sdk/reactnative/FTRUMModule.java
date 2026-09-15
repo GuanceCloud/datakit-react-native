@@ -29,6 +29,11 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
     impl.stopLongTaskTracking(promise);
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean setLongTaskContext(ReadableMap context) {
+    return impl.setLongTaskContext(context);
+  }
+
   @Override
   public void invalidate() {
     impl.destroy();

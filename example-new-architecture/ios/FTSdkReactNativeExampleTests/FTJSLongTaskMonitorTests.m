@@ -2,6 +2,8 @@
 #import <QuartzCore/CADisplayLink.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeProxy.h>
+#import <GuanceSDK/FTExternalDataManager.h>
+#import <objc/runtime.h>
 
 #import "../../../packages/react-native-mobile/ios/FTJSLongTaskMonitor.h"
 #import "../../../packages/react-native-mobile/ios/FTReactNativeRUM.h"
@@ -11,6 +13,7 @@
 - (void)applicationDidBecomeActive:(NSNotification *)notification;
 - (void)applicationWillResignActive:(NSNotification *)notification;
 - (void)invalidate;
+- (id)setLongTaskContext:(NSDictionary *)context;
 @end
 
 @interface FTFakeJSQueue : NSObject <FTJSLongTaskQueue>
@@ -99,6 +102,7 @@
 
 @interface FTFakeLongTaskReporter : NSObject <FTJSLongTaskReporter>
 @property (nonatomic, strong) NSMutableArray<NSNumber *> *durations;
+@property (nonatomic, strong) NSMutableArray<NSDictionary *> *properties;
 @end
 
 @implementation FTFakeLongTaskReporter
@@ -106,12 +110,14 @@
   self = [super init];
   if (self) {
     _durations = [NSMutableArray array];
+    _properties = [NSMutableArray array];
   }
   return self;
 }
 
-- (void)reportLongTaskWithDurationNanoseconds:(int64_t)durationNanoseconds {
+- (void)reportLongTaskWithDurationNanoseconds:(int64_t)durationNanoseconds property:(NSDictionary *)property {
   [self.durations addObject:@(durationNanoseconds)];
+  [self.properties addObject:property];
 }
 @end
 
@@ -146,6 +152,72 @@
 - (void)createRUMWithMonitor {
   self.rum = [FTReactNativeRUM new];
   [self.rum setValue:self.monitor forKey:@"jsLongTaskMonitor"];
+}
+
+- (void)testBridgeContextUpdatesBeforeDelayedStartAndSnapshotsEachDetection {
+  [self createRUMWithMonitor];
+  NSString *sdkInfo = @"{\"react_native\":\"test-version\"}";
+  [self.rum setLongTaskContext:@{@"sdk_bridge_info": sdkInfo, @"wgt_id": @"first"}];
+  [self.monitor setThresholdMilliseconds:100];
+  [self.monitor start];
+  // The context changes while scheduler installation is still queued.
+  [self.rum setLongTaskContext:@{@"sdk_bridge_info": sdkInfo, @"wgt_id": @"second"}];
+  [self.queue runAll];
+  [self.factory.scheduler fire:1.0];
+  [self.factory.scheduler fire:1.25];
+  NSDictionary *firstEvent = self.reporter.properties.firstObject;
+  [self.rum setLongTaskContext:@{@"sdk_bridge_info": sdkInfo, @"wgt_id": @"third"}];
+  [self.factory.scheduler fire:1.50];
+
+  XCTAssertEqualObjects(self.reporter.durations, (@[@250000000, @250000000]));
+  XCTAssertEqualObjects(firstEvent, (@{@"sdk_bridge_info": sdkInfo, @"wgt_id": @"second"}));
+  XCTAssertEqualObjects(self.reporter.properties.lastObject, (@{@"sdk_bridge_info": sdkInfo, @"wgt_id": @"third"}));
+  [self.monitor disableWithCompletion:nil];
+  [self.rum setLongTaskContext:@{@"wgt_id": @"after-stop"}];
+  [self.factory.scheduler fire:2.0];
+  XCTAssertEqual(self.reporter.durations.count, 2u);
+}
+
+- (void)testNoBridgeContextReportsEmptyProperties {
+  [self.monitor setThresholdMilliseconds:100];
+  [self.monitor start];
+  [self.queue runAll];
+  [self.factory.scheduler fire:1.0];
+  [self.factory.scheduler fire:1.25];
+  XCTAssertEqualObjects(self.reporter.durations, (@[@250000000]));
+  XCTAssertEqualObjects(self.reporter.properties, (@[@{}]));
+}
+
+- (void)testProductionReporterPassesContextToAddLongTaskWithStack {
+  // This example links SDK classes into both its host and test bundle. Capture
+  // both class references so the assertion observes the production reporter.
+  Method method = class_getInstanceMethod([FTExternalDataManager class], @selector(addLongTaskWithStack:duration:property:));
+  Method runtimeMethod = class_getInstanceMethod(NSClassFromString(@"FTExternalDataManager"), @selector(addLongTaskWithStack:duration:property:));
+  __block NSDictionary *captured;
+  IMP capture = imp_implementationWithBlock(^(id manager, NSString *stack, NSNumber *duration, NSDictionary *property) {
+    captured = @{@"stack": stack, @"duration": duration, @"property": property};
+  });
+  IMP original = method_setImplementation(method, capture);
+  IMP runtimeOriginal = runtimeMethod == method ? NULL : method_setImplementation(runtimeMethod, capture);
+  @try {
+    id<FTJSLongTaskReporter> reporter = [NSClassFromString(@"FTGuanceLongTaskReporter") new];
+    self.monitor = [[FTJSLongTaskMonitor alloc] initWithQueue:self.queue schedulerFactory:self.factory reporter:reporter];
+    NSDictionary *context = @{@"sdk_bridge_info": @"{\"react_native\":\"test-version\"}", @"wgt_id": @"example"};
+    [self.monitor setBridgeContext:context];
+    [self.monitor setThresholdMilliseconds:100];
+    [self.monitor start];
+    [self.queue runAll];
+    [self.factory.scheduler fire:1.0];
+    [self.factory.scheduler fire:1.25];
+    [self.monitor setBridgeContext:@{@"wgt_id": @"later"}];
+    XCTAssertEqualObjects(captured, (@{@"stack": @"", @"duration": @250000000, @"property": context}));
+  } @finally {
+    method_setImplementation(method, original);
+    if (runtimeOriginal != NULL) {
+      method_setImplementation(runtimeMethod, runtimeOriginal);
+    }
+    imp_removeBlock(capture);
+  }
 }
 
 - (void)testSchedulerIsCreatedOnJSQueueAndThresholdIsStrict {

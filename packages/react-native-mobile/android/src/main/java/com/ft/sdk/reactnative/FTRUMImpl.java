@@ -189,6 +189,14 @@ public class FTRUMImpl implements LifecycleEventListener {
     });
   }
 
+  public boolean setLongTaskContext(ReadableMap context) {
+    if (destroyed.get()) {
+      return false;
+    }
+    jsLongTaskMonitor.setBridgeContext(context == null ? null : context.toHashMap());
+    return true;
+  }
+
   public void destroy() {
     if (!destroyed.compareAndSet(false, true)) {
       return;

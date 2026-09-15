@@ -5,6 +5,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -37,6 +40,44 @@ public class JsLongTaskMonitorTest {
 
     assertEquals(1, schedulerFactory.createCount);
     assertEquals(1, schedulerFactory.scheduler.postCount);
+  }
+
+  @Test
+  public void bridgeContextUpdatesBeforeDelayedStartAndSnapshotsEachDetection() {
+    Map<String, Object> context = new HashMap<>();
+    context.put("sdk_bridge_info", "{\"react_native\":\"test-version\"}");
+    context.put("wgt_id", "first");
+    monitor.setBridgeContext(context);
+    monitor.setThresholdMilliseconds(100);
+    monitor.start();
+    context.put("wgt_id", "second");
+    monitor.setBridgeContext(context);
+    executor.runAll();
+    schedulerFactory.scheduler.fire(1_000_000_000L);
+    schedulerFactory.scheduler.fire(1_250_000_000L);
+    Map<String, Object> firstEvent = reporter.properties.get(0);
+    Map<String, Object> expected = new HashMap<>(context);
+    context.put("wgt_id", "third");
+    monitor.setBridgeContext(context);
+    schedulerFactory.scheduler.fire(1_500_000_000L);
+
+    assertEquals(java.util.Arrays.asList(250_000_000L, 250_000_000L), reporter.durations);
+    assertEquals(expected, firstEvent);
+    assertEquals(context, reporter.properties.get(1));
+    monitor.disable(null);
+    context.put("wgt_id", "after-stop");
+    monitor.setBridgeContext(context);
+    schedulerFactory.scheduler.fire(2_000_000_000L);
+    assertEquals(2, reporter.durations.size());
+  }
+
+  @Test
+  public void noBridgeContextReportsEmptyProperties() {
+    startWithThreshold(100);
+    schedulerFactory.scheduler.fire(1_000_000_000L);
+    schedulerFactory.scheduler.fire(1_250_000_000L);
+    assertEquals(250_000_000L, reporter.durations.get(0).longValue());
+    assertEquals(Collections.emptyMap(), reporter.properties.get(0));
   }
 
   @Test
@@ -390,14 +431,16 @@ public class JsLongTaskMonitorTest {
 
   private static final class FakeReporter implements JsLongTaskMonitor.Reporter {
     private final List<Long> durations = new ArrayList<>();
+    private final List<Map<String, Object>> properties = new ArrayList<>();
     private boolean shouldThrow;
 
     @Override
-    public void reportLongTask(long durationNanos) {
+    public void reportLongTask(long durationNanos, Map<String, Object> property) {
       if (shouldThrow) {
         throw new IllegalStateException("Reporter unavailable");
       }
       durations.add(durationNanos);
+      properties.add(property);
     }
   }
 }

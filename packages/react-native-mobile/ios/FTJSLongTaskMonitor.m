@@ -97,11 +97,11 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
 @end
 
 @implementation FTGuanceLongTaskReporter
-- (void)reportLongTaskWithDurationNanoseconds:(int64_t)durationNanoseconds {
+- (void)reportLongTaskWithDurationNanoseconds:(int64_t)durationNanoseconds property:(NSDictionary *)property {
   [[FTExternalDataManager sharedManager]
     addLongTaskWithStack:@""
     duration:@(durationNanoseconds)
-    property:@{}];
+    property:property];
 }
 @end
 
@@ -116,6 +116,7 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
 @property (nonatomic, strong, nullable) id<FTJSLongTaskFrameScheduler> scheduler;
 @property (nonatomic, assign) NSUInteger activeGeneration;
 @property (nonatomic, assign) CFTimeInterval lastFrameTimestamp;
+@property (atomic, copy) NSDictionary *bridgeContext;
 @end
 
 @implementation FTJSLongTaskMonitor
@@ -136,6 +137,7 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
     _schedulerFactory = schedulerFactory;
     _reporter = reporter;
     _stateLock = [NSObject new];
+    _bridgeContext = @{};
   }
   return self;
 }
@@ -232,7 +234,9 @@ static const double FTNanosecondsPerSecond = 1000000000.0;
       NSTimeInterval duration = timestamp - self.lastFrameTimestamp;
       if (duration > self.thresholdSeconds) {
         int64_t durationNanoseconds = (int64_t)(duration * FTNanosecondsPerSecond);
-        [self.reporter reportLongTaskWithDurationNanoseconds:durationNanoseconds];
+        // Capture at detection; later updates must not change an already reported event.
+        NSDictionary *property = self.bridgeContext;
+        [self.reporter reportLongTaskWithDurationNanoseconds:durationNanoseconds property:property];
       }
     }
     self.lastFrameTimestamp = timestamp;

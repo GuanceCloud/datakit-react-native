@@ -6,6 +6,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.ft.sdk.FTRUMGlobalManager;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class JsLongTaskMonitor {
@@ -31,7 +33,7 @@ final class JsLongTaskMonitor {
   }
 
   interface Reporter {
-    void reportLongTask(long durationNanos);
+    void reportLongTask(long durationNanos, Map<String, Object> property);
   }
 
   private final Executor executor;
@@ -43,6 +45,7 @@ final class JsLongTaskMonitor {
   private volatile long thresholdNanos;
   private volatile int generation;
   private volatile boolean requestedRunning;
+  private volatile Map<String, Object> bridgeContext = Collections.emptyMap();
 
   // Accessed only on the React Native JavaScript thread.
   private FrameScheduler scheduler;
@@ -80,6 +83,12 @@ final class JsLongTaskMonitor {
     if (thresholdNanos == 0) {
       stop();
     }
+  }
+
+  void setBridgeContext(Map<String, Object> context) {
+    bridgeContext = context == null
+      ? Collections.<String, Object>emptyMap()
+      : new HashMap<>(context);
   }
 
   void start() {
@@ -206,7 +215,8 @@ final class JsLongTaskMonitor {
       long durationNanos = frameTimeNanos - lastFrameTimeNanos;
       if (durationNanos > thresholdNanos) {
         try {
-          reporter.reportLongTask(durationNanos);
+          // Take a detection-time snapshot before handing the event to the SDK.
+          reporter.reportLongTask(durationNanos, new HashMap<>(bridgeContext));
         } catch (RuntimeException ignored) {
           // Reporting must not interrupt the JavaScript frame callback loop.
         }
@@ -260,11 +270,11 @@ final class JsLongTaskMonitor {
 
   private static final class GuanceLongTaskReporter implements Reporter {
     @Override
-    public void reportLongTask(long durationNanos) {
+    public void reportLongTask(long durationNanos, Map<String, Object> property) {
       FTRUMGlobalManager.get().addLongTask(
         "",
         durationNanos,
-        new HashMap<String, Object>()
+        new HashMap<>(property)
       );
     }
   }

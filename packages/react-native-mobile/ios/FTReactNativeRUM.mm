@@ -18,7 +18,8 @@
 #import "FTJSLongTaskMonitor.h"
 
 @interface FTReactNativeRUM ()
-@property (nonatomic, strong, nullable) FTJSLongTaskMonitor *jsLongTaskMonitor;
+@property (atomic, strong, nullable) FTJSLongTaskMonitor *jsLongTaskMonitor;
+- (FTJSLongTaskMonitor *)getOrCreateLongTaskMonitor;
 @end
 
 static NSString * const FTReactNativeWebSocketErrorDomain = @"com.guance.react-native.websocket";
@@ -26,6 +27,19 @@ static NSString * const FTReactNativeWebSocketErrorDomain = @"com.guance.react-n
 @implementation FTReactNativeRUM
 @synthesize bridge = _bridge;
 RCT_EXPORT_MODULE()
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setLongTaskContext:(NSDictionary *)context) {
+  [[self getOrCreateLongTaskMonitor] setBridgeContext:context ?: @{}];
+  return @YES;
+}
+
+- (FTJSLongTaskMonitor *)getOrCreateLongTaskMonitor {
+  @synchronized (self) {
+    if (self.jsLongTaskMonitor == nil) {
+      self.jsLongTaskMonitor = [FTJSLongTaskMonitor monitorWithBridge:self.bridge];
+    }
+    return self.jsLongTaskMonitor;
+  }
+}
 RCT_REMAP_METHOD(setConfig,
                  context:(NSDictionary *)context
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
@@ -270,9 +284,7 @@ RCT_REMAP_METHOD(addResource,
   };
 #endif
   [[FTMobileAgent sharedInstance] startRumWithConfigOptions:rumConfig];
-  if (self.jsLongTaskMonitor == nil) {
-    self.jsLongTaskMonitor = [FTJSLongTaskMonitor monitorWithBridge:self.bridge];
-  }
+  [self getOrCreateLongTaskMonitor];
   [self.jsLongTaskMonitor setThresholdMilliseconds:longTaskThresholdMs];
   if (longTaskThresholdMs > 0 && [self applicationIsActive]) {
     [self.jsLongTaskMonitor start];

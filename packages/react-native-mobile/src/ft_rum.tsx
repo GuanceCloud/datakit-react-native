@@ -283,6 +283,9 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     .default;
 
   setConfig(config: FTRUMConfig): Promise<void> {
+    bridgeContextManager.configureLongTaskContext(
+      config.enableLongTask === true
+    );
     console.log('FTRUMConfig');
     if (config.enableAutoTrackError) {
       FTRumErrorTracking.startTracking();

@@ -14,6 +14,7 @@ jest.mock('react-native', () => ({
 
 jest.mock('../ft_mobile_agent', () => ({
   bridgeContextManager: {
+    configureLongTaskContext: jest.fn(),
     mergeWithLocalPropertiesSync: jest.fn((property?: object) => property),
   },
 }));

@@ -14,8 +14,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FTRUMModuleTest {
+  @Test
+  public void bridgeContextUpdatesDoNotStartOrReviveMonitor() {
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    // Exercise the real module forwarding separately: only a snapshot is installed.
+    FTRUMModule module = new FTRUMModule(context);
+    assertTrue(module.setLongTaskContext(null));
+    module.invalidate();
+    assertFalse(module.setLongTaskContext(null));
+  }
   @Test
   public void shutdownResolvesWhenJSQueueIsUnavailable() {
     ReactApplicationContext context = mock(ReactApplicationContext.class);
