@@ -64,5 +64,8 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.4.1"
+  "packageManager": "yarn@3.4.1",
+  "resolutions": {
+    "@react-native-community/cli-platform-apple@13.6.9": "patch:@react-native-community/cli-platform-apple@npm%3A13.6.9#./.yarn/patches/@react-native-community-cli-platform-apple-npm-13.6.9-af92330889.patch"
+  }
 }

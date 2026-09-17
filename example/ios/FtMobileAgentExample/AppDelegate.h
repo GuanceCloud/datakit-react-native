@@ -3,4 +3,6 @@
 
 @interface AppDelegate : RCTAppDelegate
 
+- (void)bootstrapReactNativeWithWindowScene:(UIWindowScene *)windowScene;
+
 @end

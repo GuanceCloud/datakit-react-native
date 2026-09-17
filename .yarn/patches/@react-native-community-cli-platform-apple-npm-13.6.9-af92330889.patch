@@ -1,0 +1,42 @@
+diff --git a/build/commands/runCommand/runOnSimulator.js b/build/commands/runCommand/runOnSimulator.js
+index 35b8868eaa3a656f36c4dfbf198e751b43cb259e..350b09c59e9664f6b646877edb4edbe911f116ea 100644
+--- a/build/commands/runCommand/runOnSimulator.js
++++ b/build/commands/runCommand/runOnSimulator.js
+@@ -11,6 +11,20 @@ function _child_process() {
+   };
+   return data;
+ }
++function _fs() {
++  const data = _interopRequireDefault(require("fs"));
++  _fs = function () {
++    return data;
++  };
++  return data;
++}
++function _path() {
++  const data = _interopRequireDefault(require("path"));
++  _path = function () {
++    return data;
++  };
++  return data;
++}
+ function _cliTools() {
+   const data = require("@react-native-community/cli-tools");
+   _cliTools = function () {
+@@ -42,7 +56,15 @@ async function runOnSimulator(xcodeProject, platform, mode, scheme, args, simula
+   const activeDeveloperDir = _child_process().default.execFileSync('xcode-select', ['-p'], {
+     encoding: 'utf8'
+   }).trim();
+-  _child_process().default.execFileSync('open', [`${activeDeveloperDir}/Applications/Simulator.app`, '--args', '-CurrentDeviceUDID', simulator.udid]);
++  // Xcode 27 replaces Simulator.app with DeviceHub.app and relocates it from
++  // <Xcode>/Contents/Developer/Applications to <Xcode>/Contents/Applications.
++  const simulatorApp = _path().default.join(activeDeveloperDir, 'Applications', 'Simulator.app');
++  const deviceHubApp = _path().default.join(activeDeveloperDir, '..', 'Applications', 'DeviceHub.app');
++  if (_fs().default.existsSync(simulatorApp)) {
++    _child_process().default.execFileSync('open', [simulatorApp, '--args', '-CurrentDeviceUDID', simulator.udid]);
++  } else if (_fs().default.existsSync(deviceHubApp)) {
++    _child_process().default.execFileSync('open', [`devices://device/open?id=${simulator.udid}`]);
++  }
+   if (simulator.state !== 'Booted') {
+     bootSimulator(simulator);
+   }

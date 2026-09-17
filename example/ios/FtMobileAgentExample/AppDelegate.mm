@@ -3,6 +3,13 @@
 #import <React/RCTBundleURLProvider.h>
 #import <FTMobileReactNativeSDK/FTReactNativeUtils.h>
 #import <GuanceSDK/FTMobileAgent.h>
+
+@interface AppDelegate ()
+
+@property (nonatomic, copy, nullable) NSDictionary *reactNativeLaunchOptions;
+
+@end
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -14,10 +21,17 @@
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
-  
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  [ReactNativeNavigation bootstrapWithBridge:bridge];
+  self.reactNativeLaunchOptions = launchOptions;
   return YES;
+}
+
+- (void)bootstrapReactNativeWithWindowScene:(UIWindowScene *)windowScene
+{
+  self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
+
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self
+                                            launchOptions:self.reactNativeLaunchOptions];
+  [ReactNativeNavigation bootstrapWithBridge:bridge];
 }
 
 - (void)guanceSDKInit{

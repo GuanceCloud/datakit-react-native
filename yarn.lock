@@ -3605,6 +3605,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/cli-platform-apple@patch:@react-native-community/cli-platform-apple@npm%3A13.6.9#./.yarn/patches/@react-native-community-cli-platform-apple-npm-13.6.9-af92330889.patch::locator=ft-sdk-react-native%40workspace%3A.":
+  version: 13.6.9
+  resolution: "@react-native-community/cli-platform-apple@patch:@react-native-community/cli-platform-apple@npm%3A13.6.9#./.yarn/patches/@react-native-community-cli-platform-apple-npm-13.6.9-af92330889.patch::version=13.6.9&hash=34d43d&locator=ft-sdk-react-native%40workspace%3A."
+  dependencies:
+    "@react-native-community/cli-tools": 13.6.9
+    chalk: ^4.1.2
+    execa: ^5.0.0
+    fast-glob: ^3.3.2
+    fast-xml-parser: ^4.0.12
+    ora: ^5.4.1
+  checksum: 343e083494171cf8110d6bb333da3cccb0fb8328d685ebcd3ae398cccb30c4a7d935e14e9768764a3f7df31888516b4f286224e4ed30fc2bd62d4c6fc11ab34f
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-platform-ios@npm:13.6.9":
   version: 13.6.9
   resolution: "@react-native-community/cli-platform-ios@npm:13.6.9"
