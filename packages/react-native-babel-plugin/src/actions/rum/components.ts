@@ -39,7 +39,7 @@ export function createTrackedComponents(
         continue;
       }
       tracked[localName] = {
-        handlers: events.map((event) => ({ action: 'TAP', event })),
+        handlers: events.map((event) => ({ event })),
         importedName,
         isCustom: false,
         useContent: options.components.useContent,

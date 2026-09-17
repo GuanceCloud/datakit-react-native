@@ -7,7 +7,7 @@ import type * as Babel from '@babel/core';
 
 export type TrackedHandler = {
   event: string;
-  action: 'TAP';
+  actionType?: string;
   mode?: 'default' | 'delayed';
 };
 
@@ -55,8 +55,11 @@ export type ActionMetadata = {
 
 export type PluginState = Babel.PluginPass & {
   _ftCustomNames: Set<string>;
+  _ftExtractTextIdentifier: Babel.types.Identifier;
   _ftHasWrappedAction: boolean;
   _ftMemoizedHandlers: Set<Babel.types.Node>;
+  _ftNeedsContentRuntime: boolean;
+  _ftReactIdentifier: Babel.types.Identifier;
   _ftSkip: boolean;
   _ftTrackedComponents: Record<string, TrackedComponentData>;
   _ftTrackingIdentifier: Babel.types.Identifier;

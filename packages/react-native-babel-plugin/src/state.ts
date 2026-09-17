@@ -29,6 +29,10 @@ export function initializePluginState(
   );
   state._ftMemoizedHandlers = new Set();
   state._ftHasWrappedAction = false;
+  state._ftNeedsContentRuntime = false;
+  state._ftExtractTextIdentifier =
+    programPath.scope.generateUidIdentifier('ftExtractText');
+  state._ftReactIdentifier = programPath.scope.generateUidIdentifier('FTReact');
   state._ftTrackingIdentifier = programPath.scope.generateUidIdentifier(
     'FTBabelInteractionTracking'
   );

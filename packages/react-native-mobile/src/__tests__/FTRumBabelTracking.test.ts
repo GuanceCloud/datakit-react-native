@@ -94,16 +94,20 @@ describe('FTReactNativeRUM Babel tracker selection', () => {
     expect(startTracking).not.toHaveBeenCalled();
     expect(stopTracking).toHaveBeenCalledTimes(1);
 
-    const wrapped = FTBabelInteractionTracking.wrapRumAction(jest.fn(), 'TAP', {
-      'componentName': 'Button',
-      'options': { useContent: true, useNamePrefix: false },
-      'ft-action-name': ['Checkout'],
-    });
+    const wrapped = FTBabelInteractionTracking.wrapRumAction(
+      jest.fn(),
+      'checkout_submit',
+      {
+        'componentName': 'Button',
+        'options': { useContent: true, useNamePrefix: false },
+        'ft-action-name': ['Checkout'],
+      }
+    );
     wrapped();
 
     expect(mockNativeRum.startAction).toHaveBeenCalledWith(
       'Checkout',
-      'click',
+      'checkout_submit',
       undefined
     );
   });

@@ -8,6 +8,7 @@ import { ACTION_NAME_ATTRIBUTE } from '../../constants';
 import type {
   ActionMetadata,
   NormalizedPluginOptions,
+  PluginState,
   TrackedComponentData,
 } from '../../types';
 import { getNodeName } from '../../utils/jsx';
@@ -56,7 +57,8 @@ export function buildMetadata(
   path: Babel.NodePath<Babel.types.JSXElement>,
   componentName: string,
   component: TrackedComponentData,
-  options: NormalizedPluginOptions
+  options: NormalizedPluginOptions,
+  state: PluginState
 ): ActionMetadata {
   const names = collectStaticActionNames(t, path, options.actionNameAttribute);
   const hasStaticName = Object.values(names).some((values) =>
@@ -66,14 +68,17 @@ export function buildMetadata(
     ...names,
     component,
     componentName,
-    getContent: hasStaticName ? null : buildContentGetter(t, path, component),
+    getContent: hasStaticName
+      ? null
+      : buildContentGetter(t, path, component, state),
   };
 }
 
 export function buildTargetObject(
   t: typeof Babel.types,
   metadata: ActionMetadata,
-  handlerArgsIdentifier: Babel.types.Identifier
+  handlerArgsIdentifier: Babel.types.Identifier,
+  state: PluginState
 ): Babel.types.ObjectExpression {
   const properties: Babel.types.ObjectProperty[] = [
     t.objectProperty(
@@ -130,6 +135,7 @@ export function buildTargetObject(
     );
   }
   if (metadata.getContent) {
+    state._ftNeedsContentRuntime = true;
     properties.push(
       t.objectProperty(
         t.identifier('getContent'),

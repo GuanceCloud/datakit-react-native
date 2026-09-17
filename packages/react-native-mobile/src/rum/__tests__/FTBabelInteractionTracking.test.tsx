@@ -95,7 +95,7 @@ describe('FTBabelInteractionTracking', () => {
 
     const wrapped = FTBabelInteractionTracking.wrapRumAction(
       handler,
-      'TAP',
+      'long_press',
       createTarget({ 'ft-action-name': ['Submit'] })
     );
 
@@ -103,10 +103,26 @@ describe('FTBabelInteractionTracking', () => {
     expect(order).toEqual(['report', 'handler']);
     expect(reporter).toHaveBeenCalledWith(
       'Button ("Submit")',
-      'click',
+      'long_press',
       undefined
     );
     expect(handler).toHaveBeenCalledWith('value');
+  });
+
+  it('defaults empty or whitespace-only action types to click', () => {
+    const reporter = jest.fn().mockResolvedValue(undefined);
+    FTBabelInteractionTracking.configure({
+      actionReporter: reporter,
+      trackInteractions: true,
+    });
+
+    FTBabelInteractionTracking.wrapRumAction(
+      jest.fn(),
+      '   ',
+      createTarget()
+    )();
+
+    expect(reporter).toHaveBeenCalledWith('Button', 'click', undefined);
   });
 
   it('always calls optional handlers and ignores rejected reporting', async () => {
@@ -118,7 +134,7 @@ describe('FTBabelInteractionTracking', () => {
 
     const nullHandler = FTBabelInteractionTracking.wrapRumAction(
       null,
-      'TAP',
+      'click',
       createTarget()
     );
     expect(nullHandler()).toBeUndefined();
@@ -126,7 +142,7 @@ describe('FTBabelInteractionTracking', () => {
     const handler = jest.fn().mockReturnValue('result');
     const wrapped = FTBabelInteractionTracking.wrapRumAction(
       handler,
-      'TAP',
+      'click',
       createTarget()
     );
     expect(wrapped()).toBe('result');
@@ -144,7 +160,7 @@ describe('FTBabelInteractionTracking', () => {
     });
     const wrapped = FTBabelInteractionTracking.wrapRumAction(
       handler,
-      'TAP',
+      'click',
       createTarget()
     );
 
@@ -161,7 +177,7 @@ describe('FTBabelInteractionTracking', () => {
     });
     const wrapped = FTBabelInteractionTracking.wrapRumAction(
       handler,
-      'TAP',
+      'click',
       createTarget({
         getContent: () => {
           throw new Error('content failure');
@@ -179,7 +195,7 @@ describe('FTBabelInteractionTracking', () => {
     const handler = jest.fn();
     const target = createTarget();
 
-    FTBabelInteractionTracking.wrapRumAction(handler, 'TAP', target)();
+    FTBabelInteractionTracking.wrapRumAction(handler, 'click', target)();
     expect(reporter).not.toHaveBeenCalled();
 
     FTBabelInteractionTracking.configure({
@@ -188,7 +204,7 @@ describe('FTBabelInteractionTracking', () => {
     });
     const wrapped = FTBabelInteractionTracking.wrapRumAction(
       handler,
-      'TAP',
+      'click',
       target
     );
     wrapped({
@@ -209,7 +225,7 @@ describe('FTBabelInteractionTracking', () => {
     });
     const wrapped = FTBabelInteractionTracking.wrapRumAction(
       jest.fn(),
-      'TAP',
+      'click',
       createTarget()
     );
     wrapped({

@@ -29,7 +29,14 @@ type BabelTrackingConfig = {
   actionReporter?: ActionReporter;
 };
 
+const DEFAULT_ACTION_TYPE = 'click';
+
 const normalize = (value: string): string => value.replace(/\s+/g, ' ').trim();
+
+const normalizeActionType = (value: unknown): string =>
+  typeof value === 'string' && value.trim()
+    ? value.trim()
+    : DEFAULT_ACTION_TYPE;
 
 const nonEmpty = (values: string[] | undefined): string[] | null => {
   if (!values) {
@@ -84,9 +91,10 @@ class BabelInteractionTracking {
 
   wrapRumAction(
     handler: ((...args: any[]) => any) | null | undefined,
-    _action: 'TAP',
+    actionType: string,
     target: FTBabelActionTarget
   ): (...args: any[]) => any {
+    const normalizedActionType = normalizeActionType(actionType);
     return (...args: any[]) => {
       try {
         if (this.trackInteractions && this.actionReporter) {
@@ -97,7 +105,11 @@ class BabelInteractionTracking {
               handlerArgs: args,
             });
             Promise.resolve(
-              this.actionReporter(actionName, 'click', context.property)
+              this.actionReporter(
+                actionName,
+                normalizedActionType,
+                context.property
+              )
             ).catch(() => undefined);
           }
         }

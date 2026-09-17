@@ -4,6 +4,9 @@ const { transformSync } = require('@babel/core');
 const transformModulesCommonJs = require('@babel/plugin-transform-modules-commonjs');
 const transformReactJsx = require('@babel/plugin-transform-react-jsx');
 const plugin = require('../src').default;
+const {
+  __ftExtractText,
+} = require('../../react-native-mobile/src/rum/FTBabelUtils');
 
 function transform(
   code,
@@ -34,8 +37,7 @@ function execute(code, options = {}) {
   const trackingCalls = [];
   const module = { exports: {} };
   const react = {
-    Fragment: Symbol('Fragment'),
-    createElement: (type, props, ...children) => ({ type, props, children }),
+    ...require('react'),
     useMemo: (factory) => factory(),
   };
   const runtime = {
@@ -51,7 +53,7 @@ function execute(code, options = {}) {
         },
       }),
     },
-    __ftExtractText: () => [],
+    __ftExtractText,
   };
   const requireMock = (request) => {
     if (request === '@cloudcare/react-native-mobile') {
@@ -61,11 +63,7 @@ function execute(code, options = {}) {
       return react;
     }
     if (request === 'react/jsx-runtime') {
-      return {
-        Fragment: react.Fragment,
-        jsx: (type, props) => ({ type, props }),
-        jsxs: (type, props) => ({ type, props }),
-      };
+      return require('react/jsx-runtime');
     }
     if (request === 'react-native') {
       return { Button: 'Button', Pressable: 'Pressable', Text: 'Text' };
@@ -168,7 +166,7 @@ describe('CloudCare React Native Babel plugin', () => {
     expect(output).toContain('"Pay now"');
   });
 
-  it('extracts static JSX text without adding runtime element construction', () => {
+  it('converts content JSX into runtime calls including conditions and hyphenated props', () => {
     const output = transform(
       `
         <Menu.Item onSelect={handler}>
@@ -182,21 +180,21 @@ describe('CloudCare React Native Babel plugin', () => {
           tracked: [
             {
               name: 'Menu.Item',
-              handlers: [{ event: 'onSelect', action: 'TAP' }],
+              handlers: [{ event: 'onSelect' }],
             },
           ],
         },
       }
     );
 
-    expect(output).toContain('getContent: () => ["Open"]');
-    expect(output).not.toContain('_FTReact');
-    expect(output).not.toContain('__ftExtractText');
+    expect(output).toContain('getContent: () =>');
+    expect(output).toContain('_FTReact.createElement');
+    expect(output).toContain('__ftExtractText');
     expect(output).toContain('"aria-hidden": "true"');
     expect(output).not.toMatch(/<Text|<Menu/);
   });
 
-  it('does not replay dynamic content, nested spreads, getters, or render props', () => {
+  it('evaluates content expressions at click time while leaving spread props untouched', () => {
     const { exports, trackingCalls } = execute(`
       import { Pressable, Text } from 'react-native';
       export const calls = { title: 0, label: 0, style: 0, spread: 0, getter: 0, condition: 0, render: 0, handler: 0 };
@@ -229,16 +227,18 @@ describe('CloudCare React Native Babel plugin', () => {
       handler: 0,
     });
     expect(exports.element.props.onPress()).toBe(1);
-    expect(exports.calls).toEqual({ ...atRender, handler: 1 });
-    expect(trackingCalls[0].content).toEqual(['Static']);
+    expect(exports.calls).toEqual({
+      ...atRender,
+      title: 2,
+      label: 2,
+      condition: 4,
+      handler: 1,
+    });
+    expect(trackingCalls[0].content).toEqual(['Dynamic title']);
   });
 
-  it('omits content getters for dynamic-only content and explicit static names', () => {
-    for (const props of [
-      'title={getTitle()}',
-      'ft-action-name="Pay"',
-      'accessibilityLabel="Pay"',
-    ]) {
+  it('omits content getters when explicit static names take priority', () => {
+    for (const props of ['ft-action-name="Pay"', 'accessibilityLabel="Pay"']) {
       const output = transform(`
         import { Button } from 'react-native';
         <Button ${props} onPress={handler}>{getLabel()}</Button>;
@@ -284,7 +284,7 @@ describe('CloudCare React Native Babel plugin', () => {
     const component = {
       name: 'CustomButton',
       contentProp: 'caption',
-      handlers: [{ event: 'onTap', action: 'TAP' }],
+      handlers: [{ event: 'onTap' }],
     };
     const enabled = execute(code, { components: { tracked: [component] } });
     enabled.exports.element.props.onTap();
@@ -400,7 +400,7 @@ describe('CloudCare React Native Babel plugin', () => {
           tracked: [
             {
               name: 'CustomButton',
-              handlers: [{ event: 'onPress', action: 'TAP' }],
+              handlers: [{ event: 'onPress' }],
             },
           ],
         },

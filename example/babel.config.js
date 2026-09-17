@@ -5,7 +5,21 @@ const sessionReplayPackage = require('../packages/react-native-session-replay/pa
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
   plugins: [
-    '@cloudcare/react-native-mobile-babel-plugin',
+    [
+      '@cloudcare/react-native-mobile-babel-plugin',
+      {
+        components: {
+          tracked: [
+            {
+              name: 'PressableItem',
+              contentProp: 'title',
+              useNamePrefix: false,
+              handlers: [{event: 'onPress'}],
+            },
+          ],
+        },
+      },
+    ],
     [
       'module-resolver',
       {

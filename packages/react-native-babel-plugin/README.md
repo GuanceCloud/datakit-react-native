@@ -22,9 +22,10 @@ module.exports = {
 Keep `enableAutoTrackUserAction: true` in `FTRUMConfig`. When the Babel plugin
 is present, the SDK uses Babel-based interaction tracking instead of patching
 React at runtime. Applications that do not install the plugin keep the legacy
-runtime behavior. Both paths call `startAction(name, 'click', property)` and
-honor `ft-enable-track` and `ft-extra-property` when the interaction event
-provides a React Native Fiber target.
+runtime behavior. Both paths call `startAction`; Babel-based handlers use their
+configured `actionType` or `click` by default. Both honor `ft-enable-track` and
+`ft-extra-property` when the interaction event provides a React Native Fiber
+target.
 
 ## Action name priority
 
@@ -33,7 +34,7 @@ For a tracked component, the action name is selected in this order:
 1. Static `ft-action-name` attribute.
 2. Static custom attribute configured through `actionNameAttribute`.
 3. Static `accessibilityLabel`.
-4. Static text from `trackingLabel`, `title`, `label`, `text`, a custom content
+4. Content from `trackingLabel`, `title`, `label`, `text`, a custom content
    prop, or children.
 5. JSX component name.
 
@@ -44,17 +45,43 @@ By default a label is prefixed with the component name, for example
 <Button ft-action-name="checkout" title="Pay now" onPress={submit} />
 ```
 
-Content names are computed at build time from JSX text and string/number literals
-(including `{"Pay now"}` and `{123}`). The plugin does not evaluate variable or
-member reads, function calls, conditions, render props, or spread props for naming.
-These expressions still run normally in the application's render flow. Static
-content props before a spread are ignored because the spread may override them.
+Content extraction follows Datadog's click-time naming behavior. The generated
+`getContent` closure reads variables and member expressions, evaluates content
+props and children, and extracts text from the resulting React elements. This
+supports dynamic titles, fragments, conditional children, arrays, and zero-argument
+render functions. For example, each invocation of this helper uses its own title:
 
-At interaction time, the generated content getter returns only precomputed text;
-it does not recreate React elements or re-run application expressions. If no static
-name or content is available, the action falls back to the JSX component name.
-For dynamic UI content, use a static `ft-action-name` or `accessibilityLabel` to
-provide a stable name. `useContent: false` disables content-based names entirely.
+```tsx
+const renderButton = (title, onPress) => (
+  <Pressable onPress={onPress}>
+    <Text>{title}</Text>
+  </Pressable>
+);
+
+renderButton('Bind User', bindUser); // Pressable ("Bind User")
+```
+
+The getter reconstructs content elements with `React.createElement`, preserving
+React 16.13.1 compatibility. It reads click-time values, not a snapshot of the last
+render. Content expressions, including calls and property getters, can therefore
+run again on each tracked interaction. Keep them free of side effects, or provide
+a static `ft-action-name` / `accessibilityLabel` to bypass content extraction.
+`useContent: false` also disables it. Business handlers still run once per call,
+including when content extraction or reporting throws; a content-extraction error
+skips that Action.
+
+Render functions with parameters, such as
+`{({ pressed }) => <Text>{title}</Text>}`, are not invoked for naming. Without
+another label, they fall back to the component name (`Pressable`). A zero-argument
+render function can supply text. Spread props are not replayed for naming, and
+props before a spread are ignored because the spread may override them. If no
+non-empty name or content is available, the JSX component name is used.
+
+Memoized handlers keep their `useCallback` / `useMemo` identity. If dynamic
+content depends on a narrower scope than the handler definition, such as an
+`item` declared inside `items.map`, the plugin omits that unsafe content getter
+and falls back to the component name. Add a static `ft-action-name` or
+`accessibilityLabel` when that pattern needs a descriptive action name.
 
 Upgrade the Babel plugin and rebuild the application to apply these build-time
 changes. Previously transformed bundles keep their existing generated code.
@@ -77,7 +104,7 @@ interface PluginOptions {
       contentProp?: string;
       handlers: Array<{
         event: string;
-        action: 'TAP';
+        actionType?: string;
         mode?: 'default' | 'delayed';
       }>;
     }>;
@@ -100,7 +127,7 @@ module.exports = {
             {
               name: 'CustomButton',
               contentProp: 'caption',
-              handlers: [{ event: 'onPress', action: 'TAP' }],
+              handlers: [{ event: 'onPress', actionType: 'submit' }],
             },
           ],
         },
@@ -115,12 +142,14 @@ Touchable components, `Switch`, and `TextInput` from `react-native`. Import
 aliases are supported. Namespace imports are not auto-discovered, but their
 full JSX names can be configured through `components.tracked`.
 
-Only `TAP` / `click` actions are supported. Explicit action-name attributes
-must be static strings; only static content is used for naming. Web builds and files
-under `node_modules` are left unchanged. A handler configured with
-`mode: 'delayed'` is treated as a factory whose return value is the actual
-interaction handler. Direct arrow functions, function expressions, identifiers,
-member expressions, and conditional expressions are supported.
+`actionType` is written to RUM `action_type` through `startAction`; it defaults
+to `click` when omitted, empty, or whitespace-only. Keep custom values stable and
+low-cardinality. Explicit action-name attributes must be static strings; content
+props and children may be expressions. Web builds and files under `node_modules`
+are left unchanged. A handler configured with `mode: 'delayed'` is treated as a
+factory whose return value is the actual interaction handler. Direct arrow
+functions, function expressions, identifiers, member expressions, and conditional
+expressions are supported.
 
 ## Development
 
@@ -138,7 +167,7 @@ src/
     rum/
       index.ts             JSX action processing and runtime imports
       components.ts        Component discovery and required TextInput handlers
-      content.ts           Build-time static text extraction and literal getters
+      content.ts           JSX conversion and click-time content getters
       metadata.ts          Action-name attributes and runtime target objects
       tap.ts               Immediate, delayed, and conditional handler wrappers
       memoization.ts       useCallback / useMemo handling

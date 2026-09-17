@@ -7,6 +7,14 @@ import type * as Babel from '@babel/core';
 import type { ActionMetadata, PluginState, TrackedHandler } from '../../types';
 import { buildTargetObject } from './metadata';
 
+const DEFAULT_ACTION_TYPE = 'click';
+
+function normalizeActionType(actionType: TrackedHandler['actionType']): string {
+  return typeof actionType === 'string' && actionType.trim()
+    ? actionType.trim()
+    : DEFAULT_ACTION_TYPE;
+}
+
 function buildOriginalInvocation(
   t: typeof Babel.types,
   originalExpression: Babel.types.Expression,
@@ -24,7 +32,8 @@ function buildImmediateHandlerWrapper(
   originalExpression: Babel.types.Expression,
   metadata: ActionMetadata,
   state: PluginState,
-  scope: Babel.NodePath['scope']
+  scope: Babel.NodePath['scope'],
+  actionType: TrackedHandler['actionType']
 ): Babel.types.ArrowFunctionExpression {
   const handlerArgsIdentifier = scope.generateUidIdentifier('ftHandlerArgs');
   const originalArgsIdentifier = scope.generateUidIdentifier('ftOriginalArgs');
@@ -43,8 +52,8 @@ function buildImmediateHandlerWrapper(
     t.memberExpression(instanceCall, t.identifier('wrapRumAction')),
     [
       originalInvoker,
-      t.stringLiteral('TAP'),
-      buildTargetObject(t, metadata, handlerArgsIdentifier),
+      t.stringLiteral(normalizeActionType(actionType)),
+      buildTargetObject(t, metadata, handlerArgsIdentifier, state),
     ]
   );
   return t.arrowFunctionExpression(
@@ -62,7 +71,8 @@ export function buildHandlerWrapper(
   metadata: ActionMetadata,
   state: PluginState,
   scope: Babel.NodePath['scope'],
-  mode: TrackedHandler['mode'] = 'default'
+  mode: TrackedHandler['mode'] = 'default',
+  actionType?: TrackedHandler['actionType']
 ): Babel.types.ArrowFunctionExpression {
   if (mode !== 'delayed') {
     return buildImmediateHandlerWrapper(
@@ -70,7 +80,8 @@ export function buildHandlerWrapper(
       originalExpression,
       metadata,
       state,
-      scope
+      scope,
+      actionType
     );
   }
 
@@ -91,7 +102,8 @@ export function buildHandlerWrapper(
           handlerIdentifier,
           metadata,
           state,
-          scope
+          scope,
+          actionType
         )
       ),
     ])
@@ -105,7 +117,8 @@ export function buildGuardedHandlerWrapper(
   metadata: ActionMetadata,
   state: PluginState,
   scope: Babel.NodePath['scope'],
-  mode: TrackedHandler['mode'] = 'default'
+  mode: TrackedHandler['mode'] = 'default',
+  actionType?: TrackedHandler['actionType']
 ): Babel.types.CallExpression {
   const resolvedHandlerIdentifier =
     scope.generateUidIdentifier('ftResolvedHandler');
@@ -124,7 +137,8 @@ export function buildGuardedHandlerWrapper(
           metadata,
           state,
           scope,
-          mode
+          mode,
+          actionType
         ),
         t.cloneNode(resolvedHandlerIdentifier)
       )

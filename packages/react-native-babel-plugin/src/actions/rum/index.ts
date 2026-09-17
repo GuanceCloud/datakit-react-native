@@ -49,7 +49,7 @@ export function handleJSXElement(
     }
     const attributeName = getNodeName(t, attributePath.node.name);
     const handler = component.handlers.find(
-      (item) => item.action === 'TAP' && item.event === attributeName
+      (item) => item.event === attributeName
     );
     if (!handler) {
       continue;
@@ -69,7 +69,14 @@ export function handleJSXElement(
       continue;
     }
 
-    metadata ||= buildMetadata(t, path, componentName, component, options);
+    metadata ||= buildMetadata(
+      t,
+      path,
+      componentName,
+      component,
+      options,
+      state
+    );
 
     if (
       !wrapMemoizedHandler(
@@ -78,7 +85,8 @@ export function handleJSXElement(
         expression,
         metadata,
         state,
-        handler.mode
+        handler.mode,
+        handler.actionType
       )
     ) {
       const wrappedHandler = t.isConditionalExpression(expression)
@@ -88,7 +96,8 @@ export function handleJSXElement(
             metadata,
             state,
             attributePath.scope,
-            handler.mode
+            handler.mode,
+            handler.actionType
           )
         : buildHandlerWrapper(
             t,
@@ -96,7 +105,8 @@ export function handleJSXElement(
             metadata,
             state,
             attributePath.scope,
-            handler.mode
+            handler.mode,
+            handler.actionType
           );
       attributePath.node.value = t.jsxExpressionContainer(wrappedHandler);
       state._ftHasWrappedAction = true;
@@ -116,16 +126,29 @@ export function insertRuntimeImports(
   if (!state._ftHasWrappedAction) {
     return;
   }
+  const imports = [
+    t.importSpecifier(
+      t.cloneNode(state._ftTrackingIdentifier),
+      t.identifier('FTBabelInteractionTracking')
+    ),
+  ];
+  if (state._ftNeedsContentRuntime) {
+    imports.push(
+      t.importSpecifier(
+        t.cloneNode(state._ftExtractTextIdentifier),
+        t.identifier('__ftExtractText')
+      )
+    );
+    programPath.unshiftContainer(
+      'body',
+      t.importDeclaration(
+        [t.importNamespaceSpecifier(t.cloneNode(state._ftReactIdentifier))],
+        t.stringLiteral('react')
+      )
+    );
+  }
   programPath.unshiftContainer(
     'body',
-    t.importDeclaration(
-      [
-        t.importSpecifier(
-          t.cloneNode(state._ftTrackingIdentifier),
-          t.identifier('FTBabelInteractionTracking')
-        ),
-      ],
-      t.stringLiteral(RUNTIME_PACKAGE)
-    )
+    t.importDeclaration(imports, t.stringLiteral(RUNTIME_PACKAGE))
   );
 }

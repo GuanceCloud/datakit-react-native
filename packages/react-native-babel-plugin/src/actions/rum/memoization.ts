@@ -5,6 +5,7 @@
 
 import type * as Babel from '@babel/core';
 import type { ActionMetadata, PluginState, TrackedHandler } from '../../types';
+import { isContentVisibleFromScope } from './content';
 import { buildHandlerWrapper } from './tap';
 
 function getMemoizationName(
@@ -58,7 +59,8 @@ export function wrapMemoizedHandler(
   expression: Babel.types.Expression,
   metadata: ActionMetadata,
   state: PluginState,
-  mode: TrackedHandler['mode']
+  mode: TrackedHandler['mode'],
+  actionType: TrackedHandler['actionType']
 ): boolean {
   if (!t.isIdentifier(expression)) {
     return false;
@@ -104,14 +106,28 @@ export function wrapMemoizedHandler(
     return true;
   }
 
+  const elementPath = path.parentPath?.parentPath;
+  const metadataAtMemoDefinition =
+    metadata.getContent &&
+    elementPath?.isJSXElement() &&
+    !isContentVisibleFromScope(
+      t,
+      elementPath,
+      metadata.component,
+      initPath.scope
+    )
+      ? { ...metadata, getContent: null }
+      : metadata;
+
   callbackPath.replaceWith(
     buildHandlerWrapper(
       t,
       callback,
-      metadata,
+      metadataAtMemoDefinition,
       state,
       callbackPath.scope,
-      memoizationName === 'useMemo' ? 'delayed' : mode
+      memoizationName === 'useMemo' ? 'delayed' : mode,
+      actionType
     )
   );
   state._ftMemoizedHandlers.add(declaratorPath.node);
