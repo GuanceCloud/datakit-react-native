@@ -1,10 +1,10 @@
 {
   "name": "@cloudcare/react-native-mobile-babel-plugin",
   "version": "0.4.3-alpha.1",
-  "description": "Babel plugin for automatic CloudCare React Native RUM action naming.",
+  "description": "Babel plugin for automatic Guance React Native RUM action naming.",
   "keywords": [
     "babel",
-    "cloudcare",
+    "guance",
     "react-native",
     "rum"
   ],
