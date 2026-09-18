@@ -1645,7 +1645,7 @@ __metadata:
     "@babel/plugin-transform-react-jsx": ^7.25.2
   peerDependencies:
     "@babel/core": ^7.0.0
-    "@cloudcare/react-native-mobile": ^0.4.3
+    "@cloudcare/react-native-mobile": ^0.4.3-0
     react: ">=16.13.1"
     react-native: ">=0.63.4 <1.0"
   languageName: unknown

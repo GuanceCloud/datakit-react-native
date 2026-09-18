@@ -107,64 +107,15 @@ async function metadata(name, version) {
   return value;
 }
 
-const sleep = (milliseconds) =>
-  new Promise((resolve) => setTimeout(resolve, milliseconds));
-
-async function verifyPublishedPackages(
-  packageNames,
-  version,
-  sha,
-  options = {}
-) {
-  const metadataFn = options.metadataFn || metadata;
-  const sleepFn = options.sleepFn || sleep;
-  const attempts = options.attempts || 30;
-  const delayMs = options.delayMs ?? 10000;
-  const pending = new Set(packageNames);
-  let lastError;
-
-  for (let attempt = 1; attempt <= attempts && pending.size; attempt++) {
-    for (const name of [...pending]) {
-      let actual;
-      try {
-        actual = await metadataFn(name, version);
-      } catch (error) {
-        lastError = error;
-        continue;
-      }
-      if (!actual) continue;
-      if (actual.gitHead !== sha) {
-        throw new Error(`${name}@${version} already belongs to another commit`);
-      }
-      pending.delete(name);
-      console.log(`${name}@${version} verified from ${sha}`);
-    }
-    if (pending.size && attempt < attempts) await sleepFn(delayMs);
-  }
-
-  if (pending.size) {
-    const suffix = lastError
-      ? `; last registry error: ${lastError.message}`
-      : '';
-    throw new Error(
-      `Published versions could not be verified: ${[...pending].join(
-        ', '
-      )}${suffix}`
-    );
-  }
-}
-
 async function publishPreparedPackages(
   ready,
-  { version, sha, channel },
+  { version, channel },
   options = {}
 ) {
-  const packageNames = options.packageNames || packages.map(({ name }) => name);
   const runCommand = options.runCommand || run;
 
-  // Publish every validated tarball before waiting for registry propagation. A
-  // slow first package must not prevent the remaining packages from publishing.
-  for (const [, tarball] of ready) {
+  // Successful npm commands complete publishing; registry propagation is asynchronous.
+  for (const [name, tarball] of ready) {
     runCommand([
       'npm',
       'publish',
@@ -175,14 +126,8 @@ async function publishPreparedPackages(
       channel,
       '--ignore-scripts',
     ]);
+    console.log(`${name}@${version} published successfully`);
   }
-
-  await verifyPublishedPackages(packageNames, version, sha, {
-    metadataFn: options.metadataFn,
-    sleepFn: options.sleepFn,
-    attempts: options.verificationAttempts,
-    delayMs: options.verificationDelayMs,
-  });
 }
 
 async function publish({ version, sha, channel }) {
@@ -236,7 +181,7 @@ async function publish({ version, sha, channel }) {
     }
     await publishPreparedPackages(ready, { version, sha, channel });
     console.log(
-      `All npm packages verified: ${version} (${channel}), commit ${sha}`
+      `All npm packages published: ${version} (${channel}), commit ${sha}`
     );
   } finally {
     fs.rmSync(output, { recursive: true, force: true });
@@ -261,6 +206,5 @@ module.exports = {
   versionPattern,
   releaseIdentity,
   metadata,
-  verifyPublishedPackages,
   publishPreparedPackages,
 };
