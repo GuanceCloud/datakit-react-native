@@ -36,7 +36,18 @@ const mockFTReactNativeTrace = {
   setConfig: jest.fn().mockResolvedValue(undefined),
 };
 
+const mockWebSocketMetadata = {
+  startCapture: jest.fn().mockResolvedValue(undefined),
+  stopCapture: jest.fn().mockResolvedValue(undefined),
+  startResource: jest.fn().mockResolvedValue(undefined),
+  stopResource: jest.fn().mockResolvedValue(undefined),
+  addResource: jest.fn().mockResolvedValue(undefined),
+  releaseResource: jest.fn().mockResolvedValue(undefined),
+  clear: jest.fn().mockResolvedValue(undefined),
+};
+
 const mockNativeModules = {
+  FTReactNativeWebSocket: mockWebSocketMetadata,
   FTMobileReactNative: mockFTMobileReactNative,
   FTReactNativeRUM: mockFTReactNativeRUM,
   FTReactNativeLog: mockFTReactNativeLog,
@@ -372,6 +383,11 @@ describe('native adapter config forwarding', () => {
 describe('FTMobileReactNative shutdown', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPlatform.OS = 'ios';
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('stops JavaScript long task monitoring before shutting down the SDK', async () => {
@@ -398,5 +414,143 @@ describe('FTMobileReactNative shutdown', () => {
     await expect(FTMobileReactNative.shutDown()).rejects.toThrow('stop failed');
 
     expect(mockFTMobileReactNative.shutDown).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not let older configuration results reactivate WebSocket collection or tracing', async () => {
+    let resolveRum!: () => void;
+    let resolveTrace!: () => void;
+    mockFTReactNativeRUM.setConfig.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveRum = resolve;
+      })
+    );
+    mockFTReactNativeTrace.setConfig.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveTrace = resolve;
+      })
+    );
+    const start = jest
+      .spyOn(FTRumWebSocketTracking, 'startTracking')
+      .mockImplementation();
+    const stop = jest
+      .spyOn(FTRumWebSocketTracking, 'stopTracking')
+      .mockImplementation();
+    const trace = jest
+      .spyOn(FTRumWebSocketTracking, 'setNativeAutoTraceEnabled')
+      .mockImplementation();
+    const oldRum = FTReactNativeRUM.setConfig({
+      iOSAppId: 'ios',
+      androidAppId: 'android',
+      enableNativeUserResource: true,
+    });
+    const oldTrace = FTReactNativeTrace.setConfig({
+      enableNativeAutoTrace: true,
+    });
+    await FTReactNativeRUM.setConfig({
+      iOSAppId: 'ios',
+      androidAppId: 'android',
+      enableNativeUserResource: false,
+    });
+    await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: false });
+    resolveRum();
+    resolveTrace();
+    await Promise.all([oldRum, oldTrace]);
+    expect(start).not.toHaveBeenCalled();
+    expect(stop).toHaveBeenCalledTimes(1);
+    expect(trace).toHaveBeenCalledTimes(1);
+    expect(trace).toHaveBeenCalledWith(false);
+  });
+
+  it.each(['shutdown', 'disable'])(
+    'starts JS capture immediately and ignores native setup replies after %s',
+    async (action) => {
+      FTRumWebSocketTracking.shutDown();
+      const originalWebSocket = globalThis.WebSocket;
+      class TestWebSocket {}
+      globalThis.WebSocket =
+        TestWebSocket as unknown as typeof globalThis.WebSocket;
+      let resolveCapture!: () => void;
+      mockWebSocketMetadata.startCapture.mockReturnValueOnce(
+        new Promise<void>((resolve) => {
+          resolveCapture = resolve;
+        })
+      );
+      const start = jest.spyOn(FTRumWebSocketTracking, 'startTracking');
+      const config = {
+        androidAppId: 'android',
+        iOSAppId: 'ios',
+        enableNativeUserResource: true,
+      };
+      try {
+        let configured = false;
+        const configuration = FTReactNativeRUM.setConfig(config).then(() => {
+          configured = true;
+        });
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        expect(configured).toBe(true);
+        expect(start).toHaveBeenCalledTimes(1);
+        expect(globalThis.WebSocket).not.toBe(TestWebSocket);
+        if (action === 'shutdown') await FTMobileReactNative.shutDown();
+        else
+          await FTReactNativeRUM.setConfig({
+            ...config,
+            enableNativeUserResource: false,
+          });
+        expect(globalThis.WebSocket).toBe(TestWebSocket);
+        resolveCapture();
+        await configuration;
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        expect(start).toHaveBeenCalledTimes(1);
+        expect(globalThis.WebSocket).toBe(TestWebSocket);
+        expect(mockWebSocketMetadata.stopCapture).toHaveBeenCalled();
+      } finally {
+        FTRumWebSocketTracking.shutDown();
+        globalThis.WebSocket = originalWebSocket;
+      }
+    }
+  );
+
+  it('ignores RUM and Trace configuration results from before shutdown', async () => {
+    let resolveRum!: () => void;
+    let resolveTrace!: () => void;
+    mockFTReactNativeRUM.setConfig.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveRum = resolve;
+      })
+    );
+    mockFTReactNativeTrace.setConfig.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveTrace = resolve;
+      })
+    );
+    const startTracking = jest
+      .spyOn(FTRumWebSocketTracking, 'startTracking')
+      .mockImplementation();
+    const setTrace = jest
+      .spyOn(FTRumWebSocketTracking, 'setNativeAutoTraceEnabled')
+      .mockImplementation();
+    const rumConfig = {
+      androidAppId: 'android-app-id',
+      iOSAppId: 'ios-app-id',
+      enableNativeUserResource: true,
+    };
+    const oldRumConfig = FTReactNativeRUM.setConfig(rumConfig);
+    const oldTraceConfig = FTReactNativeTrace.setConfig({
+      enableNativeAutoTrace: true,
+    });
+
+    await FTMobileReactNative.shutDown();
+    startTracking.mockClear();
+    setTrace.mockClear();
+    resolveRum();
+    resolveTrace();
+    await Promise.all([oldRumConfig, oldTraceConfig]);
+    expect(startTracking).not.toHaveBeenCalled();
+    expect(setTrace).not.toHaveBeenCalled();
+
+    await FTReactNativeRUM.setConfig(rumConfig);
+    await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: true });
+    expect(startTracking).toHaveBeenCalledTimes(1);
+    expect(setTrace).toHaveBeenCalledWith(true);
   });
 });

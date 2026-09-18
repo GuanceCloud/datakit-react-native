@@ -6,6 +6,7 @@ import {
 import type { Spec as NativeFTMobileReactNativeSpec } from './specs/NativeFTMobileReactNative';
 import type { Spec as NativeFTReactNativeRUMSpec } from './specs/NativeFTReactNativeRUM';
 import { version as sdkVersion } from './version';
+import { FTRumWebSocketTracking } from './rum/FTRumWebSocketTracking';
 
 /**
  * Bridge context manager for managing shared properties across RUM and Logger modules
@@ -451,6 +452,7 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
   async shutDown(): Promise<void> {
     bridgeContextManager.configureLongTaskContext(false);
     try {
+      FTRumWebSocketTracking.shutDown();
       await this.rum.stopLongTaskTracking();
     } finally {
       await this.sdk.shutDown();

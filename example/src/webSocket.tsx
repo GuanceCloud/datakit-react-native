@@ -27,6 +27,7 @@ interface State {
 
 class WebSocketScreen extends React.Component<{}, State> {
   private socket: WebSocket | null = null;
+  private validationSockets = new Set<WebSocket>();
 
   static options() {
     return {
@@ -49,6 +50,11 @@ class WebSocketScreen extends React.Component<{}, State> {
   }
 
   componentWillUnmount() {
+    this.validationSockets.forEach(socket => {
+      socket.onopen = socket.onerror = socket.onclose = null;
+      socket.close();
+    });
+    this.validationSockets.clear();
     if (this.socket) {
       this.socket.onopen = null;
       this.socket.onmessage = null;
@@ -154,6 +160,29 @@ class WebSocketScreen extends React.Component<{}, State> {
     this.socket.close(1000, 'Closed from example');
   };
 
+  validateConnections = (count: number, reconnect = false) => {
+    const connectOne = (again: boolean) => {
+      try {
+        const socket = new WebSocket(this.state.url.trim());
+        this.validationSockets.add(socket);
+        socket.onopen = () => {
+          this.appendEvent('Validation OPEN; closing after handshake');
+          socket.close();
+        };
+        socket.onerror = event =>
+          this.appendEvent(`Validation ERROR: ${event.message || 'failed'}`);
+        socket.onclose = () => {
+          this.validationSockets.delete(socket);
+          this.appendEvent('Validation CLOSE');
+          if (again) connectOne(false);
+        };
+      } catch (error) {
+        this.appendEvent(`Validation construction failed: ${String(error)}`);
+      }
+    };
+    for (let index = 0; index < count; index++) connectOne(reconnect);
+  };
+
   renderButton = (title: string, onPress: () => void, disabled = false) => (
     <Pressable
       accessibilityRole="button"
@@ -223,6 +252,19 @@ class WebSocketScreen extends React.Component<{}, State> {
             'Disconnect',
             this.disconnect,
             status === 'Disconnected',
+          )}
+        </View>
+
+        <Text style={pageStyles.description}>
+          Enter your WebSocket server URL above. Use the buttons below to test
+          concurrent handshakes and reconnecting after close. Each connection
+          closes after a successful handshake. For a server on your computer,
+          use 127.0.0.1 on the iOS simulator or 10.0.2.2 on the Android emulator.
+        </Text>
+        <View style={pageStyles.actions}>
+          {this.renderButton('3 concurrent', () => this.validateConnections(3))}
+          {this.renderButton('Reconnect once', () =>
+            this.validateConnections(1, true),
           )}
         </View>
 

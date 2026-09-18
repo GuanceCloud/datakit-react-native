@@ -70,16 +70,24 @@ type FTReactNativeTraceType = {
 };
 
 class FTReactNativeTraceWrapper implements FTReactNativeTraceType {
+  private webSocketConfigVersion = 0;
   /* eslint-disable @typescript-eslint/no-var-requires */
   private trace: FTReactNativeTraceType =
     require('./specs/NativeFTReactNativeTrace').default;
   /* eslint-enable @typescript-eslint/no-var-requires */
 
   setConfig(config: FTTraceConfig): Promise<void> {
+    const webSocketLifecycle = FTRumWebSocketTracking.getLifecycleVersion();
+    const webSocketConfigVersion = ++this.webSocketConfigVersion;
+    const traceWebSocket = config.enableNativeAutoTrace === true;
     return this.trace.setConfig(config).then(() => {
-      FTRumWebSocketTracking.setNativeAutoTraceEnabled(
-        config.enableNativeAutoTrace === true
-      );
+      if (
+        webSocketLifecycle !== FTRumWebSocketTracking.getLifecycleVersion() ||
+        webSocketConfigVersion !== this.webSocketConfigVersion
+      ) {
+        return;
+      }
+      FTRumWebSocketTracking.setNativeAutoTraceEnabled(traceWebSocket);
     });
   }
   /**

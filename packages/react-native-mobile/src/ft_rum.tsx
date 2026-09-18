@@ -278,6 +278,7 @@ function isBabelPluginEnabled(): boolean {
 }
 
 class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
+  private webSocketConfigVersion = 0;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   private rum: FTReactNativeRUMType = require('./specs/NativeFTReactNativeRUM')
     .default;
@@ -286,6 +287,9 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     bridgeContextManager.configureLongTaskContext(
       config.enableLongTask === true
     );
+    const webSocketLifecycle = FTRumWebSocketTracking.getLifecycleVersion();
+    const webSocketConfigVersion = ++this.webSocketConfigVersion;
+    const trackWebSocket = config.enableNativeUserResource === true;
     console.log('FTRUMConfig');
     if (config.enableAutoTrackError) {
       FTRumErrorTracking.startTracking();
@@ -311,7 +315,13 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
         ),
       })
       .then(() => {
-        if (Platform.OS === 'ios' && config.enableNativeUserResource === true) {
+        if (
+          webSocketLifecycle !== FTRumWebSocketTracking.getLifecycleVersion() ||
+          webSocketConfigVersion !== this.webSocketConfigVersion
+        ) {
+          return;
+        }
+        if (Platform.OS === 'ios' && trackWebSocket) {
           FTRumWebSocketTracking.startTracking(this);
         } else {
           FTRumWebSocketTracking.stopTracking();

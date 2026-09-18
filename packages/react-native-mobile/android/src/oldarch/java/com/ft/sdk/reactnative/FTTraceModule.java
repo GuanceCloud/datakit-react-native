@@ -33,4 +33,10 @@ public class FTTraceModule extends ReactContextBaseJavaModule {
   public WritableMap getTraceHeaderFieldsSync(String url, String key) {
     return impl.getTraceHeaderFieldsSync(url, key);
   }
+
+  @ReactMethod
+  public void cancelWebSocketTrace(String key, Promise promise) {
+    // JS WebSocket observation is iOS-only; Android owns its native lifecycle.
+    promise.resolve(null);
+  }
 }

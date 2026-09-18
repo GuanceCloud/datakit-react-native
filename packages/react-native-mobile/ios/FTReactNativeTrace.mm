@@ -10,12 +10,17 @@
 #import "FtMobileAgent.h"
 #import <GuanceSDK/FTMobileAgent.h>
 #import <GuanceSDK/FTExternalDataManager.h>
+#import <GuanceSDK/FTExternalDataManager+Private.h>
+#import "FTWebSocketResourceData.h"
 #import <GuanceSDK/FTResourceMetricsModel.h>
 #import <GuanceSDK/FTResourceContentModel.h>
 #import <React/RCTConvert.h>
 #import <GuanceSDK/FTTraceManager.h>
 
 @interface FTReactNativeTrace ()
+// Keep no extra owner alive. Cancellation must not obtain a singleton after
+// shutdown or depend on a WebSocket Resource having started.
+@property (nonatomic, weak) id<FTExternalResourceProtocol> traceResourceDelegate;
 - (nullable NSDictionary *)traceHeaderFieldsForURL:(NSString *)url key:(nullable NSString *)key;
 @end
 
@@ -42,6 +47,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getTraceHeaderFieldsSync:(NSString *)url
   return [self traceHeaderFieldsForURL:url key:key];
 }
 
+RCT_REMAP_METHOD(cancelWebSocketTrace,
+                 cancelWebSocketTrace:(NSString *)key
+                 resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject) {
+  @synchronized (self) {
+    FTWebSocketDiscardTraceResource(self.traceResourceDelegate, key);
+  }
+  resolve(nil);
+}
+
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
   return std::make_shared<facebook::react::NativeFTReactNativeTraceSpecJSI>(params);
@@ -66,9 +81,22 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getTraceHeaderFieldsSync:(NSString *)url
     return nil;
   }
   if (key.length > 0) {
-    return [[FTExternalDataManager sharedManager] getTraceHeaderWithKey:key url:requestURL];
+    @synchronized (self) {
+      // Use the exact delegate that creates the keyed correlation. Record it
+      // before generation, including a generation that subsequently throws.
+      id<FTExternalResourceProtocol> delegate = [FTExternalDataManager sharedManager].resourceDelegate;
+      self.traceResourceDelegate = delegate;
+      if ([delegate respondsToSelector:@selector(getTraceHeaderWithKey:url:)]) {
+        return [delegate getTraceHeaderWithKey:key url:requestURL];
+      }
+      return nil;
+    }
   }
   return [[FTExternalDataManager sharedManager] getTraceHeaderWithUrl:requestURL];
+}
+
+- (void)invalidate {
+  @synchronized (self) { self.traceResourceDelegate = nil; }
 }
 
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {

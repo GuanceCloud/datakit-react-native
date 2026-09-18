@@ -14,6 +14,7 @@
 #import <GuanceSDK/FTConstants.h>
 #import <GuanceSDK/FTJSONUtil.h>
 #import <GuanceSDK/FTRemoteConfigModel+Private.h>
+#import "FTWebSocketMetadataStore.h"
 
 static NSString *const FTRemoteConfigCallbackEvent = @"ft_remote_config_callback";
 
@@ -490,6 +491,7 @@ RCT_REMAP_METHOD(clearAllData,
       };
     }
     [FTMobileAgent startWithConfigOptions:config];
+    [FTWebSocketMetadataStore sdkDidStart];
     resolve(nil);
   }];
 }
@@ -537,6 +539,7 @@ RCT_REMAP_METHOD(clearAllData,
 }
 
 - (void)shutDown:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
+  [FTWebSocketMetadataStore shutDown];
   [FTMobileAgent shutDown];
   resolve(nil);
 }

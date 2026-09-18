@@ -7,6 +7,7 @@ const mockNativeRum = {
 };
 
 jest.mock('react-native', () => ({
+  Platform: { OS: 'ios' },
   TurboModuleRegistry: {
     get: jest.fn(() => mockNativeRum),
   },
@@ -57,7 +58,11 @@ describe('FTReactNativeRUM Babel tracker selection', () => {
 
     expect(startTracking).toHaveBeenCalledTimes(1);
     expect(stopTracking).not.toHaveBeenCalled();
-    expect(mockNativeRum.setConfig).toHaveBeenCalledWith(config);
+    expect(mockNativeRum.setConfig).toHaveBeenCalledWith({
+      ...config,
+      enableLongTask: false,
+      longTaskThresholdMs: 100,
+    });
   });
 
   it('keeps the legacy tracker when globalThis is unavailable', async () => {
@@ -84,7 +89,11 @@ describe('FTReactNativeRUM Babel tracker selection', () => {
     await configPromise;
     expect(startTracking).toHaveBeenCalledTimes(1);
     expect(stopTracking).not.toHaveBeenCalled();
-    expect(mockNativeRum.setConfig).toHaveBeenCalledWith(config);
+    expect(mockNativeRum.setConfig).toHaveBeenCalledWith({
+      ...config,
+      enableLongTask: false,
+      longTaskThresholdMs: 100,
+    });
   });
 
   it('uses only Babel tracking when the plugin flag is present', async () => {

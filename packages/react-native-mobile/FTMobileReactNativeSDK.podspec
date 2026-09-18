@@ -16,7 +16,8 @@ Pod::Spec.new do |s|
 
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  s.private_header_files = "ios/FTJSLongTaskMonitor.h"
+  s.private_header_files = "ios/FTJSLongTaskMonitor.h", "ios/FTWebSocketMetadataStore.h", "ios/FTReactNativeWebSocket.h", "ios/FTReactNativeResource.h", "ios/FTWebSocketResourceData.h"
+  s.frameworks = "CFNetwork"
 
 
   s.dependency "React-Core"
