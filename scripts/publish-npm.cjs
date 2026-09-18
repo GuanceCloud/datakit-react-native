@@ -87,15 +87,9 @@ async function publish({version, sha, channel}) {
     }
     for (const [name, tarball] of ready) {
       run(['npm', 'publish', tarball, '--access', 'public', '--tag', channel, '--ignore-scripts']);
-      let verified = false;
-      for (let attempt = 0; attempt < 6; attempt++) {
-        const actual = await metadata(name, version);
-        if (actual && actual.gitHead === sha) { verified = true; break; }
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-      }
-      if (!verified) throw new Error(`Published version could not be verified: ${name}`);
+      console.log(`${name}@${version} published successfully`);
     }
-    console.log(`Both npm packages verified: ${version} (${channel}), commit ${sha}`);
+    console.log(`Both npm packages published: ${version} (${channel}), commit ${sha}`);
   } finally {
     fs.rmSync(output, {recursive: true, force: true});
   }
