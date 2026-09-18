@@ -2,6 +2,11 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# 0.4.3-alpha.2
+* Fixed npm publishing for the Babel plugin.
+* Improved Babel plugin prerelease compatibility.
+
+---
 # 0.4.3-alpha.1
 * Upgraded compatibility to iOS `GuanceSDK 1.6.7`, Android `ft-sdk 1.7.5`, Android `ft-plugin 1.3.8` and Android `ft-session-replay 0.1.8`.
 * Fixed remote configuration updates and callbacks under React Native New Architecture on iOS and Android.
