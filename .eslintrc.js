@@ -27,6 +27,7 @@ module.exports = {
   ignorePatterns: [
     'node_modules/',
     '**/lib/',
+    '**/android/build/',
     'example/**',
     'example-new-architecture/**',
   ],

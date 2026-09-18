@@ -132,6 +132,8 @@ async function reactNativeInitSDK() {
     enableTrackNativeAppANR:true,
     enableTrackNativeCrash:true,
     enableTrackNativeFreeze:true,
+    enableLongTask: true,
+    longTaskThresholdMs: 200,
     errorMonitorType:ErrorMonitorType.cpu | ErrorMonitorType.memory,
     deviceMonitorType:DeviceMetricsMonitorType.all,
     detectFrequency:DetectFrequency.rare,

@@ -27,6 +27,7 @@ jest.mock('../rum/FTBabelInteractionTracking', () => ({
 describe('JS long task bridge context', () => {
   let sdk: typeof import('../ft_mobile_agent').FTMobileReactNative;
   let rum: typeof import('../ft_rum').FTReactNativeRUM;
+  let bridgeContextManager: typeof import('../ft_mobile_agent').bridgeContextManager;
   let version: string;
   const config = {
     androidAppId: 'android',
@@ -39,9 +40,18 @@ describe('JS long task bridge context', () => {
     jest.clearAllMocks();
     mockRUM.setLongTaskContext.mockReturnValue(true);
     mockRUM.setConfig.mockResolvedValue(undefined);
-    sdk = require('../ft_mobile_agent').FTMobileReactNative;
-    rum = require('../ft_rum').FTReactNativeRUM;
-    version = require('../version').version;
+    const sdkModule =
+      jest.requireActual<typeof import('../ft_mobile_agent')>(
+        '../ft_mobile_agent'
+      );
+    sdk = sdkModule.FTMobileReactNative;
+    bridgeContextManager = sdkModule.bridgeContextManager;
+    rum =
+      jest.requireActual<typeof import('../ft_rum')>(
+        '../ft_rum'
+      ).FTReactNativeRUM;
+    version =
+      jest.requireActual<typeof import('../version')>('../version').version;
   });
 
   it('sends SDK version and preconfigured custom context before enabling the monitor', async () => {
@@ -111,9 +121,7 @@ describe('JS long task bridge context', () => {
       throw new Error('Bridge unavailable');
     });
     expect(() => sdk.appendBridgeContext({ wgt_id: 'updated' })).not.toThrow();
-    expect(
-      require('../ft_mobile_agent').bridgeContextManager.mergeWithLocalPropertiesSync()
-    ).toEqual({
+    expect(bridgeContextManager.mergeWithLocalPropertiesSync()).toEqual({
       sdk_bridge_info: JSON.stringify({ react_native: version }),
       wgt_id: 'updated',
     });

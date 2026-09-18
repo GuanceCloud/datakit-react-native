@@ -22,6 +22,15 @@ class RUMScreen extends React.Component {
             var test;
             test.color; //This will generate a TypeError: undefined
       }
+      generateLongTask = () => {
+            const startTime = performance.now();
+            // Intentionally block the JS thread for 1 second, exceeding the 200 ms
+            // threshold configured in example/index.tsx. Only run on a button press.
+            while (performance.now() - startTime < 1000) {
+                  // Synchronous work is required here; an async delay would not block JS.
+            }
+            console.log(`JS long task example: blocked for ${Math.round(performance.now() - startTime)} ms`);
+      }
       _sectionComp = (info: any) => {
             var txt = " " + info.section.title;
             return <Text
@@ -85,6 +94,16 @@ class RUMScreen extends React.Component {
 
       render() {
             var sections = [
+                  {
+                        key: "D",
+                        title: "JavaScript Long Task",
+                        data: [
+                              {
+                                    title: "Trigger JS Long Task (block JS for 1 s)",
+                                    onPress: this.generateLongTask,
+                              }
+                        ]
+                  },
                   {
                         key: "A",
                         title: "When auto collection is not enabled, you can manually collect via API",
