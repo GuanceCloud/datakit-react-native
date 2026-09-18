@@ -40,3 +40,28 @@ index 35b8868eaa3a656f36c4dfbf198e751b43cb259e..350b09c59e9664f6b646877edb4edbe9
    if (simulator.state !== 'Booted') {
      bootSimulator(simulator);
    }
+diff --git a/build/commands/runCommand/createRun.js b/build/commands/runCommand/createRun.js
+--- a/build/commands/runCommand/createRun.js
++++ b/build/commands/runCommand/createRun.js
+@@ -161,16 +161,12 @@
+       _cliTools().logger.info('No booted devices or simulators found. Launching first available simulator...');
+       return (0, _runOnSimulator.runOnSimulator)(xcodeProject, platformName, mode, scheme, args, fallbackSimulator);
+     }
+-    _cliTools().logger.info(`Found booted ${booted.map(({
+-      name
+-    }) => name).join(', ')}`);
+-    for (const device of bootedDevices) {
+-      await (0, _runOnDevice.runOnDevice)(device, platformName, mode, scheme, xcodeProject, args);
++    const target = booted[0];
++    _cliTools().logger.info(`Found booted ${target.name}`);
++    if (target.type === 'device') {
++      return (0, _runOnDevice.runOnDevice)(target, platformName, mode, scheme, xcodeProject, args);
+     }
+-    for (const simulator of bootedSimulators) {
+-      await (0, _runOnSimulator.runOnSimulator)(xcodeProject, platformName, mode, scheme, args, simulator || fallbackSimulator);
+-    }
+-    return;
++    return (0, _runOnSimulator.runOnSimulator)(xcodeProject, platformName, mode, scheme, args, target);
+   }
+   if (args.device && args.udid) {
+     return _cliTools().logger.error('The `device` and `udid` options are mutually exclusive.');
