@@ -34,6 +34,7 @@ const mockFTReactNativeLog = {
 
 const mockFTReactNativeTrace = {
   setConfig: jest.fn().mockResolvedValue(undefined),
+  getTraceHeaderFieldsSync: jest.fn().mockReturnValue({}),
 };
 
 const mockWebSocketMetadata = {
@@ -236,31 +237,141 @@ describe('native adapter config forwarding', () => {
     });
   });
 
-  it('enables iOS WebSocket tracking with native resource collection', async () => {
-    const startTracking = jest
-      .spyOn(FTRumWebSocketTracking, 'startTracking')
-      .mockImplementation();
-    const stopTracking = jest
-      .spyOn(FTRumWebSocketTracking, 'stopTracking')
-      .mockImplementation();
+  it.each([true, false, undefined])(
+    'enables iOS WebSocket tracking independently when native resource collection is %s',
+    async (nativeResource) => {
+      const startTracking = jest
+        .spyOn(FTRumWebSocketTracking, 'startTracking')
+        .mockImplementation();
+      const stopTracking = jest
+        .spyOn(FTRumWebSocketTracking, 'stopTracking')
+        .mockImplementation();
 
-    await FTReactNativeRUM.setConfig({
+      const config = {
+        androidAppId: 'android-app-id',
+        iOSAppId: 'ios-app-id',
+        enableNativeUserResource: nativeResource,
+        enableIOSWebSocketResource: true,
+      };
+      await FTReactNativeRUM.setConfig(config);
+
+      expect(startTracking).toHaveBeenCalledTimes(1);
+      expect(startTracking).toHaveBeenCalledWith(FTReactNativeRUM);
+      expect(stopTracking).not.toHaveBeenCalled();
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith({
+        ...config,
+        enableLongTask: false,
+        longTaskThresholdMs: 100,
+      });
+    }
+  );
+
+  it('reports a traced handshake through the native bridge with native resource collection disabled', async () => {
+    FTRumWebSocketTracking.shutDown();
+    const originalWebSocket = globalThis.WebSocket;
+    const performanceDescriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      'performance'
+    );
+    let now = 100;
+    Object.defineProperty(globalThis, 'performance', {
+      configurable: true,
+      value: { now: () => now },
+    });
+    class TestWebSocket {
+      _socketId = 7;
+      listeners = new Map<string, () => void>();
+      constructor(
+        readonly url: string,
+        readonly protocols?: string[],
+        readonly options?: { headers?: Record<string, unknown> }
+      ) {}
+      addEventListener(type: string, listener: () => void) {
+        this.listeners.set(type, listener);
+      }
+      removeEventListener(type: string) {
+        this.listeners.delete(type);
+      }
+    }
+    globalThis.WebSocket =
+      TestWebSocket as unknown as typeof globalThis.WebSocket;
+    let resolveStart!: () => void;
+    mockWebSocketMetadata.startResource.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveStart = resolve;
+      })
+    );
+    mockFTReactNativeTrace.getTraceHeaderFieldsSync.mockReturnValueOnce({
+      traceparent: 'test-trace-header',
+    });
+    const config = {
       androidAppId: 'android-app-id',
       iOSAppId: 'ios-app-id',
-      enableNativeUserResource: true,
-    });
+      enableNativeUserResource: false,
+      enableIOSWebSocketResource: true,
+    };
+    try {
+      await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: true });
+      await FTReactNativeRUM.setConfig(config);
+      const constructor = globalThis.WebSocket;
+      const socket = new globalThis.WebSocket(
+        'wss://example.com/socket'
+      ) as unknown as TestWebSocket;
+      expect(socket.options?.headers?.traceparent).toBe('test-trace-header');
+      expect(mockWebSocketMetadata.startCapture).toHaveBeenCalledTimes(1);
+      expect(mockWebSocketMetadata.startResource).toHaveBeenCalledTimes(1);
 
-    expect(startTracking).toHaveBeenCalledTimes(1);
-    expect(startTracking).toHaveBeenCalledWith(FTReactNativeRUM);
-    expect(stopTracking).not.toHaveBeenCalled();
+      // Toggling native HTTP collection must not retire WebSocket capture.
+      await FTReactNativeRUM.setConfig({
+        ...config,
+        enableNativeUserResource: true,
+      });
+      await FTReactNativeRUM.setConfig(config);
+      expect(globalThis.WebSocket).toBe(constructor);
+      expect(mockWebSocketMetadata.startCapture).toHaveBeenCalledTimes(1);
+      expect(mockWebSocketMetadata.stopCapture).not.toHaveBeenCalled();
+      now = 125;
+      socket.listeners.get('open')!();
+      expect(socket.listeners.size).toBe(0);
+      expect(mockWebSocketMetadata.stopResource).toHaveBeenCalledTimes(1);
+      // Delayed native start acknowledgement must not extend the 25 ms handshake.
+      now = 1000;
+      resolveStart();
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      expect(mockWebSocketMetadata.addResource).toHaveBeenCalledTimes(1);
+      const [key, , , session] =
+        mockWebSocketMetadata.startResource.mock.calls[0];
+      expect(mockWebSocketMetadata.addResource).toHaveBeenCalledWith(
+        key,
+        expect.objectContaining({ webSocketEvent: 'open', url: socket.url }),
+        { duration: 25000000 },
+        session
+      );
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenLastCalledWith({
+        ...config,
+        enableLongTask: false,
+        longTaskThresholdMs: 100,
+      });
+    } finally {
+      FTRumWebSocketTracking.shutDown();
+      globalThis.WebSocket = originalWebSocket;
+      if (performanceDescriptor) {
+        Object.defineProperty(globalThis, 'performance', performanceDescriptor);
+      } else {
+        Reflect.deleteProperty(globalThis, 'performance');
+      }
+    }
   });
 
   it.each([
-    ['the switch is disabled on iOS', 'ios', false],
-    ['native resource collection is enabled on Android', 'android', true],
+    ['the iOS WebSocket switch is omitted', 'ios', true, undefined],
+    ['the iOS WebSocket switch is disabled', 'ios', true, false],
+    ['the iOS switch is enabled on Android', 'android', true, true],
+    ['the iOS switch is disabled on Android', 'android', true, false],
+    ['the iOS switch is omitted on Android', 'android', true, undefined],
   ])(
     'does not enable JS WebSocket tracking when %s',
-    async (_, os, enabled) => {
+    async (_, os, nativeResource, webSocketResource) => {
       mockPlatform.OS = os;
       const startTracking = jest
         .spyOn(FTRumWebSocketTracking, 'startTracking')
@@ -269,14 +380,56 @@ describe('native adapter config forwarding', () => {
         .spyOn(FTRumWebSocketTracking, 'stopTracking')
         .mockImplementation();
 
-      await FTReactNativeRUM.setConfig({
+      const config = {
         androidAppId: 'android-app-id',
         iOSAppId: 'ios-app-id',
-        enableNativeUserResource: enabled,
-      });
+        enableNativeUserResource: nativeResource,
+        enableIOSWebSocketResource: webSocketResource,
+      };
+      await FTReactNativeRUM.setConfig(config);
 
       expect(startTracking).not.toHaveBeenCalled();
       expect(stopTracking).toHaveBeenCalledTimes(1);
+      // The iOS-only switch must not disable HTTP or Android native collection.
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith({
+        ...config,
+        enableLongTask: false,
+        longTaskThresholdMs: 100,
+      });
+    }
+  );
+
+  it.each([undefined, false])(
+    'leaves the constructor, native capture and WebSocket Trace inactive when the iOS switch is %s',
+    async (enabled) => {
+      FTRumWebSocketTracking.shutDown();
+      const originalWebSocket = globalThis.WebSocket;
+      class TestWebSocket {}
+      globalThis.WebSocket =
+        TestWebSocket as unknown as typeof globalThis.WebSocket;
+      try {
+        await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: true });
+        await FTReactNativeRUM.setConfig({
+          androidAppId: 'android-app-id',
+          iOSAppId: 'ios-app-id',
+          enableNativeUserResource: true,
+          enableIOSWebSocketResource: enabled,
+        });
+        expect(globalThis.WebSocket).toBe(TestWebSocket);
+        expect(
+          new globalThis.WebSocket('wss://example.com/socket')
+        ).toBeInstanceOf(TestWebSocket);
+        expect(mockWebSocketMetadata.startCapture).not.toHaveBeenCalled();
+        expect(
+          mockFTReactNativeTrace.getTraceHeaderFieldsSync
+        ).not.toHaveBeenCalled();
+        expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledWith({
+          enableNativeAutoTrace: true,
+        });
+      } finally {
+        FTRumWebSocketTracking.shutDown();
+        globalThis.WebSocket = originalWebSocket;
+      }
     }
   );
 
@@ -441,7 +594,8 @@ describe('FTMobileReactNative shutdown', () => {
     const oldRum = FTReactNativeRUM.setConfig({
       iOSAppId: 'ios',
       androidAppId: 'android',
-      enableNativeUserResource: true,
+      enableNativeUserResource: false,
+      enableIOSWebSocketResource: true,
     });
     const oldTrace = FTReactNativeTrace.setConfig({
       enableNativeAutoTrace: true,
@@ -449,7 +603,8 @@ describe('FTMobileReactNative shutdown', () => {
     await FTReactNativeRUM.setConfig({
       iOSAppId: 'ios',
       androidAppId: 'android',
-      enableNativeUserResource: false,
+      enableNativeUserResource: true,
+      enableIOSWebSocketResource: false,
     });
     await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: false });
     resolveRum();
@@ -479,7 +634,8 @@ describe('FTMobileReactNative shutdown', () => {
       const config = {
         androidAppId: 'android',
         iOSAppId: 'ios',
-        enableNativeUserResource: true,
+        enableNativeUserResource: false,
+        enableIOSWebSocketResource: true,
       };
       try {
         let configured = false;
@@ -494,7 +650,7 @@ describe('FTMobileReactNative shutdown', () => {
         else
           await FTReactNativeRUM.setConfig({
             ...config,
-            enableNativeUserResource: false,
+            enableIOSWebSocketResource: false,
           });
         expect(globalThis.WebSocket).toBe(TestWebSocket);
         resolveCapture();
@@ -532,7 +688,8 @@ describe('FTMobileReactNative shutdown', () => {
     const rumConfig = {
       androidAppId: 'android-app-id',
       iOSAppId: 'ios-app-id',
-      enableNativeUserResource: true,
+      enableNativeUserResource: false,
+      enableIOSWebSocketResource: true,
     };
     const oldRumConfig = FTReactNativeRUM.setConfig(rumConfig);
     const oldTraceConfig = FTReactNativeTrace.setConfig({

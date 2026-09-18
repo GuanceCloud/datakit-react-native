@@ -127,6 +127,7 @@ async function reactNativeInitSDK() {
     enableTraceWebView: true,
     iosCrashMonitoringType: IOSCrashMonitoringType.all,
     enableNativeUserResource: true,
+    enableIOSWebSocketResource: true,
     enableResourceHostIP:true,
     enableTrackNativeAppANR:true,
     enableTrackNativeCrash:true,

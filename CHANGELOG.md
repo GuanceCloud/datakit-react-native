@@ -5,7 +5,7 @@
 # 0.4.3
 * Upgraded compatibility to iOS `GuanceSDK 1.6.7`, Android `ft-sdk 1.7.5`, Android `ft-plugin 1.3.8` and Android `ft-session-replay 0.1.8`.
 * Fixed remote configuration updates and callbacks under React Native New Architecture on iOS and Android.
-* Added automatic React Native WebSocket handshake Resource collection on iOS and Android, including distributed trace correlation and handshake success or failure details.
+* Added automatic React Native WebSocket handshake Resource collection on iOS and Android, including distributed trace correlation and handshake success or failure details. iOS collection is controlled by `FTRUMConfig.enableIOSWebSocketResource` (default `false`) and is independent of `enableNativeUserResource`. Android collection remains controlled by `enableNativeUserResource`.
 * Improved React Native development Resource filtering on iOS and Android to exclude Metro, Inspector, HMR, and debugger WebSocket requests.
 * Added the optional `@cloudcare/react-native-mobile-babel-plugin` package for build-time React Native interaction tracking and readable RUM `action_name` values.
 * Added React Native JavaScript long task monitoring on iOS and Android, with `FTRUMConfig.enableLongTask` to enable collection and `FTRUMConfig.longTaskThresholdMs` to configure the detection threshold.

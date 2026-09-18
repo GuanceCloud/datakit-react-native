@@ -89,6 +89,10 @@ export enum IOSCrashMonitoringType {
  * @param enableNativeUserAction whether to start Native Action tracking, Button click events, recommended to disable for pure react-native apps
  * @param enableNativeUserView whether to start Native View auto tracking, recommended to disable for pure react-native apps
  * @param enableNativeUserResource whether to automatically collect react-native Resource
+ * @param enableIOSWebSocketResource whether to collect iOS WebSocket opening handshakes as RUM Resources. Defaults to false.
+ * Independent of enableNativeUserResource. Android native WebSocket collection is unaffected.
+ * iOS WebSocket Trace header injection requires both this option and enableNativeAutoTrace.
+ * When disabled, new iOS WebSocket connections are not instrumented or automatically injected with Trace headers by this SDK.
  * @param enableResourceHostIP whether to collect network request Host IP (only for native http, iOS 13 and above)
  * @param errorMonitorType error monitoring supplement type
  * @param deviceMonitorType page monitoring supplement type
@@ -116,6 +120,7 @@ export interface FTRUMConfig {
   enableNativeUserAction?: boolean;
   enableNativeUserView?: boolean;
   enableNativeUserResource?: boolean;
+  enableIOSWebSocketResource?: boolean;
   enableResourceHostIP?: boolean;
   errorMonitorType?: ErrorMonitorType;
   deviceMonitorType?: DeviceMetricsMonitorType;
@@ -289,7 +294,7 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     );
     const webSocketLifecycle = FTRumWebSocketTracking.getLifecycleVersion();
     const webSocketConfigVersion = ++this.webSocketConfigVersion;
-    const trackWebSocket = config.enableNativeUserResource === true;
+    const trackWebSocket = config.enableIOSWebSocketResource === true;
     console.log('FTRUMConfig');
     if (config.enableAutoTrackError) {
       FTRumErrorTracking.startTracking();
