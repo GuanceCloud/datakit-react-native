@@ -30,7 +30,8 @@
     "pods": "cd example && pod-install --quiet",
     "lint": "yarn workspace @cloudcare/react-native-mobile lint && yarn workspace @cloudcare/react-native-session-replay lint && yarn workspace @cloudcare/react-native-mobile-babel-plugin lint",
     "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript && yarn workspace @cloudcare/react-native-mobile-babel-plugin typescript",
-    "test": "yarn workspace @cloudcare/react-native-mobile test && yarn workspace @cloudcare/react-native-mobile-babel-plugin test"
+    "test": "yarn workspace @cloudcare/react-native-mobile test && yarn workspace @cloudcare/react-native-mobile-babel-plugin test",
+    "test:publish": "node --test scripts/publish-npm.test.cjs"
   },
   "prettier": {
     "quoteProps": "consistent",

@@ -40,6 +40,8 @@ jobs:
           yarn install --immutable
       - name: Validate versions
         run: yarn check-version
+      - name: Test publishing workflow
+        run: yarn test:publish
       - name: Test beta releases
         if: contains(github.ref_name, '-beta')
         run: yarn test --runInBand
