@@ -383,8 +383,7 @@ RCT_REMAP_METHOD(clearAllData,
     }else if(datakitUrl && datakitUrl.length>0){
       config = [[FTSDKConfig alloc]initWithDatakitUrl:datakitUrl];
     }else{
-      resolve(nil);
-      return;
+      config = [[FTSDKConfig alloc]init];
     }
     if ([context.allKeys containsObject:@"debug"]) {
       config.enableSDKDebugLog = [RCTConvert BOOL:context[@"debug"]];

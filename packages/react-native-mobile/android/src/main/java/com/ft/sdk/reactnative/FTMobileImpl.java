@@ -367,6 +367,19 @@ public class FTMobileImpl {
         return convertedFilters;
     }
 
+    static FTSDKConfig buildSDKConfig(@Nullable String datakitUrl,
+                                      @Nullable String datawayUrl,
+                                      @Nullable String clientToken) {
+        if (datakitUrl != null && datakitUrl.length() > 0) {
+            return FTSDKConfig.builder(datakitUrl);
+        }
+        if (datawayUrl != null && datawayUrl.length() > 0
+            && clientToken != null && clientToken.length() > 0) {
+            return FTSDKConfig.builder(datawayUrl, clientToken);
+        }
+        return FTSDKConfig.builder();
+    }
+
     public void sdkConfig(ReadableMap context, Promise promise) {
         Map<String, Object> map = context.toHashMap();
         String datakitUrl = (String) map.get("datakitUrl");
@@ -393,9 +406,7 @@ public class FTMobileImpl {
         this.remoteConfigOverrideRules = context.hasKey("remoteConfigOverrideRules")
             ? context.getArray("remoteConfigOverrideRules") : null;
 
-        FTSDKConfig sdkConfig = (datakitUrl != null)
-            ? FTSDKConfig.builder(datakitUrl)
-            : FTSDKConfig.builder(datawayUrl, cliToken);
+        FTSDKConfig sdkConfig = buildSDKConfig(datakitUrl, datawayUrl, cliToken);
 
         if (env != null) {
             EnvType envType;
