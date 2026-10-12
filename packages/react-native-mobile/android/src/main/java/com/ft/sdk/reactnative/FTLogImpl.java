@@ -21,6 +21,7 @@ public class FTLogImpl {
     Map<String, Object> map = context.toHashMap();
     Integer discardStrategy = ReactNativeUtils.convertToNativeInt(map.get("discardStrategy"));
     Double sampleRate = (Double) map.get("sampleRate");
+    Double logSamplingRate = (Double) map.get("logSamplingRate");
     ArrayList<Object> logTypeReadArr = (ArrayList<Object>) map.get("logLevelFilters");
     Boolean enableLinkRumData = (Boolean) map.get("enableLinkRumData");
     Boolean enableWebViewLog = (Boolean) map.get("enableWebViewLog");
@@ -48,7 +49,9 @@ public class FTLogImpl {
     FTLoggerConfig logConfig = new FTLoggerConfig()
       .setLogCacheDiscardStrategy(logCacheDiscard);
 
-    if (sampleRate != null) {
+    if (logSamplingRate != null) {
+      logConfig.setLogSamplingRate(logSamplingRate.floatValue());
+    } else if (sampleRate != null) {
       logConfig.setLogSamplingRate((float) (sampleRate * 100.0));
     }
 

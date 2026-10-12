@@ -45,7 +45,13 @@ export enum TextAndInputPrivacyLevel {
  * @returns a Promise.
  */
 export interface FTSessionReplayConfig {
+  /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
+  sessionReplaySamplingRate?: number;
+  /** @deprecated Use sessionReplaySamplingRate. Legacy probability in [0, 1]. */
   sampleRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over sessionReplayOnErrorSampleRate. */
+  sessionReplayOnErrorSamplingRate?: number;
+  /** @deprecated Use sessionReplayOnErrorSamplingRate. Legacy probability in [0, 1]. */
   sessionReplayOnErrorSampleRate?: number;
   privacy?: SessionReplayPrivacy;
   touchPrivacy?: TouchPrivacyLevel;

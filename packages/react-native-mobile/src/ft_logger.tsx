@@ -28,6 +28,9 @@ export enum FTLogCacheDiscard {
  * @param logCacheLimitCount get maximum log entry count limit [1000,), default 5000
  */
 export interface FTLogConfig {
+  /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
+  logSamplingRate?: number;
+  /** @deprecated Use logSamplingRate. Legacy probability in [0, 1]. */
   sampleRate?: number;
   enableLinkRumData?: boolean;
   enableCustomLog?: boolean;

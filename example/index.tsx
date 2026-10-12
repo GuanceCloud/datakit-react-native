@@ -102,7 +102,7 @@ async function reactNativeInitSDK() {
     enableWebViewLog: true,
     enableLinkRumData: true,
     logCacheLimitCount: 2000,
-    sampleRate:1, // RN probability 1 maps to native logSamplingRate 100%.
+    logSamplingRate:100, // Percentage: 100 means all logs.
     globalContext: { 'log_example': 'example2' },
   };
   await FTReactNativeLog.logConfig(logConfig);
@@ -111,7 +111,7 @@ async function reactNativeInitSDK() {
   let traceConfig: FTTraceConfig = {
     enableLinkRUMData: true,
     enableNativeAutoTrace: true,
-    sampleRate:1.0,
+    traceSamplingRate:100,
     traceType: TraceType.ddTrace,
   };
   await FTReactNativeTrace.setConfig(traceConfig);
@@ -125,7 +125,8 @@ async function reactNativeInitSDK() {
     enableAutoTrackError: true,
     enableNativeUserAction: true,
     enableNativeUserView: false,
-    sampleRate:1,
+    sessionSamplingRate:100,
+    sessionOnErrorSamplingRate:0,
     enableTraceWebView: true,
     iosCrashMonitoringType: IOSCrashMonitoringType.all,
     enableNativeUserResource: true,
@@ -162,8 +163,8 @@ async function reactNativeInitSDK() {
      })
    */
   let sessionReplayConfig:FTSessionReplayConfig = {
-    sampleRate:1, // RN probability 1 maps to native sessionReplaySamplingRate 100%.
-    sessionReplayOnErrorSampleRate:0, // Native default: error replay disabled.
+    sessionReplaySamplingRate:100,
+    sessionReplayOnErrorSamplingRate:0, // Native default: error replay disabled.
     privacy:SessionReplayPrivacy.ALLOW
   }
   await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);

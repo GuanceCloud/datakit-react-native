@@ -42,8 +42,10 @@ RCT_REMAP_METHOD(logWithStatusString,
 
 - (void)logConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FTLoggerConfig *logger = [[FTLoggerConfig alloc]init];
-  if ([context.allKeys containsObject:@"sampleRate"]) {
-      logger.logSamplingRate = [RCTConvert double:context[@"sampleRate"]] * 100;
+  if ([context.allKeys containsObject:@"logSamplingRate"]) {
+    logger.logSamplingRate = [RCTConvert double:context[@"logSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sampleRate"]) {
+    logger.logSamplingRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
   if ([context.allKeys containsObject:@"enableWebViewLog"]) {
       logger.enableWebViewLog = [RCTConvert BOOL:context[@"enableWebViewLog"]];

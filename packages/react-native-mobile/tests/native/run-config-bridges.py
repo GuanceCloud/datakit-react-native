@@ -18,9 +18,16 @@ def method(path, signature):
     return source[start:end]
 
 
+def sampling_region(path, start, end):
+    source = (ROOT / path).read_text()
+    return source[source.index(start):source.index(end, source.index(start))]
+
+
 def run_ios(tmp):
     log = method('packages/react-native-mobile/ios/FTReactNativeLog.mm', '- (void)logConfig:')
     replay = method('packages/react-native-session-replay/ios/FTReactNativeSessionReplay.mm', '- (void)sessionReplayConfig:')
+    rum_sampling = sampling_region('packages/react-native-mobile/ios/FTReactNativeRUM.mm', '  if ([context.allKeys containsObject:@"sessionSamplingRate"])', '  if ([context.allKeys containsObject:@"enableNativeUserAction"])')
+    trace_sampling = sampling_region('packages/react-native-mobile/ios/FTReactNativeTrace.mm', '  if ([context.allKeys containsObject:@"traceSamplingRate"])', '  if ([context.allKeys containsObject:@"traceType"])')
     source = r'''
 #import <Foundation/Foundation.h>
 #include <math.h>
@@ -46,6 +53,12 @@ enum { FTTouchPrivacyLevelShow, FTTouchPrivacyLevelHide,
 + (id)NSNumberArray:(id)v { return v; }
 + (id)NSDictionary:(id)v { return v; }
 + (id)NSString:(id)v { return v; }
+@end
+@interface SamplingConfig : NSObject
+@property float sessionSamplingRate, sessionOnErrorSamplingRate, traceSamplingRate;
+@end
+@implementation SamplingConfig
+- (instancetype)init { if ((self = [super init])) { _sessionSamplingRate = 100; _traceSamplingRate = 100; } return self; }
 @end
 @interface FTLoggerConfig : NSObject
 @property float logSamplingRate;
@@ -100,7 +113,7 @@ static FTSessionReplayConfig *lastReplay;
 @interface ConfigBridge : NSObject { TestBridge *_bridge; }
 @end
 @implementation ConfigBridge
-''' + log + '\n' + replay + r'''
+''' + log + '\n' + replay + '\n- (void)rumSampling:(NSDictionary *)context config:(SamplingConfig *)rumConfig {\n' + rum_sampling + '}\n- (void)traceSampling:(NSDictionary *)context config:(SamplingConfig *)trace {\n' + trace_sampling + '}\n' + r'''
 @end
 static int failures;
 static void check(double actual, double expected) {
@@ -137,7 +150,30 @@ int main() { @autoreleasepool {
   [bridge sessionReplayConfig:@{@"sessionReplayOnErrorSampleRate": @0.001} resolve:resolve reject:reject];
   check(lastReplay.sessionReplaySamplingRate, 100);
   check(lastReplay.sessionReplayOnErrorSamplingRate, 0.1);
-  check(resolved, 13);
+  for (NSNumber *percentage in @[@0, @0.1, @12.5, @100]) {
+    [bridge logConfig:@{@"sampleRate": @1, @"logSamplingRate": percentage} resolve:resolve reject:reject];
+    check(lastLog.logSamplingRate, percentage.doubleValue);
+    [bridge sessionReplayConfig:@{@"sampleRate": @1, @"sessionReplayOnErrorSampleRate": @1,
+      @"sessionReplaySamplingRate": percentage, @"sessionReplayOnErrorSamplingRate": percentage} resolve:resolve reject:reject];
+    check(lastReplay.sessionReplaySamplingRate, percentage.doubleValue);
+    check(lastReplay.sessionReplayOnErrorSamplingRate, percentage.doubleValue);
+  }
+  check(resolved, 21);
+  for (NSNumber *percentage in @[@0, @0.1, @12.5, @100]) {
+    for (int includeLegacy = 0; includeLegacy <= 1; includeLegacy++) {
+      NSMutableDictionary *context = [@{@"sessionSamplingRate": percentage, @"sessionOnErrorSamplingRate": percentage, @"traceSamplingRate": percentage} mutableCopy];
+      if (includeLegacy) { context[@"sampleRate"] = @1; context[@"sessionOnErrorSampleRate"] = @1; }
+      SamplingConfig *config = [SamplingConfig new];
+      [bridge rumSampling:context config:config]; [bridge traceSampling:context config:config];
+      check(config.sessionSamplingRate, percentage.doubleValue); check(config.sessionOnErrorSamplingRate, percentage.doubleValue); check(config.traceSamplingRate, percentage.doubleValue);
+    }
+  }
+  SamplingConfig *config = [SamplingConfig new];
+  [bridge rumSampling:@{@"sampleRate": @0.001, @"sessionOnErrorSampleRate": @0.125} config:config];
+  [bridge traceSampling:@{@"sampleRate": @0.001} config:config];
+  check(config.sessionSamplingRate, 0.1); check(config.sessionOnErrorSamplingRate, 12.5); check(config.traceSamplingRate, 0.1);
+  config = [SamplingConfig new]; [bridge rumSampling:@{} config:config]; [bridge traceSampling:@{} config:config];
+  check(config.sessionSamplingRate, 100); check(config.sessionOnErrorSamplingRate, 0); check(config.traceSamplingRate, 100);
   if (failures) return 1;
   puts("iOS config bridge: 0, 0.1, 12.5, 100 percent; WebView true/false/omitted; defaults PASS");
 } }
@@ -224,6 +260,13 @@ map.clear(); log.logConfig(() -> map, promise); check(FTSdk.log.webView ? 1 : 0,
 replay.sessionReplayConfig(() -> map, promise, new ReactContext()); check(FTSdk.replay.percentage, 100); check(FTSdk.replay.errorPercentage, 0);
 map.put("sampleRate", 0.125); replay.sessionReplayConfig(() -> map, promise, new ReactContext()); check(FTSdk.replay.percentage, 12.5); check(FTSdk.replay.errorPercentage, 0);
 map.clear(); map.put("sessionReplayOnErrorSampleRate", 0.001); replay.sessionReplayConfig(() -> map, promise, new ReactContext()); check(FTSdk.replay.percentage, 100); check(FTSdk.replay.errorPercentage, 0.1); check(resolved, 13);
+for (double percentage : new double[]{0, 0.1, 12.5, 100}) {
+map.clear(); map.put("sampleRate", 1.0); map.put("logSamplingRate", percentage);
+map.put("sessionReplayOnErrorSampleRate", 1.0); map.put("sessionReplaySamplingRate", percentage); map.put("sessionReplayOnErrorSamplingRate", percentage);
+log.logConfig(() -> map, promise); check(FTSdk.log.percentage, percentage);
+replay.sessionReplayConfig(() -> map, promise, new ReactContext()); check(FTSdk.replay.percentage, percentage); check(FTSdk.replay.errorPercentage, percentage);
+}
+check(resolved, 21);
 if (failures > 0) throw new AssertionError(failures + " config checks failed");
 System.out.println("Android config bridge (Java 8): percentages; WebView true/false/omitted; defaults PASS");
 } }''')

@@ -49,7 +49,9 @@ public class FTRUMImpl implements LifecycleEventListener {
     Map<String, Object> map = context.toHashMap();
     String rumAppId = (String) map.get("androidAppId");
     Double sampleRate = (Double) map.get("sampleRate");
+    Double sessionSamplingRate = (Double) map.get("sessionSamplingRate");
     Double sessionOnErrorSampleRate = (Double) map.get("sessionOnErrorSampleRate");
+    Double sessionOnErrorSamplingRate = (Double) map.get("sessionOnErrorSamplingRate");
 
     Boolean enableNativeUserAction = (Boolean) map.get("enableNativeUserAction");
     Boolean enableNativeUserView = (Boolean) map.get("enableNativeUserView");
@@ -71,11 +73,15 @@ public class FTRUMImpl implements LifecycleEventListener {
     ArrayList<String> allowWebViewHost = (ArrayList<String>) map.get("allowWebViewHost");
 
     FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId);
-    if (sampleRate != null) {
-      rumConfig.setSamplingRate(sampleRate.floatValue());
+    if (sessionSamplingRate != null) {
+      rumConfig.setSessionSamplingRate(sessionSamplingRate.floatValue());
+    } else if (sampleRate != null) {
+      rumConfig.setSessionSamplingRate((float) (sampleRate * 100.0));
     }
-    if (sessionOnErrorSampleRate != null) {
-      rumConfig.setSessionErrorSampleRate(sessionOnErrorSampleRate.floatValue());
+    if (sessionOnErrorSamplingRate != null) {
+      rumConfig.setSessionOnErrorSamplingRate(sessionOnErrorSamplingRate.floatValue());
+    } else if (sessionOnErrorSampleRate != null) {
+      rumConfig.setSessionOnErrorSamplingRate((float) (sessionOnErrorSampleRate * 100.0));
     }
     if (enableNativeUserAction != null) {
       rumConfig.setEnableTraceUserAction(enableNativeUserAction);

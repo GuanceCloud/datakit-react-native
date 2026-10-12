@@ -107,7 +107,13 @@ export enum IOSCrashMonitoringType {
 export interface FTRUMConfig {
   androidAppId: string;
   iOSAppId: string;
+  /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
+  sessionSamplingRate?: number;
+  /** @deprecated Use sessionSamplingRate. Legacy probability in [0, 1]. */
   sampleRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over sessionOnErrorSampleRate. */
+  sessionOnErrorSamplingRate?: number;
+  /** @deprecated Use sessionOnErrorSamplingRate. Legacy probability in [0, 1]. */
   sessionOnErrorSampleRate?: number;
   enableAutoTrackUserAction?: boolean;
   enableAutoTrackError?: boolean;

@@ -171,6 +171,18 @@ export type FTRemoteConfigOverrideValues = {
   compressIntakeRequests?: boolean;
   syncPageSize?: number;
   syncSleepTime?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over the legacy field. */
+  sessionSamplingRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over the legacy field. */
+  sessionOnErrorSamplingRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over the legacy field. */
+  traceSamplingRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over the legacy field. */
+  logSamplingRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over the legacy field. */
+  sessionReplaySamplingRate?: number;
+  /** Sampling percentage in [0, 100]; takes precedence over the legacy field. */
+  sessionReplayOnErrorSamplingRate?: number;
   rumSampleRate?: number;
   rumSessionOnErrorSampleRate?: number;
   rumEnableTraceUserAction?: boolean;

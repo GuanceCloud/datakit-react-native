@@ -153,7 +153,15 @@ describe('FTMobileReactNative remote configuration APIs', () => {
       {
         id: 'force-log-sampling',
         match: { customKeys: { user_tier: 'internal' } },
-        override: { logSampleRate: 1 },
+        override: {
+          logSampleRate: 1,
+          logSamplingRate: 0.1,
+          sessionSamplingRate: 0,
+          sessionOnErrorSamplingRate: 12.5,
+          traceSamplingRate: 100,
+          sessionReplaySamplingRate: 12.5,
+          sessionReplayOnErrorSamplingRate: 0,
+        },
       },
     ];
 
@@ -774,4 +782,44 @@ describe('Native Adapter Logger and Session Replay configuration', () => {
       mockFTReactNativeSessionReplay.sessionReplayConfig
     ).toHaveBeenCalledWith({});
   });
+});
+
+describe('percentage sampling configuration', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([0, 0.1, 12.5, 100])(
+    'forwards %s percent across all configs',
+    async (rate) => {
+      const log = { logSamplingRate: rate, sampleRate: 1 };
+      const rum = {
+        androidAppId: 'app',
+        iOSAppId: 'app',
+        sessionSamplingRate: rate,
+        sessionOnErrorSamplingRate: rate,
+        sampleRate: 1,
+        sessionOnErrorSampleRate: 1,
+      };
+      const trace = { traceSamplingRate: rate, sampleRate: 1 };
+      const replay = {
+        sessionReplaySamplingRate: rate,
+        sessionReplayOnErrorSamplingRate: rate,
+        sampleRate: 1,
+        sessionReplayOnErrorSampleRate: 1,
+      };
+      await FTReactNativeLog.logConfig(log);
+      await FTReactNativeRUM.setConfig(rum);
+      await FTReactNativeTrace.setConfig(trace);
+      await FTReactNativeSessionReplay.sessionReplayConfig(replay);
+      expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith(log);
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith({
+        ...rum,
+        enableLongTask: false,
+        longTaskThresholdMs: 100,
+      });
+      expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledWith(trace);
+      expect(
+        mockFTReactNativeSessionReplay.sessionReplayConfig
+      ).toHaveBeenCalledWith(replay);
+    }
+  );
 });

@@ -275,6 +275,24 @@ RCT_EXPORT_MODULE()
     if ([override.allKeys containsObject:@"logSampleRate"]) {
       model.logSampleRate = @([RCTConvert double:override[@"logSampleRate"]]);
     }
+    if ([override.allKeys containsObject:@"sessionSamplingRate"]) {
+      model.sessionSamplingRate = @([RCTConvert double:override[@"sessionSamplingRate"]]);
+    }
+    if ([override.allKeys containsObject:@"sessionOnErrorSamplingRate"]) {
+      model.sessionOnErrorSamplingRate = @([RCTConvert double:override[@"sessionOnErrorSamplingRate"]]);
+    }
+    if ([override.allKeys containsObject:@"traceSamplingRate"]) {
+      model.traceSamplingRate = @([RCTConvert double:override[@"traceSamplingRate"]]);
+    }
+    if ([override.allKeys containsObject:@"logSamplingRate"]) {
+      model.logSamplingRate = @([RCTConvert double:override[@"logSamplingRate"]]);
+    }
+    if ([override.allKeys containsObject:@"sessionReplaySamplingRate"]) {
+      model.sessionReplaySamplingRate = @([RCTConvert double:override[@"sessionReplaySamplingRate"]]);
+    }
+    if ([override.allKeys containsObject:@"sessionReplayOnErrorSamplingRate"]) {
+      model.sessionReplayOnErrorSamplingRate = @([RCTConvert double:override[@"sessionReplayOnErrorSamplingRate"]]);
+    }
     if ([override.allKeys containsObject:@"logLevelFilters"]) {
       model.logLevelFilters = [RCTConvert NSArray:override[@"logLevelFilters"]];
     }

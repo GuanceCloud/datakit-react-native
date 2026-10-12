@@ -101,8 +101,10 @@ RCT_REMAP_METHOD(cancelWebSocketTrace,
 
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   FTTraceConfig *trace = [[FTTraceConfig alloc]init];
-  if ([context.allKeys containsObject:@"sampleRate"]) {
-      trace.sampleRate = [RCTConvert double:context[@"sampleRate"]] * 100;
+  if ([context.allKeys containsObject:@"traceSamplingRate"]) {
+    trace.traceSamplingRate = [RCTConvert double:context[@"traceSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sampleRate"]) {
+    trace.traceSamplingRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
   if ([context.allKeys containsObject:@"traceType"]) {
       int traceType = [RCTConvert int:context[@"traceType"]];

@@ -21,13 +21,16 @@ public class FTTraceImpl {
   public void setConfig(ReadableMap context, Promise promise) {
     Map<String, Object> map = context.toHashMap();
     Double sampleRate = (Double) map.get("sampleRate");
+    Double traceSamplingRate = (Double) map.get("traceSamplingRate");
     Integer traceType = ReactNativeUtils.convertToNativeInt(map.get("traceType"));
     Boolean enableLinkRUMData = (Boolean) map.get("enableLinkRUMData");
     Boolean enableNativeAutoTrace = (Boolean) map.get("enableNativeAutoTrace");
 
     FTTraceConfig traceConfig = new FTTraceConfig();
-    if (sampleRate != null) {
-      traceConfig.setSamplingRate(sampleRate.floatValue());
+    if (traceSamplingRate != null) {
+      traceConfig.setTraceSamplingRate(traceSamplingRate.floatValue());
+    } else if (sampleRate != null) {
+      traceConfig.setTraceSamplingRate((float) (sampleRate * 100.0));
     }
 
     if (traceType != null) {

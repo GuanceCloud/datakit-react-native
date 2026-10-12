@@ -41,6 +41,9 @@ export enum TraceType {
  * @param enableNativeAutoTrace whether to enable automatic tracing
  */
 export interface FTTraceConfig {
+  /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
+  traceSamplingRate?: number;
+  /** @deprecated Use traceSamplingRate. Legacy probability in [0, 1]. */
   sampleRate?: number;
   traceType?: TraceType;
   enableLinkRUMData?: boolean;

@@ -170,11 +170,15 @@ RCT_REMAP_METHOD(addResource,
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
-  if ([context.allKeys containsObject:@"sampleRate"]) {
-    rumConfig.sampleRate = [RCTConvert double:context[@"sampleRate"]] * 100;
+  if ([context.allKeys containsObject:@"sessionSamplingRate"]) {
+    rumConfig.sessionSamplingRate = [RCTConvert double:context[@"sessionSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sampleRate"]) {
+    rumConfig.sessionSamplingRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
-  if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
-    rumConfig.sessionOnErrorSampleRate  = [RCTConvert double:context[@"sessionOnErrorSampleRate"]]*100;
+  if ([context.allKeys containsObject:@"sessionOnErrorSamplingRate"]) {
+    rumConfig.sessionOnErrorSamplingRate = [RCTConvert double:context[@"sessionOnErrorSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
+    rumConfig.sessionOnErrorSamplingRate = [RCTConvert double:context[@"sessionOnErrorSampleRate"]] * 100;
   }
   if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
     rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];
