@@ -98,9 +98,11 @@ async function reactNativeInitSDK() {
   // log settings
   let logConfig: FTLogConfig = {
     enableCustomLog: true,
+    // Collect Browser Logs SDK events from WebViews (native demo enables this).
+    enableWebViewLog: true,
     enableLinkRumData: true,
     logCacheLimitCount: 2000,
-    sampleRate:1,
+    sampleRate:1, // RN probability 1 maps to native logSamplingRate 100%.
     globalContext: { 'log_example': 'example2' },
   };
   await FTReactNativeLog.logConfig(logConfig);
@@ -160,7 +162,8 @@ async function reactNativeInitSDK() {
      })
    */
   let sessionReplayConfig:FTSessionReplayConfig = {
-    sampleRate:1,
+    sampleRate:1, // RN probability 1 maps to native sessionReplaySamplingRate 100%.
+    sessionReplayOnErrorSampleRate:0, // Native default: error replay disabled.
     privacy:SessionReplayPrivacy.ALLOW
   }
   await FTReactNativeSessionReplay.sessionReplayConfig(sessionReplayConfig);

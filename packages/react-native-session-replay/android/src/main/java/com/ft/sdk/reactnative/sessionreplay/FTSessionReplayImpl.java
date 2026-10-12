@@ -37,11 +37,11 @@ public class FTSessionReplayImpl {
     FTSessionReplayConfig sessionReplayConfig = new FTSessionReplayConfig();
 
     if (sampleRate != null) {
-      sessionReplayConfig.setSampleRate(sampleRate.floatValue());
+      sessionReplayConfig.setSessionReplaySamplingRate((float) (sampleRate * 100.0));
     }
 
     if (sessionReplayOnErrorSampleRate != null) {
-      sessionReplayConfig.setSessionReplayOnErrorSampleRate(sessionReplayOnErrorSampleRate.floatValue());
+      sessionReplayConfig.setSessionReplayOnErrorSamplingRate((float) (sessionReplayOnErrorSampleRate * 100.0));
     }
 
     // Handle deprecated privacy setting for backward compatibility

@@ -2,6 +2,11 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# Unreleased
+
+* Adapted iOS `GuanceSDK 1.6.8-alpha.10`, Android `agent_1.7.6-alpha06`, and Android Session Replay `replay_0.1.9-alpha05`: added `FTLogConfig.enableWebViewLog` and mapped existing RN sampling probabilities to native percentage APIs, preserving fractional Logger and Session Replay sampling on iOS.
+
+---
 # 0.4.3-alpha.2
 * Fixed npm publishing for the Babel plugin.
 * Improved Babel plugin prerelease compatibility.

@@ -23,6 +23,7 @@ public class FTLogImpl {
     Double sampleRate = (Double) map.get("sampleRate");
     ArrayList<Object> logTypeReadArr = (ArrayList<Object>) map.get("logLevelFilters");
     Boolean enableLinkRumData = (Boolean) map.get("enableLinkRumData");
+    Boolean enableWebViewLog = (Boolean) map.get("enableWebViewLog");
     Boolean enableCustomLog = (Boolean) map.get("enableCustomLog");
     HashMap<String, Object> globalContext = (HashMap<String, Object>) map.get("globalContext");
     Integer logCacheLimitCount = ReactNativeUtils.convertToNativeInt(map.get("logCacheLimitCount"));
@@ -48,7 +49,7 @@ public class FTLogImpl {
       .setLogCacheDiscardStrategy(logCacheDiscard);
 
     if (sampleRate != null) {
-      logConfig.setSamplingRate(sampleRate.floatValue());
+      logConfig.setLogSamplingRate((float) (sampleRate * 100.0));
     }
 
     if (logTypeReadArr != null) {
@@ -68,6 +69,10 @@ public class FTLogImpl {
 
     if (enableLinkRumData != null) {
       logConfig.setEnableLinkRumData(enableLinkRumData);
+    }
+
+    if (enableWebViewLog != null) {
+      logConfig.setEnableWebViewLog(enableWebViewLog);
     }
 
     if (enableCustomLog != null) {

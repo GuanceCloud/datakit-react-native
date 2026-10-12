@@ -32,6 +32,10 @@ const mockFTReactNativeLog = {
   logConfig: jest.fn().mockResolvedValue(undefined),
 };
 
+const mockFTReactNativeSessionReplay = {
+  sessionReplayConfig: jest.fn().mockResolvedValue(undefined),
+};
+
 const mockFTReactNativeTrace = {
   setConfig: jest.fn().mockResolvedValue(undefined),
   getTraceHeaderFieldsSync: jest.fn().mockReturnValue({}),
@@ -52,6 +56,7 @@ const mockNativeModules = {
   FTMobileReactNative: mockFTMobileReactNative,
   FTReactNativeRUM: mockFTReactNativeRUM,
   FTReactNativeLog: mockFTReactNativeLog,
+  FTReactNativeSessionReplay: mockFTReactNativeSessionReplay,
   FTReactNativeTrace: mockFTReactNativeTrace,
 };
 
@@ -74,6 +79,11 @@ const { FTMobileReactNative } = require('../ft_mobile_agent');
 const { FTReactNativeRUM } = require('../ft_rum');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTReactNativeLog } = require('../ft_logger');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const {
+  FTReactNativeSessionReplay,
+} = require('../../../react-native-session-replay/src/ft_session_replay');
+/* eslint-enable @typescript-eslint/no-var-requires */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTReactNativeTrace } = require('../ft_tracing');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -709,5 +719,59 @@ describe('FTMobileReactNative shutdown', () => {
     await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: true });
     expect(startTracking).toHaveBeenCalledTimes(1);
     expect(setTrace).toHaveBeenCalledWith(true);
+  });
+});
+
+describe('Native Adapter Logger and Session Replay configuration', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it.each([true, false, undefined])(
+    'forwards enableWebViewLog=%s without changing RN sampling units',
+    async (enableWebViewLog) => {
+      const config = {
+        sampleRate: 0.001,
+        ...(enableWebViewLog === undefined ? {} : { enableWebViewLog }),
+      };
+
+      await FTReactNativeLog.logConfig(config);
+
+      expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledTimes(1);
+      expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith({
+        sampleRate: 0.001,
+        ...(enableWebViewLog === undefined ? {} : { enableWebViewLog }),
+      });
+    }
+  );
+
+  it.each([0, 0.001, 0.125, 1])(
+    'forwards Session Replay probability %s unchanged for native conversion',
+    async (rate) => {
+      await FTReactNativeSessionReplay.sessionReplayConfig({
+        sampleRate: rate,
+        sessionReplayOnErrorSampleRate: rate,
+      });
+
+      expect(
+        mockFTReactNativeSessionReplay.sessionReplayConfig
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockFTReactNativeSessionReplay.sessionReplayConfig
+      ).toHaveBeenCalledWith({
+        sampleRate: rate,
+        sessionReplayOnErrorSampleRate: rate,
+      });
+    }
+  );
+
+  it('leaves omitted sampling fields to native defaults', async () => {
+    await FTReactNativeLog.logConfig({});
+    await FTReactNativeSessionReplay.sessionReplayConfig({});
+
+    expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith({});
+    expect(
+      mockFTReactNativeSessionReplay.sessionReplayConfig
+    ).toHaveBeenCalledWith({});
   });
 });
