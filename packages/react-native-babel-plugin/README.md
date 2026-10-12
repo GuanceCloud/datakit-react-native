@@ -1,4 +1,4 @@
-# Guance React Native Babel Plugin
+# Guance React Native Babel plugin
 
 This plugin wraps supported React Native interaction handlers at build time so
 the Guance SDK can write a stable, readable value to RUM `action_name`. Use
