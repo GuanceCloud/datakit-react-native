@@ -4,9 +4,8 @@
 
 # Unreleased
 
-* Added unified percentage sampling fields for Logger, RUM, Trace, Session Replay, and remote config overrides. Legacy probability fields remain supported; new fields take precedence. RUM and Trace on iOS now preserve fractional sampling percentages.
-
-* Adapted iOS `GuanceSDK 1.6.8-alpha.10`, Android `agent_1.7.6-alpha06`, and Android Session Replay `replay_0.1.9-alpha05`: added `FTLogConfig.enableWebViewLog` and mapped existing RN sampling probabilities to native percentage APIs, preserving fractional Logger and Session Replay sampling on iOS.
+* Added unified percentage sampling fields (`0–100`) for Logger, RUM, Trace, Session Replay, and remote config overrides, with support for fractional percentages on iOS and Android. Legacy probability fields (`0–1`) remain supported; the new fields take precedence when both are set.
+* Upgraded compatibility to iOS `GuanceSDK 1.6.8-alpha.10`, Android `ft-sdk 1.7.6-alpha06`, and Android `ft-session-replay 0.1.9-alpha05`. Added `FTLogConfig.enableWebViewLog` to collect Browser Logs SDK events from WebViews.
 
 ---
 # 0.4.3-alpha.2
