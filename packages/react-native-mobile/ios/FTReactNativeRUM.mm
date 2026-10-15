@@ -15,6 +15,47 @@
 #import <UIKit/UIKit.h>
 #import "FTReactNativeUtils.h"
 #import "FTJSLongTaskMonitor.h"
+#import <GuanceSDK/FTVisitorIDConfig+Private.h>
+#include <math.h>
+
+static FTVisitorIDConfig *FTVisitorIdConfigFromDictionary(id value, NSError **error) {
+  if (!value || value == NSNull.null) return nil;
+  NSString *reason = nil;
+  FTVisitorIDConfig *config = [FTVisitorIDConfig new];
+  if (![value isKindOfClass:NSDictionary.class]) {
+    reason = @"visitorIdConfig must be an object";
+  } else {
+    NSDictionary *map = value;
+    config.header = [map[@"header"] isKindOfClass:NSString.class] ? map[@"header"] : nil;
+    id hours = map[@"ttlHours"];
+    if (hours) {
+      double milliseconds = [hours isKindOfClass:NSNumber.class] ? [hours doubleValue] * 3600000 : NAN;
+      if (!isfinite(milliseconds) || milliseconds < 1 || milliseconds >= 9223372036854775807.0) reason = @"Visitor ID TTL is out of range";
+      else config.ttlHours = [hours doubleValue];
+    }
+    for (NSString *key in @[@"urlPrefixes", @"regularExpressions"]) {
+      id rules = map[key];
+      if (!rules) continue;
+      if (![rules isKindOfClass:NSArray.class]) { reason = @"Visitor ID rules must be arrays"; break; }
+      for (id rule in rules) {
+        if (![rule isKindOfClass:NSString.class] || [rule length] == 0) { reason = @"Invalid Visitor ID rule"; break; }
+        if ([key isEqualToString:@"urlPrefixes"]) {
+          [config addMatchWithURLPrefix:rule];
+        } else {
+          NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:rule options:0 error:error];
+          if (!expression) return nil;
+          [config addMatchWithRegularExpression:expression];
+        }
+      }
+      if (reason) break;
+    }
+  }
+  if (reason) {
+    if (error) *error = [NSError errorWithDomain:@"com.guance.rn.visitor-id-config" code:1 userInfo:@{NSLocalizedDescriptionKey: reason}];
+    return nil;
+  }
+  return [config validatedCopyWithError:error];
+}
 
 @interface FTReactNativeRUM ()
 @property (atomic, strong, nullable) FTJSLongTaskMonitor *jsLongTaskMonitor;
@@ -168,8 +209,12 @@ RCT_REMAP_METHOD(addResource,
 }
 
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  NSError *visitorError = nil;
+  FTVisitorIDConfig *visitorConfig = FTVisitorIdConfigFromDictionary(context[@"visitorIdConfig"], &visitorError);
+  if (visitorError) { reject(@"E_VISITOR_ID_CONFIG", visitorError.localizedDescription, visitorError); return; }
   NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
+  rumConfig.visitorIDConfig = visitorConfig;
   if ([context.allKeys containsObject:@"sessionSamplingRate"]) {
     rumConfig.sessionSamplingRate = [RCTConvert double:context[@"sessionSamplingRate"]];
   } else if ([context.allKeys containsObject:@"sampleRate"]) {

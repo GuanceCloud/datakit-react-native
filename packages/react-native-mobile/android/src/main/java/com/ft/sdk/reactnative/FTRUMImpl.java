@@ -47,6 +47,13 @@ public class FTRUMImpl implements LifecycleEventListener {
   @ReactMethod
   public void setConfig(ReadableMap context, Promise promise) {
     Map<String, Object> map = context.toHashMap();
+    com.ft.sdk.FTVisitorIdConfig visitorIdConfig;
+    try {
+      visitorIdConfig = VisitorIdConfigMapper.fromMap(map.get("visitorIdConfig"));
+    } catch (IllegalArgumentException error) {
+      promise.reject("E_VISITOR_ID_CONFIG", error.getMessage(), error);
+      return;
+    }
     String rumAppId = (String) map.get("androidAppId");
     Double sampleRate = (Double) map.get("sampleRate");
     Double sessionSamplingRate = (Double) map.get("sessionSamplingRate");
@@ -72,7 +79,7 @@ public class FTRUMImpl implements LifecycleEventListener {
     Boolean enableTraceWebView = (Boolean) map.get("enableTraceWebView");
     ArrayList<String> allowWebViewHost = (ArrayList<String>) map.get("allowWebViewHost");
 
-    FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId);
+    FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId).setVisitorIdConfig(visitorIdConfig);
     if (sessionSamplingRate != null) {
       rumConfig.setSessionSamplingRate(sessionSamplingRate.floatValue());
     } else if (sampleRate != null) {

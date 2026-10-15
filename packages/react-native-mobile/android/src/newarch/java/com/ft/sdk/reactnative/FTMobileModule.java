@@ -40,6 +40,11 @@ public class FTMobileModule extends NativeFTMobileReactNativeSpec {
   }
 
   @ReactMethod
+  public void resetVisitorId(Promise promise) {
+    impl.resetVisitorId(promise);
+  }
+
+  @ReactMethod
   public void unbindRUMUserData(Promise promise) {
     impl.unbindRUMUserData(promise);
   }

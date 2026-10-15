@@ -41,6 +41,7 @@ export interface Spec extends TurboModule {
    * @returns a Promise.
    */
   unbindRUMUserData(): Promise<void>;
+  resetVisitorId(): Promise<void>;
   /**
    * Add custom global parameters. Applies to RUM and Log data
    * @param context custom global parameters.

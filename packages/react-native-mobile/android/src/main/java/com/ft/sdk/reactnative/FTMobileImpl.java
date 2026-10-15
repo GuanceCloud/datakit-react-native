@@ -552,6 +552,11 @@ public class FTMobileImpl {
         promise.resolve(null);
     }
 
+    public void resetVisitorId(Promise promise) {
+        FTSdk.resetVisitorId();
+        promise.resolve(null);
+    }
+
     public void bindRUMUserData(String userId, String userName, String userEmail, ReadableMap extra, Promise promise) {
         UserData userData = new UserData();
         userData.setId(userId);

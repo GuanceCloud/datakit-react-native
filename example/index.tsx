@@ -119,6 +119,12 @@ async function reactNativeInitSDK() {
 
   // rum settings
   let rumConfig: FTRUMConfig = {
+    // Replace this example endpoint with the HTTP(S) API that accepts visitor headers.
+    visitorIdConfig: {
+      header: 'x-visitor-id',
+      ttlHours: 24,
+      urlPrefixes: ['https://api.example.com/v1/'],
+    },
     androidAppId: Config.ANDROID_APP_ID,
     iOSAppId:Config.IOS_APP_ID,
     enableAutoTrackUserAction: true,

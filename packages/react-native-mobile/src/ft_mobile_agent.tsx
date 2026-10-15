@@ -332,6 +332,8 @@ type FTMobileReactNativeType = {
    * @returns a Promise.
    */
   unbindRUMUserData(): Promise<void>;
+  /** Rotate the native anonymous Visitor ID for subsequent requests. */
+  resetVisitorId(): Promise<void>;
   /**
    * Add custom global parameters. Applies to RUM and Log data
    * @param context custom global parameters.
@@ -442,6 +444,9 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
     extra?: object
   ): Promise<void> {
     return this.sdk.bindRUMUserData(userId, userName, userEmail, extra);
+  }
+  resetVisitorId(): Promise<void> {
+    return this.sdk.resetVisitorId();
   }
   unbindRUMUserData(): Promise<void> {
     return this.sdk.unbindRUMUserData();

@@ -1,3 +1,4 @@
+import { FTVisitorIdConfig, validateVisitorIdConfig } from './visitorIdConfig';
 // import { NativeModules } from 'react-native';
 import { Platform } from 'react-native';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
@@ -105,6 +106,8 @@ export enum IOSCrashMonitoringType {
  * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information.
  */
 export interface FTRUMConfig {
+  /** Valid config enables Visitor ID; omitted/null disables it. */
+  visitorIdConfig?: FTVisitorIdConfig | null;
   androidAppId: string;
   iOSAppId: string;
   /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
@@ -295,6 +298,13 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     .default;
 
   setConfig(config: FTRUMConfig): Promise<void> {
+    if (config.visitorIdConfig != null) {
+      try {
+        validateVisitorIdConfig(config.visitorIdConfig);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    }
     bridgeContextManager.configureLongTaskContext(
       config.enableLongTask === true
     );

@@ -7,6 +7,7 @@ const mockFTMobileReactNative = {
   setDatawayURL: jest.fn().mockResolvedValue(undefined),
   bindRUMUserData: jest.fn().mockResolvedValue(undefined),
   unbindRUMUserData: jest.fn().mockResolvedValue(undefined),
+  resetVisitorId: jest.fn().mockResolvedValue(undefined),
   appendGlobalContext: jest.fn().mockResolvedValue(undefined),
   appendRUMGlobalContext: jest.fn().mockResolvedValue(undefined),
   appendLogGlobalContext: jest.fn().mockResolvedValue(undefined),
@@ -822,4 +823,58 @@ describe('percentage sampling configuration', () => {
       ).toHaveBeenCalledWith(replay);
     }
   );
+});
+
+describe('Visitor ID configuration', () => {
+  beforeEach(() => jest.clearAllMocks());
+  const base = { androidAppId: 'app', iOSAppId: 'app' };
+  it('forwards declarative rules without changing lifetime units', async () => {
+    const visitorIdConfig = {
+      header: 'x-visitor-id',
+      ttlHours: 0.5,
+      urlPrefixes: ['https://api.example.com/v1/'],
+      regularExpressions: ['^https://api\\.example\\.com/orders/'],
+    };
+    await FTReactNativeRUM.setConfig({ ...base, visitorIdConfig });
+    expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ visitorIdConfig })
+    );
+  });
+  it.each([undefined, null])(
+    'allows disabled config %s',
+    async (visitorIdConfig) => {
+      await FTReactNativeRUM.setConfig({ ...base, visitorIdConfig });
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(
+        expect.objectContaining({ visitorIdConfig })
+      );
+    }
+  );
+  it.each([
+    { header: 'X-Visitor-Id', urlPrefixes: ['https://example.com/'] },
+    { header: 'x-visitor-id\n', urlPrefixes: ['https://example.com/'] },
+    { header: 'authorization', urlPrefixes: ['https://example.com/'] },
+    { header: 'x-api-key', urlPrefixes: ['https://example.com/'] },
+    { header: 'traceparent', urlPrefixes: ['https://example.com/'] },
+    { header: 'x-visitor-id' },
+    { header: 'x-visitor-id', urlPrefixes: [] },
+    { header: 'x-visitor-id', urlPrefixes: ['wss://example.com/'] },
+    { header: 'x-visitor-id', regularExpressions: [''] },
+    ...[0, -1, NaN, Infinity, 1e20].map((ttlHours) => ({
+      header: 'x-visitor-id',
+      ttlHours,
+      urlPrefixes: ['https://example.com/'],
+    })),
+  ])(
+    'rejects invalid config before configuring native RUM: %j',
+    async (visitorIdConfig) => {
+      await expect(
+        FTReactNativeRUM.setConfig({ ...base, visitorIdConfig })
+      ).rejects.toThrow();
+      expect(mockFTReactNativeRUM.setConfig).not.toHaveBeenCalled();
+    }
+  );
+  it('resets through the native SDK', async () => {
+    await FTMobileReactNative.resetVisitorId();
+    expect(mockFTMobileReactNative.resetVisitorId).toHaveBeenCalledTimes(1);
+  });
 });

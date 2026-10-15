@@ -61,3 +61,5 @@ export {
   FTBabelInteractionTracking,
   __ftExtractText,
 };
+
+export type { FTVisitorIdConfig } from './visitorIdConfig';

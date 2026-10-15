@@ -7,6 +7,7 @@
 //
 
 #import "FTMobileReactNative.h"
+#import <GuanceSDK/FTSDKAgent.h>
 #import <React/RCTConvert.h>
 #import <GuanceSDK/FTMobileAgent.h>
 #import <GuanceSDK/FTSDKConfig+Private.h>
@@ -338,6 +339,12 @@ RCT_REMAP_METHOD(bindRUMUserData,
   [self bindRUMUserData:userId userName:userName userEmail:userName extra:extra resolve:resolve reject:reject];
 }
 
+RCT_REMAP_METHOD(resetVisitorId,
+                 resetVisitorIdResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+  [self resetVisitorId:resolve reject:reject];
+}
+
 RCT_REMAP_METHOD(unbindRUMUserData,
                  unbindRUMUserData_Resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject
@@ -545,6 +552,11 @@ RCT_REMAP_METHOD(clearAllData,
   [[FTMobileAgent sharedInstance] unbindUser];
   resolve(nil);
 }
+- (void)resetVisitorId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [FTSDKAgent resetVisitorID];
+  resolve(nil);
+}
+
 - (void)clearAllData:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [FTMobileAgent clearAllData];
   resolve(nil);
