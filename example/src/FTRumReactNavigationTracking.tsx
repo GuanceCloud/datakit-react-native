@@ -63,7 +63,8 @@ export class FTRumReactNavigationTracking {
                     const navInfo:NavigationInfo = FTRumReactNavigationTracking.navigationInfoDict.get(e.target);
                     if(navInfo != null){
                     const endTime =  new Date().getTime(); 
-                    const duration = (endTime - navInfo.startTime)*1000;
+                    // Date timestamps are milliseconds; RUM loadTime uses nanoseconds.
+                    const duration = (endTime - navInfo.startTime)*1e6;
                     FTRumReactNavigationTracking.handleRouteNavigation(navInfo.route,undefined,duration);
                     FTRumReactNavigationTracking.navigationInfoDict.delete(e.target);
                 }

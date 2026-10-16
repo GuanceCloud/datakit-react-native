@@ -39,7 +39,8 @@ export class FTRumReactNativeNavigationTracking {
                         componentDidAppear: (event: ComponentDidAppearEvent) => {
                             const screenName = event.componentName;
                             const endTime =  new Date().getTime(); 
-                            const duration = startTime != null ?(endTime - startTime)*1000:0;
+                            // Date timestamps are milliseconds; RUM loadTime uses nanoseconds.
+                            const duration = startTime != null ?(endTime - startTime)*1e6:0;
                             FTReactNativeRUM.onCreateView(screenName,duration);
                             FTReactNativeRUM.startView(screenName);
                         },
