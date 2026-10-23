@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React-Core"
-  s.dependency 'GuanceSDK', '1.6.8-alpha.10'
+  s.dependency 'GuanceSDK', '1.6.8'
   
     xcconfig = {
     "HEADER_SEARCH_PATHS" => "$(inherited) " +

@@ -39,6 +39,6 @@ Visitor ID mapping checks:
 python3 packages/react-native-mobile/tests/native/run-visitor-id-config.py
 ```
 
-This compiles the production iOS mapping function and Android mapper against the real native config implementations from `/private/tmp/native-adapter-cache` (iOS `1.6.8-alpha.10`, Android `agent_1.7.6-alpha06`). It verifies 24-hour defaults, a 0.5-hour TTL (1,800,000 ms on Android), OR matching, origin restrictions, WebSocket URL exclusion, missing config and invalid regex handling. Native ID persistence and request lifetime logic are delegated to the SDK; this is not a live network or device test.
+This compiles the production iOS mapping function and Android mapper against the real native config implementations from `/private/tmp/native-adapter-cache` (iOS `1.6.8`, Android `agent_1.7.6`). It verifies 24-hour defaults, a 0.5-hour TTL (1,800,000 ms on Android), OR matching, origin restrictions, WebSocket URL exclusion, missing config and invalid regex handling. Native ID persistence and request lifetime logic are delegated to the SDK; this is not a live network or device test.
 
 `run-websocket-bridge.py` also checks the RUM and Mobile bridges against freshly generated old/new architecture protocols, including `resetVisitorId`.

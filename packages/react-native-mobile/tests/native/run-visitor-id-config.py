@@ -9,7 +9,7 @@ CACHE = Path('/private/tmp/native-adapter-cache')
 
 def native(platform, path):
     repo = CACHE / ('ssh_git_gitlab.jiagouyun.com_40022_cma_ft-sdk-' + platform + '.git')
-    tag = '1.6.8-alpha.10' if platform == 'ios' else 'agent_1.7.6-alpha06'
+    tag = '1.6.8' if platform == 'ios' else 'agent_1.7.6'
     return subprocess.check_output(['git', '--git-dir=' + str(repo), 'show', tag + ':' + path], text=True)
 
 def ios(tmp):
