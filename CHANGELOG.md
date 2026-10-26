@@ -4,6 +4,8 @@
 
 # Unreleased
 
+* Adapted automatic View tracking to native foreground/background lifecycle handling. Navigation adapters now use monotonic nanosecond loading durations with captured loading-start timestamps, restart Views on foreground without reusing loading data, and filter duplicate or stale callbacks. Manual View APIs remain compatible.
+
 * Added `FTRUMConfig.visitorIdConfig` for anonymous Visitor ID headers on matched HTTP(S) requests, with URL prefix/regex rules and a configurable fixed lifetime. Added `FTMobileReactNative.resetVisitorId()`. WebSocket requests are excluded.
 
 * Added unified percentage sampling fields (`0–100`) for Logger, RUM, Trace, Session Replay, and remote config overrides, with support for fractional percentages on iOS and Android. Legacy probability fields (`0–1`) remain supported; the new fields take precedence when both are set.

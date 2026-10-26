@@ -57,6 +57,16 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void onCreateViewWithLoadStart(String viewName, double duration, double loadStartEpochMs, Promise promise) {
+    impl.onCreateViewWithLoadStart(viewName, duration, loadStartEpochMs, promise);
+  }
+
+  @ReactMethod
+  public void startViewWithTrackingType(String viewName, ReadableMap map, double trackingType, Promise promise) {
+    impl.startViewWithTrackingType(viewName, map, trackingType, promise);
+  }
+
+  @ReactMethod
   public void onCreateView(String viewName, Double duration, Promise promise) {
     impl.onCreateView(viewName, duration, promise);
   }

@@ -24,6 +24,10 @@ const mockFTMobileReactNative = {
 };
 
 const mockFTReactNativeRUM = {
+  onCreateView: jest.fn().mockResolvedValue(undefined),
+  onCreateViewWithLoadStart: jest.fn().mockResolvedValue(undefined),
+  startView: jest.fn().mockResolvedValue(undefined),
+  startViewWithTrackingType: jest.fn().mockResolvedValue(undefined),
   setConfig: jest.fn().mockResolvedValue(undefined),
   setLongTaskContext: jest.fn().mockReturnValue(true),
   stopLongTaskTracking: jest.fn().mockResolvedValue(undefined),
@@ -876,5 +880,23 @@ describe('Visitor ID configuration', () => {
   it('resets through the native SDK', async () => {
     await FTMobileReactNative.resetVisitorId();
     expect(mockFTMobileReactNative.resetVisitorId).toHaveBeenCalledTimes(1);
+  });
+});
+
+
+describe('public View APIs', () => {
+  beforeEach(() => jest.clearAllMocks());
+  it('keeps manual start and loading on their existing native APIs', async () => {
+    await FTReactNativeRUM.onCreateView('Home', 25000000);
+    await FTReactNativeRUM.startView('Home', { screen: 'home' });
+    expect(mockFTReactNativeRUM.onCreateView).toHaveBeenCalledWith('Home', 25000000);
+    expect(mockFTReactNativeRUM.startView).toHaveBeenCalledWith('Home', expect.objectContaining({ screen: 'home' }));
+    expect(mockFTReactNativeRUM.onCreateViewWithLoadStart).not.toHaveBeenCalled();
+    expect(mockFTReactNativeRUM.startViewWithTrackingType).not.toHaveBeenCalled();
+  });
+  it('does not expose framework bridge methods or a tracking type enum', () => {
+    expect(FTReactNativeRUM).not.toHaveProperty('onCreateViewWithLoadStart');
+    expect(FTReactNativeRUM).not.toHaveProperty('startViewWithTrackingType');
+    expect(require('../index')).not.toHaveProperty('FTRUMViewTrackingType');
   });
 });

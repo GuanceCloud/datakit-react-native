@@ -214,7 +214,7 @@ type FTReactNativeRUMType = {
   /**
    * view load duration.
    * @param viewName view name
-   * @param loadTime view load duration
+   * @param loadTime monotonic view load duration in nanoseconds
    * @returns a Promise.
    */
   onCreateView(viewName: string, loadTime: number): Promise<void>;

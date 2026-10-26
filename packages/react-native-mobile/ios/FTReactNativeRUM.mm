@@ -9,6 +9,8 @@
 #import "FTReactNativeRUM.h"
 #import <GuanceSDK/FTMobileAgent.h>
 #import <GuanceSDK/FTExternalDataManager.h>
+#import <GuanceSDK/FTExternalDataManager+FrameworkIntegration.h>
+#import "FTReactNativeViewTiming.h"
 #import "FTReactNativeResource.h"
 #import <React/RCTConvert.h>
 #import <React/RCTBridge.h>
@@ -108,6 +110,16 @@ RCT_REMAP_METHOD(onCreateView,
                  rejecter:(RCTPromiseRejectBlock)reject){
   [self onCreateView:viewName loadTime:loadTime resolve:resolve reject:reject];
 }
+RCT_REMAP_METHOD(onCreateViewWithLoadStart,
+                 viewName:(NSString *)viewName loadTime:(double)loadTime loadStartEpochMs:(double)loadStartEpochMs
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  [self onCreateViewWithLoadStart:viewName loadTime:loadTime loadStartEpochMs:loadStartEpochMs resolve:resolve reject:reject];
+}
+RCT_REMAP_METHOD(startViewWithTrackingType,
+                 viewName:(NSString *)viewName property:(NSDictionary *)property trackingType:(double)trackingType
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  [self startViewWithTrackingType:viewName property:property trackingType:trackingType resolve:resolve reject:reject];
+}
 RCT_REMAP_METHOD(startView,
                   viewName:(NSString *)viewName property:(NSDictionary *)property
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
@@ -200,6 +212,21 @@ RCT_REMAP_METHOD(addResource,
 
 - (void)addResource:(NSString *)key resource:(NSDictionary *)content metrics:(NSDictionary *)metrics resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
   FTAddReactNativeResource(key, content, metrics);
+  resolve(nil);
+}
+
+- (void)onCreateViewWithLoadStart:(NSString *)viewName loadTime:(double)loadTime loadStartEpochMs:(double)loadStartEpochMs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  NSNumber *duration = FTViewDurationNanoseconds(loadTime);
+  [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:duration loadStartEpochNs:duration.longLongValue > 0 ? FTViewEpochNanoseconds(loadStartEpochMs) : nil];
+  resolve(nil);
+}
+
+- (void)startViewWithTrackingType:(NSString *)viewName property:(NSDictionary *)property trackingType:(double)trackingType resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  if (trackingType != 0 && trackingType != 1) {
+    reject(@"E_VIEW_TRACKING_TYPE", @"trackingType must be Manual (0) or Automatic (1)", nil);
+    return;
+  }
+  [[FTExternalDataManager sharedManager] startViewWithName:viewName property:property trackingType:(FTRUMViewTrackingType)(NSInteger)trackingType];
   resolve(nil);
 }
 

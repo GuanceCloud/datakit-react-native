@@ -43,10 +43,22 @@ export interface Spec extends TurboModule {
   /**
    * view load duration.
    * @param viewName view name
-   * @param loadTime view load duration
+   * @param loadTime monotonic view load duration in nanoseconds
    * @returns a Promise.
    */
   onCreateView(viewName: string, loadTime: number): Promise<void>;
+  /** Framework integration: duration in ns; epoch start in ms, converted natively. */
+  onCreateViewWithLoadStart(
+    viewName: string,
+    loadTime: number,
+    loadStartEpochMs: number
+  ): Promise<void>;
+  /** Framework integration: Manual = 0, Automatic = 1. */
+  startViewWithTrackingType(
+    viewName: string,
+    property: Object | undefined,
+    trackingType: number
+  ): Promise<void>;
   /**
    * view start.
    * @param viewName page name

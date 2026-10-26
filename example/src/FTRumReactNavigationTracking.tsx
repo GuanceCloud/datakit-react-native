@@ -1,167 +1,97 @@
-import type { EventArg, NavigationContainerRef, Route ,EventListenerCallback,EventMapBase} from "@react-navigation/native";
-import { FTReactNativeRUM } from '@cloudcare/react-native-mobile';
-import { AppState, AppStateStatus } from 'react-native';
+import type {
+  EventArg,
+  NavigationContainerRef,
+  Route,
+} from '@react-navigation/native';
+import {FTRumViewTracking} from '@cloudcare/react-native-mobile';
 
-declare type NavigationListener = (event: EventArg<string, boolean, any>) => void | null
+type NavigationListener = (event: EventArg<string, boolean, any>) => void;
+type TrackedRoute = Route<string, any | undefined>;
 
-
-declare type AppStateListener = (appStateStatus: AppStateStatus) => void | null
-declare type NavigationInfo = {
-    startTime:number,
-    route: Route<string, any | undefined> | undefined,
-}
+/** Choose either StackListener (with load timing) or startTrackingViews. */
 export class FTRumReactNavigationTracking {
+  private static tracker = new FTRumViewTracking();
+  private static registeredContainer: NavigationContainerRef<ReactNavigation.RootParamList> | null =
+    null;
+  private static currentTargetKey?: string;
+  private static transitions = new Map<string, TrackedRoute>();
+  static trackRouter: TrackedRoute | undefined;
 
-    private static registeredContainer: NavigationContainerRef<ReactNavigation.RootParamList> | null;
-    
-    private static navigationStateChangeListener: NavigationListener;
+  static startTrackingViews(
+    ref: NavigationContainerRef<ReactNavigation.RootParamList> | null,
+  ): void {
+    if (!ref || this.registeredContainer === ref) return;
+    if (this.registeredContainer)
+      this.stopTrackingViews(this.registeredContainer);
+    this.registeredContainer = ref;
+    this.tracker.start();
+    const route = ref.getCurrentRoute();
+    if (route) this.show(route);
+    ref.addListener('state', this.navigationListener);
+  }
 
-    private static appStateListener: AppStateListener;
+  static stopTrackingViews(
+    ref: NavigationContainerRef<ReactNavigation.RootParamList> | null,
+  ): void {
+    if (ref !== this.registeredContainer) return;
+    ref?.removeListener('state', this.navigationListener);
+    this.registeredContainer = null;
+    this.tracker.stop();
+    this.transitions.clear();
+    this.currentTargetKey = undefined;
+    this.trackRouter = undefined;
+  }
 
+  static StackListener = {
+    transitionEnd: (event: EventArg<string, boolean, any>): void => {
+      // A new start closes the previous route. A late closing transition must
+      // never issue an unscoped stop against the newly displayed route.
+      if (event.data?.closing || !event.target) return;
+      const route = this.transitions.get(event.target);
+      this.transitions.delete(event.target);
+      if (route && route.key === this.trackRouter?.key)
+        this.show(route, event.target);
+    },
+    state: (event: EventArg<string, boolean, any>): void => {
+      const outer = event.data?.state?.routes[event.data?.state?.index ?? 0];
+      const route = this.leafRoute(outer);
+      if (!route) return;
+      this.trackRouter = route;
+      this.tracker.setCurrent(route);
+      if (outer.key === this.currentTargetKey) {
+        this.transitions.clear();
+        this.transitions.set(outer.key, route);
+      } else {
+        this.transitions.clear();
+        this.show(route);
+      }
+      this.currentTargetKey = undefined;
+    },
+    focus: (event: EventArg<string, boolean, any>): void => {
+      this.currentTargetKey = event.target;
+      this.tracker.start();
+      if (event.target) this.tracker.beginLoad(event.target);
+    },
+  };
 
-    static  trackRouter:Route<string, any | undefined> | undefined = undefined;
-    private static  currentTargetKey:string|  undefined = undefined; 
-    private static  navigationInfoDict = new Map();
-
-    static startTrackingViews(
-        navigationRef: NavigationContainerRef<ReactNavigation.RootParamList> | null,
-        ): void {
-
-        if (navigationRef == null) {
-            console.log ("Cannot track views with a null navigationRef");
-            return;
-        }
-        if (FTRumReactNavigationTracking.registeredContainer != null && this.registeredContainer !== navigationRef) {
-        } else if (FTRumReactNavigationTracking.registeredContainer == null) {
-            const listener = FTRumReactNavigationTracking.resolveNavigationStateChangeListener();
-            FTRumReactNavigationTracking.handleRouteNavigation(navigationRef.getCurrentRoute());
-            navigationRef.addListener("state", listener);
-            FTRumReactNavigationTracking.registeredContainer = navigationRef;
-        }
-
-
-        FTRumReactNavigationTracking.registerAppStateListenerIfNeeded();
+  private static leafRoute(route: any): TrackedRoute | undefined {
+    while (route?.state) {
+      const child = route.state.routes?.[route.state.index ?? 0];
+      if (!child) break;
+      route = child;
     }
+    return route;
+  }
 
-    
-    static stopTrackingViews(navigationRef: NavigationContainerRef<ReactNavigation.RootParamList> | null): void {
-        if (navigationRef != null) {
-            navigationRef.removeListener("state", FTRumReactNavigationTracking.navigationStateChangeListener);
-            FTRumReactNavigationTracking.registeredContainer = null;
-        }
-    }
-    static  StackListener:Partial<{
-        transitionEnd?:EventListenerCallback<EventMapBase,"transitionEnd">| undefined;
-        state?:EventListenerCallback<EventMapBase,"state">| undefined;
-        focus?:EventListenerCallback<EventMapBase,"focus">| undefined
-    }>
-    = {
-        transitionEnd:(e) =>{
-            if(e.data?.closing == true){
-                FTReactNativeRUM.stopView();
-            }else{
-                    const navInfo:NavigationInfo = FTRumReactNavigationTracking.navigationInfoDict.get(e.target);
-                    if(navInfo != null){
-                    const endTime =  new Date().getTime(); 
-                    const duration = (endTime - navInfo.startTime)*1000;
-                    FTRumReactNavigationTracking.handleRouteNavigation(navInfo.route,undefined,duration);
-                    FTRumReactNavigationTracking.navigationInfoDict.delete(e.target);
-                }
-            }
-        },
-        state:(event:EventArg<string, boolean, any>) =>{
-            let route = event.data?.state?.routes[event.data?.state?.index];
-            let key = route.key;
-            let time = new Date().getTime(); 
+  private static show(route: TrackedRoute, loadingKey?: string): void {
+    this.trackRouter = route;
+    this.tracker.show(route, loadingKey);
+  }
 
-            while (route.state != undefined) {
-                const nestedRoute = route.state.routes[route.state.index];
-                if (nestedRoute == undefined) {
-                    break;
-                }
-                route = nestedRoute
-            }
-            if(FTRumReactNavigationTracking.currentTargetKey == key){
-                let nav:NavigationInfo ={
-                    startTime : time,
-                    route:route
-                } 
-                FTRumReactNavigationTracking.navigationInfoDict.set(key,nav);
-            }else{
-                FTRumReactNavigationTracking.handleRouteNavigation(route);
-            }
-            FTRumReactNavigationTracking.trackRouter = route;
-            FTRumReactNavigationTracking.currentTargetKey = undefined;
-        },
-        focus:(e)=>{
-            FTRumReactNavigationTracking.currentTargetKey = e.target;
-            FTRumReactNavigationTracking.registerAppStateListenerIfNeeded();
-        }
-    }
-    private static handleRouteNavigation(
-        route: Route<string, any | undefined> | undefined, 
-        appStateStatus: AppStateStatus | undefined = undefined,
-        duration: number = 0,
-        ) {
-        if (route == undefined || route == null) {
-            return
-        }
-        const key = route.key;
-
-        const screenName =  route.name;
-
-        if (key != null && screenName != null) {
-            if (appStateStatus === 'background') {
-                FTReactNativeRUM.stopView();
-            } else if (appStateStatus === 'active' || appStateStatus == undefined) {
-                FTReactNativeRUM.onCreateView(screenName,duration);
-                FTReactNativeRUM.startView(screenName);
-
-            }
-        }
-    }
-
-    private static resolveNavigationStateChangeListener(): NavigationListener {
-        if (FTRumReactNavigationTracking.navigationStateChangeListener == null) {
-            FTRumReactNavigationTracking.navigationStateChangeListener = (event: EventArg<string, boolean, any>) => {
-                let route = event.data?.state?.routes[event.data?.state?.index];
-
-                if (route == undefined) {
-                    return
-                }
-
-                while (route.state != undefined) {
-                    const nestedRoute = route.state.routes[route.state.index];
-                    if (nestedRoute == undefined) {
-                        break;
-                    }
-                    route = nestedRoute
-                }
-
-                FTRumReactNavigationTracking.handleRouteNavigation(route);
-            };
-        }
-        return FTRumReactNavigationTracking.navigationStateChangeListener;
-    }
-
-    private static registerAppStateListenerIfNeeded() {
-        if (FTRumReactNavigationTracking.appStateListener == null) {
-            FTRumReactNavigationTracking.appStateListener = (appStateStatus: AppStateStatus) => {
-
-                const currentRoute = FTRumReactNavigationTracking.registeredContainer?.getCurrentRoute();
-                if (currentRoute == undefined) {
-                    if(FTRumReactNavigationTracking.trackRouter != undefined){
-                        FTRumReactNavigationTracking.handleRouteNavigation(FTRumReactNavigationTracking.trackRouter, appStateStatus); 
-                    }
-                    return;
-                }
-
-                FTRumReactNavigationTracking.handleRouteNavigation(currentRoute, appStateStatus);
-            };
-
-            AppState.addEventListener("change", FTRumReactNavigationTracking.appStateListener);
-        }
-    }
-
+  private static navigationListener: NavigationListener = event => {
+    const route =
+      this.registeredContainer?.getCurrentRoute() ??
+      this.leafRoute(event.data?.state?.routes[event.data?.state?.index ?? 0]);
+    if (route) this.show(route);
+  };
 }
-

@@ -14,6 +14,7 @@ import com.ft.sdk.FTRUMGlobalManager;
 import com.ft.sdk.FTSdk;
 import com.ft.sdk.RUMCacheDiscard;
 import com.ft.sdk.garble.bean.AppState;
+import com.ft.sdk.garble.bean.ViewTrackingType;
 import com.ft.sdk.garble.bean.NetStatusBean;
 import com.ft.sdk.garble.bean.ResourceParams;
 import com.ft.sdk.reactnative.utils.ReactNativeUtils;
@@ -252,6 +253,25 @@ public class FTRUMImpl implements LifecycleEventListener {
     } else {
       FTRUMGlobalManager.get().addAction(actionName, actionType);
     }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void onCreateViewWithLoadStart(String viewName, double duration, double loadStartEpochMs, Promise promise) {
+    long nanoseconds = ViewTiming.durationNanoseconds(duration);
+    FTRUMGlobalManager.get().onCreateView(viewName, nanoseconds,
+        nanoseconds > 0 ? ViewTiming.epochNanoseconds(loadStartEpochMs) : 0);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void startViewWithTrackingType(String viewName, ReadableMap map, double trackingType, Promise promise) {
+    if (trackingType != 0 && trackingType != 1) {
+      promise.reject("E_VIEW_TRACKING_TYPE", "trackingType must be Manual (0) or Automatic (1)");
+      return;
+    }
+    FTRUMGlobalManager.get().startView(viewName, map == null ? null : map.toHashMap(),
+        trackingType == 1 ? ViewTrackingType.AUTOMATIC : ViewTrackingType.MANUAL);
     promise.resolve(null);
   }
 

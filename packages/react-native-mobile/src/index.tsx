@@ -63,3 +63,5 @@ export {
 };
 
 export type { FTVisitorIdConfig } from './visitorIdConfig';
+
+export { FTRumViewTracking } from './rum/FTRumViewTracking';
