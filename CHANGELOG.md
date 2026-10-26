@@ -4,14 +4,20 @@
 
 # Unreleased
 
-* Added `FTReactNativeRUM.updateViewLoadingTime(duration)` to update the current View's loading duration in nanoseconds on iOS and Android.
+---
+# 0.4.3
 
-* Adapted automatic View tracking to native foreground/background lifecycle handling. Navigation adapters now use monotonic nanosecond loading durations with captured loading-start timestamps, restart Views on foreground without reusing loading data, and filter duplicate or stale callbacks. Manual View APIs remain compatible.
-
-* Added `FTRUMConfig.visitorIdConfig` for anonymous Visitor ID headers on matched HTTP(S) requests, with URL prefix/regex rules and a configurable fixed lifetime. Added `FTMobileReactNative.resetVisitorId()`. WebSocket requests are excluded.
-
-* Added unified percentage sampling fields (`0–100`) for Logger, RUM, Trace, Session Replay, and remote config overrides, with support for fractional percentages on iOS and Android. Legacy probability fields (`0–1`) remain supported; the new fields take precedence when both are set.
-* Upgraded compatibility to iOS `GuanceSDK 1.6.8`, Android `ft-sdk 1.7.6`, Android `ft-session-replay 0.1.9`, and Android `ft-native 1.1.4`. Added `FTLogConfig.enableWebViewLog` to collect Browser Logs SDK events from WebViews.
+* Upgraded compatibility to iOS `GuanceSDK 1.6.8` and Android `ft-sdk 1.7.6`, `ft-plugin 1.3.8`, `ft-session-replay 0.1.9`, and `ft-native 1.1.4`.
+* Added unified percentage sampling fields (`0–100`) for RUM, Log, Trace, Session Replay, and remote configuration, with support for fractional percentages. Legacy probability fields (`0–1`) remain supported; the new fields take precedence when both are set.
+* Added `visitorIdConfig` and `resetVisitorId()` to inject anonymous Visitor ID headers into matched HTTP(S) requests, configure the identifier lifetime, and reset the identifier. WebSocket requests are excluded.
+* Adapted automatic View tracking to foreground/background lifecycle handling. Native closes Views on background entry, and navigation adapters restart them on foreground. Improved loading duration and loading-start capture, with safeguards against duplicate lifecycle calls and reuse of stale loading data.
+* Added `FTReactNativeRUM.updateViewLoadingTime(duration)` to update the current View's loading duration in nanoseconds.
+* Added iOS WebSocket handshake Resource collection through the independent `enableIOSWebSocketResource` option, disabled by default. Android uses native SDK automatic collection.
+* Added the optional `@cloudcare/react-native-mobile-babel-plugin` package for build-time interaction tracking and readable `action_name` values.
+* Added JavaScript long task monitoring on iOS and Android, with `enableLongTask` and `longTaskThresholdMs` to configure collection and the detection threshold.
+* Added `FTLogConfig.enableWebViewLog` to collect Browser Logs SDK events from WebViews.
+* Fixed remote configuration updates and callbacks under React Native New Architecture on iOS and Android. SDK initialization is now supported without an upload URL.
+* Improved development Resource filtering to exclude Metro, Inspector, HMR, and debugger WebSocket requests.
 
 ---
 # 0.4.3-alpha.2
