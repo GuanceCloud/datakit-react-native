@@ -54,6 +54,10 @@ nanoseconds, fractional milliseconds, invalid values and Int64 overflow boundari
 It also compiles the production bridge entry points with recording SDK doubles to
 check forwarded values, Automatic tracking type, invalid-type rejection and legacy
 Manual calls.
+It also verifies `updateViewLoadingTime` forwards exact nanoseconds (including
+zero and the maximum JS safe integer), rejects invalid values without replacing
+the prior duration, and maps to Android's `updateLoadTime` / iOS's
+`updateViewLoadingTime:` without creating or starting another View.
 `FTRumNavigationTracking.test.ts` uses controlled clocks and AppState events for
 load timing, one-time consumption, background recovery, expiry, duplicate/late
 callbacks and delayed native Promise completion. `run-websocket-bridge.py` also

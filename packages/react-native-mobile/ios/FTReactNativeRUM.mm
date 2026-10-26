@@ -115,6 +115,11 @@ RCT_REMAP_METHOD(onCreateViewWithLoadStart,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
   [self onCreateViewWithLoadStart:viewName loadTime:loadTime loadStartEpochMs:loadStartEpochMs resolve:resolve reject:reject];
 }
+RCT_REMAP_METHOD(updateViewLoadingTime,
+                 duration:(double)duration
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  [self updateViewLoadingTime:duration resolve:resolve reject:reject];
+}
 RCT_REMAP_METHOD(startViewWithTrackingType,
                  viewName:(NSString *)viewName property:(NSDictionary *)property trackingType:(double)trackingType
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -232,6 +237,15 @@ RCT_REMAP_METHOD(addResource,
 
 - (void)onCreateView:(NSString *)viewName loadTime:(double)loadTime resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
   [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:@(loadTime)];
+  resolve(nil);
+}
+
+- (void)updateViewLoadingTime:(double)duration resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  if (!isfinite(duration) || duration < 0 || duration > 9007199254740991.0 || duration != floor(duration)) {
+    reject(@"E_VIEW_LOADING_TIME", @"duration must be a non-negative safe integer in nanoseconds", nil);
+    return;
+  }
+  [[FTExternalDataManager sharedManager] updateViewLoadingTime:@((int64_t)duration)];
   resolve(nil);
 }
 

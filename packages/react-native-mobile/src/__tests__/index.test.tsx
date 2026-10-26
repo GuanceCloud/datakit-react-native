@@ -25,6 +25,7 @@ const mockFTMobileReactNative = {
 
 const mockFTReactNativeRUM = {
   onCreateView: jest.fn().mockResolvedValue(undefined),
+  updateViewLoadingTime: jest.fn().mockResolvedValue(undefined),
   onCreateViewWithLoadStart: jest.fn().mockResolvedValue(undefined),
   startView: jest.fn().mockResolvedValue(undefined),
   startViewWithTrackingType: jest.fn().mockResolvedValue(undefined),
@@ -883,20 +884,60 @@ describe('Visitor ID configuration', () => {
   });
 });
 
-
 describe('public View APIs', () => {
   beforeEach(() => jest.clearAllMocks());
+  it('updates the current View with exact nanoseconds, including zero', async () => {
+    await FTReactNativeRUM.updateViewLoadingTime(25500000);
+    await FTReactNativeRUM.updateViewLoadingTime(0);
+    await FTReactNativeRUM.updateViewLoadingTime(Number.MAX_SAFE_INTEGER);
+    expect(mockFTReactNativeRUM.updateViewLoadingTime.mock.calls).toEqual([
+      [25500000],
+      [0],
+      [9007199254740991],
+    ]);
+    expect(mockFTReactNativeRUM.onCreateView).not.toHaveBeenCalled();
+    expect(mockFTReactNativeRUM.startView).not.toHaveBeenCalled();
+  });
+  it.each([-1, NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    'rejects invalid loading duration %s without overwriting the current value',
+    async (duration) => {
+      await expect(
+        FTReactNativeRUM.updateViewLoadingTime(duration)
+      ).rejects.toThrow(
+        'duration must be a non-negative safe integer in nanoseconds'
+      );
+      expect(mockFTReactNativeRUM.updateViewLoadingTime).not.toHaveBeenCalled();
+    }
+  );
+  it('propagates native update failures to the caller', async () => {
+    const error = new Error('native update failed');
+    mockFTReactNativeRUM.updateViewLoadingTime.mockRejectedValueOnce(error);
+    await expect(FTReactNativeRUM.updateViewLoadingTime(25500000)).rejects.toBe(
+      error
+    );
+  });
   it('keeps manual start and loading on their existing native APIs', async () => {
     await FTReactNativeRUM.onCreateView('Home', 25000000);
     await FTReactNativeRUM.startView('Home', { screen: 'home' });
-    expect(mockFTReactNativeRUM.onCreateView).toHaveBeenCalledWith('Home', 25000000);
-    expect(mockFTReactNativeRUM.startView).toHaveBeenCalledWith('Home', expect.objectContaining({ screen: 'home' }));
-    expect(mockFTReactNativeRUM.onCreateViewWithLoadStart).not.toHaveBeenCalled();
-    expect(mockFTReactNativeRUM.startViewWithTrackingType).not.toHaveBeenCalled();
+    expect(mockFTReactNativeRUM.onCreateView).toHaveBeenCalledWith(
+      'Home',
+      25000000
+    );
+    expect(mockFTReactNativeRUM.startView).toHaveBeenCalledWith(
+      'Home',
+      expect.objectContaining({ screen: 'home' })
+    );
+    expect(
+      mockFTReactNativeRUM.onCreateViewWithLoadStart
+    ).not.toHaveBeenCalled();
+    expect(
+      mockFTReactNativeRUM.startViewWithTrackingType
+    ).not.toHaveBeenCalled();
   });
   it('does not expose framework bridge methods or a tracking type enum', () => {
     expect(FTReactNativeRUM).not.toHaveProperty('onCreateViewWithLoadStart');
     expect(FTReactNativeRUM).not.toHaveProperty('startViewWithTrackingType');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     expect(require('../index')).not.toHaveProperty('FTRUMViewTrackingType');
   });
 });

@@ -4,6 +4,8 @@
 
 # Unreleased
 
+* Added `FTReactNativeRUM.updateViewLoadingTime(duration)` to update the current View's loading duration in nanoseconds on iOS and Android.
+
 * Adapted automatic View tracking to native foreground/background lifecycle handling. Navigation adapters now use monotonic nanosecond loading durations with captured loading-start timestamps, restart Views on foreground without reusing loading data, and filter duplicate or stale callbacks. Manual View APIs remain compatible.
 
 * Added `FTRUMConfig.visitorIdConfig` for anonymous Visitor ID headers on matched HTTP(S) requests, with URL prefix/regex rules and a configurable fixed lifetime. Added `FTMobileReactNative.resetVisitorId()`. WebSocket requests are excluded.

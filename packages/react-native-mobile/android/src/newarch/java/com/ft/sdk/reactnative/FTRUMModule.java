@@ -72,6 +72,12 @@ public class FTRUMModule extends NativeFTReactNativeRUMSpec {
 
   @Override
   @ReactMethod
+  public void updateViewLoadingTime(double duration, Promise promise) {
+    impl.updateViewLoadingTime(duration, promise);
+  }
+
+  @Override
+  @ReactMethod
   public void onCreateView(String viewName, double duration, Promise promise) {
     impl.onCreateView(viewName, duration, promise);
   }

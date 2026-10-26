@@ -67,6 +67,11 @@ public class FTRUMModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void updateViewLoadingTime(double duration, Promise promise) {
+    impl.updateViewLoadingTime(duration, promise);
+  }
+
+  @ReactMethod
   public void onCreateView(String viewName, Double duration, Promise promise) {
     impl.onCreateView(viewName, duration, promise);
   }

@@ -70,6 +70,31 @@ over error-text inference.
 
 Apache 2.0
 
+### Updating View loading time
+
+The public `FTReactNativeRUM.updateViewLoadingTime(duration)` method replaces the
+current active View's loading duration on iOS and Android. Call it after
+`startView` and before `stopView`, while the same page is still active:
+
+```ts
+await FTReactNativeRUM.startView('Home');
+const loadingStart = performance.now();
+// Perform the page's loading work, then verify that Home is still the active View.
+const durationNs = Math.round((performance.now() - loadingStart) * 1_000_000);
+await FTReactNativeRUM.updateViewLoadingTime(durationNs);
+```
+
+The value is elapsed time from the observed loading start to loading completion,
+not a timestamp or time spent waiting for the bridge. Pass a non-negative safe
+integer in nanoseconds; invalid values reject without updating Native. Zero
+clears the loading duration, and subsequent calls replace rather than accumulate
+it. With no active View, there is no current View to update. This method does not
+identify a View, so callers must discard late loading callbacks after navigation
+or background closure; they could otherwise update a newer View. Promise
+completion acknowledges the native call, not data upload. No loading-start
+timestamp is supplied: this does not backfill pre-View AppState history (iOS
+resets its loading-state interval start to View start when updating).
+
 ### Automatic View framework integration
 
 Use the updated `example/src/FTRumReactNavigationTracking.tsx` (React Navigation)

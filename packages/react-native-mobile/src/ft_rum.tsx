@@ -219,6 +219,13 @@ type FTReactNativeRUMType = {
    */
   onCreateView(viewName: string, loadTime: number): Promise<void>;
   /**
+   * Replace the current active View's loading duration, between startView and stopView.
+   * @param duration monotonic elapsed time in nanoseconds; a non-negative safe integer.
+   * Zero clears loading time. Late calls can update a newer View; no View ID is supplied.
+   * @returns a Promise for the native call, not for data upload.
+   */
+  updateViewLoadingTime(duration: number): Promise<void>;
+  /**
    * view start.
    * @param viewName page name
    * @param property event context (optional)
@@ -371,6 +378,16 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   }
   onCreateView(viewName: string, loadTime: number): Promise<void> {
     return this.rum.onCreateView(viewName, loadTime);
+  }
+  updateViewLoadingTime(duration: number): Promise<void> {
+    if (!Number.isSafeInteger(duration) || duration < 0) {
+      return Promise.reject(
+        new RangeError(
+          'duration must be a non-negative safe integer in nanoseconds'
+        )
+      );
+    }
+    return this.rum.updateViewLoadingTime(duration);
   }
   startView(viewName: string, property?: object): Promise<void> {
     // Automatically merge bridge context properties with local properties

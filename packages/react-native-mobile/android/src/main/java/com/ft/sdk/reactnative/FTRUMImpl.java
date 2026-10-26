@@ -276,6 +276,17 @@ public class FTRUMImpl implements LifecycleEventListener {
   }
 
   @ReactMethod
+  public void updateViewLoadingTime(double duration, Promise promise) {
+    if (Double.isNaN(duration) || Double.isInfinite(duration) || duration < 0
+        || duration > 9007199254740991d || duration != Math.floor(duration)) {
+      promise.reject("E_VIEW_LOADING_TIME", "duration must be a non-negative safe integer in nanoseconds");
+      return;
+    }
+    FTRUMGlobalManager.get().updateLoadTime((long) duration);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
   public void onCreateView(String viewName, Double duration, Promise promise) {
     FTRUMGlobalManager.get().onCreateView(viewName, duration.longValue());
     promise.resolve(null);

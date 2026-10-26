@@ -47,6 +47,8 @@ export interface Spec extends TurboModule {
    * @returns a Promise.
    */
   onCreateView(viewName: string, loadTime: number): Promise<void>;
+  /** Replace the current View's loading duration; non-negative safe integer nanoseconds. */
+  updateViewLoadingTime(duration: number): Promise<void>;
   /** Framework integration: duration in ns; epoch start in ms, converted natively. */
   onCreateViewWithLoadStart(
     viewName: string,

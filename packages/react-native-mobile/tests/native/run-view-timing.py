@@ -72,7 +72,7 @@ public class ViewTimingTests {
     ios = (SDK / 'ios/FTReactNativeRUM.mm').read_text()
     methods = '\n'.join(method(ios, signature) for signature in [
         '- (void)onCreateViewWithLoadStart:', '- (void)startViewWithTrackingType:',
-        '- (void)onCreateView:', '- (void)startView:'])
+        '- (void)onCreateView:', '- (void)startView:', '- (void)updateViewLoadingTime:'])
     objc.write_text(r'''#import "FTReactNativeViewTiming.h"
 #include <assert.h>
 typedef NSInteger FTRUMViewTrackingType;
@@ -80,12 +80,14 @@ typedef void (^RCTPromiseResolveBlock)(id);
 typedef void (^RCTPromiseRejectBlock)(NSString *, NSString *, NSError *);
 static NSString *lastName; static NSNumber *lastDuration, *lastEpoch;
 static NSDictionary *lastProperty; static NSInteger lastType;
+static int updateCount; static int64_t updatedDuration;
 @interface FTExternalDataManager : NSObject
 + (instancetype)sharedManager;
 - (void)onCreateView:(NSString *)name loadTime:(NSNumber *)duration loadStartEpochNs:(NSNumber *)epoch;
 - (void)onCreateView:(NSString *)name loadTime:(NSNumber *)duration;
 - (void)startViewWithName:(NSString *)name property:(NSDictionary *)property trackingType:(NSInteger)type;
 - (void)startViewWithName:(NSString *)name property:(NSDictionary *)property;
+- (void)updateViewLoadingTime:(NSNumber *)duration;
 @end
 @implementation FTExternalDataManager
 + (instancetype)sharedManager { static id manager; if (!manager) manager = [self new]; return manager; }
@@ -93,6 +95,7 @@ static NSDictionary *lastProperty; static NSInteger lastType;
 - (void)onCreateView:(NSString *)name loadTime:(NSNumber *)duration { lastName=name; lastDuration=duration; lastEpoch=nil; }
 - (void)startViewWithName:(NSString *)name property:(NSDictionary *)property trackingType:(NSInteger)type { lastName=name; lastProperty=property; lastType=type; }
 - (void)startViewWithName:(NSString *)name property:(NSDictionary *)property { lastName=name; lastProperty=property; lastType=0; }
+- (void)updateViewLoadingTime:(NSNumber *)duration { updateCount++; updatedDuration=duration.longLongValue; }
 @end
 @interface Bridge : NSObject @end
 @implementation Bridge
@@ -116,6 +119,20 @@ int main(void) { @autoreleasepool {
   assert(lastType == 0 && [lastName isEqual:@"Manual"]);
   [bridge onCreateView:@"Manual" loadTime:1000000 resolve:resolve reject:reject];
   assert(lastDuration.longLongValue == 1000000 && lastEpoch == nil);
+  [bridge updateViewLoadingTime:25500000 resolve:resolve reject:reject];
+  assert(updatedDuration == 25500000 && updateCount == 1);
+  [bridge updateViewLoadingTime:0 resolve:resolve reject:reject];
+  assert(updatedDuration == 0 && updateCount == 2);
+  [bridge updateViewLoadingTime:9007199254740991.0 resolve:resolve reject:reject];
+  assert(updatedDuration == 9007199254740991LL && updateCount == 3);
+  double invalidUpdates[] = {-1, NAN, INFINITY, -INFINITY, 1.5, 9007199254740992.0, 0x1p63};
+  for (unsigned i=0; i<sizeof(invalidUpdates)/sizeof(double); i++) {
+    int before=rejected;
+    [bridge updateViewLoadingTime:invalidUpdates[i] resolve:resolve reject:reject];
+    assert(rejected == before + 1 && updateCount == 3 && updatedDuration == 9007199254740991LL);
+  }
+  // Updating is not another onCreateView/startView and does not alter their arguments.
+  assert(lastDuration.longLongValue == 1000000 && [lastName isEqual:@"Manual"]);
 } return 0; }
 ''')
     run(['xcrun', 'clang', '-fobjc-arc', '-fblocks', '-framework', 'Foundation', '-I', SDK / 'ios', objc, '-o', tmp / 'ios-bridge-test'])
@@ -123,7 +140,7 @@ int main(void) { @autoreleasepool {
     print('PASS: production iOS View bridge mapping and Manual compatibility', flush=True)
     android = (SDK / 'android/src/main/java/com/ft/sdk/reactnative/FTRUMImpl.java').read_text()
     methods = '\n'.join(method(android, '  public void ' + name + '(') for name in [
-        'onCreateViewWithLoadStart', 'startViewWithTrackingType', 'onCreateView', 'startView'])
+        'onCreateViewWithLoadStart', 'startViewWithTrackingType', 'onCreateView', 'startView', 'updateViewLoadingTime'])
     java.write_text(r'''package com.ft.sdk.reactnative;
 import java.util.HashMap;
 public class ViewTimingTests {
@@ -134,6 +151,8 @@ public class ViewTimingTests {
     static final FTRUMGlobalManager INSTANCE=new FTRUMGlobalManager();
     static FTRUMGlobalManager get() { return INSTANCE; }
     String name; long duration, epoch; ViewTrackingType type; HashMap<String,Object> property;
+    long updatedDuration; int updateCount;
+    void updateLoadTime(long d) { updatedDuration=d; updateCount++; }
     void onCreateView(String n, long d, long e) { name=n; duration=d; epoch=e; }
     void onCreateView(String n, long d) { onCreateView(n,d,0); }
     void startView(String n, HashMap<String,Object> p, ViewTrackingType t) { name=n; property=p; type=t; }
@@ -153,6 +172,15 @@ public class ViewTimingTests {
     bridge.startViewWithTrackingType("Home",null,2,p); check(p.rejected == 1 && sdk.type == ViewTrackingType.AUTOMATIC);
     bridge.startView("Manual",null,p); check(sdk.type == ViewTrackingType.MANUAL && sdk.name.equals("Manual"));
     bridge.onCreateView("Manual",1000000.0,p); check(sdk.duration == 1000000 && sdk.epoch == 0);
+    bridge.updateViewLoadingTime(25500000,p); check(sdk.updatedDuration == 25500000 && sdk.updateCount == 1);
+    bridge.updateViewLoadingTime(0,p); check(sdk.updatedDuration == 0 && sdk.updateCount == 2);
+    bridge.updateViewLoadingTime(9007199254740991.0,p); check(sdk.updatedDuration == 9007199254740991L && sdk.updateCount == 3);
+    for (double invalid: new double[]{-1, Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 1.5, 9007199254740992.0, 0x1p63}) {
+      int before=p.rejected;
+      bridge.updateViewLoadingTime(invalid,p);
+      check(p.rejected == before + 1 && sdk.updateCount == 3 && sdk.updatedDuration == 9007199254740991L);
+    }
+    check(sdk.duration == 1000000 && sdk.name.equals("Manual"));
   }
 }
 ''')
