@@ -82,7 +82,7 @@ const HomeScreen = (props) => {
           sessionSamplingRate:100,
           sessionOnErrorSamplingRate:100,
           rumEnableTraceUserAction:true,
-          rumEnableTraceUserView:true,
+          rumEnableTraceUserView:false,
           rumEnableTraceUserResource:true,
           rumEnableResourceHostIP:true,
           rumEnableTrackAppUIBlock:true,

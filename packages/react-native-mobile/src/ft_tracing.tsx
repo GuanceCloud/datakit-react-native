@@ -35,15 +35,20 @@ export enum TraceType {
 }
 /**
  * Configure trace.
- * @param sampleRate sampling rate
+ * @param traceSamplingRate Trace sampling percentage in [0, 100], default 100. Supports fractional percentages and takes precedence over sampleRate.
+ * @param sampleRate Deprecated Trace sampling probability in [0, 1], default 1. Used only when traceSamplingRate is omitted; multiplied by 100 before passing to Native.
  * @param traceType trace type
  * @param enableLinkRUMData whether to link with RUM data
  * @param enableNativeAutoTrace whether to enable automatic tracing
  */
 export interface FTTraceConfig {
-  /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
+  /**
+   * Trace sampling percentage in [0, 100], default 100.
+   * Supports fractional percentages: 12.5 means 12.5%, not 0.125.
+   * Takes precedence over sampleRate when both are supplied, including 0.
+   */
   traceSamplingRate?: number;
-  /** @deprecated Use traceSamplingRate. Legacy probability in [0, 1]. */
+  /** @deprecated Use traceSamplingRate. Probability in [0, 1], default 1; 0.125 maps to 12.5%. Ignored when traceSamplingRate is supplied. */
   sampleRate?: number;
   traceType?: TraceType;
   enableLinkRUMData?: boolean;

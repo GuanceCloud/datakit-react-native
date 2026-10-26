@@ -77,8 +77,10 @@ export enum IOSCrashMonitoringType {
  * Set RUM tracking conditions.
  * @param androidAppId appId, apply during monitoring
  * @param iOSAppId appId, apply during monitoring
- * @param sampleRate sampling rate
- * @param sessionOnErrorSampleRate error session sampling rate. For sessions not sampled, if ERROR is hit, collect data 1 minute before the error occurs
+ * @param sessionSamplingRate RUM session sampling percentage in [0, 100], default 100. Supports fractional percentages and takes precedence over sampleRate.
+ * @param sessionOnErrorSamplingRate Sampling percentage in [0, 100] for otherwise unsampled sessions when an error occurs, default 0. Supports fractional percentages and takes precedence over sessionOnErrorSampleRate.
+ * @param sampleRate Deprecated RUM session sampling probability in [0, 1], default 1. Used only when sessionSamplingRate is omitted; multiplied by 100 before passing to Native.
+ * @param sessionOnErrorSampleRate Deprecated error session sampling probability in [0, 1], default 0. Used only when sessionOnErrorSamplingRate is omitted; multiplied by 100 before passing to Native.
  * @param enableAutoTrackUserAction whether to automatically collect react-native control click events, can set actionName with accessibilityLabel when enabled
  * @param enableTrackError whether to automatically collect react-native Error
  * @param enableTrackNativeCrash whether to collect Native Error
@@ -110,13 +112,22 @@ export interface FTRUMConfig {
   visitorIdConfig?: FTVisitorIdConfig | null;
   androidAppId: string;
   iOSAppId: string;
-  /** Sampling percentage in [0, 100]; takes precedence over sampleRate. */
+  /**
+   * RUM session sampling percentage in [0, 100], default 100.
+   * Supports fractional percentages: 12.5 means 12.5%, not 0.125.
+   * Takes precedence over sampleRate when both are supplied, including 0.
+   * Setting 0 disables regular session sampling; error session sampling is separate.
+   */
   sessionSamplingRate?: number;
-  /** @deprecated Use sessionSamplingRate. Legacy probability in [0, 1]. */
+  /** @deprecated Use sessionSamplingRate. Probability in [0, 1], default 1; 0.125 maps to 12.5%. Ignored when sessionSamplingRate is supplied. */
   sampleRate?: number;
-  /** Sampling percentage in [0, 100]; takes precedence over sessionOnErrorSampleRate. */
+  /**
+   * Sampling percentage for otherwise unsampled RUM sessions when an error occurs.
+   * Range [0, 100], default 0; fractional percentages are supported.
+   * Takes precedence over sessionOnErrorSampleRate when both are supplied, including 0.
+   */
   sessionOnErrorSamplingRate?: number;
-  /** @deprecated Use sessionOnErrorSamplingRate. Legacy probability in [0, 1]. */
+  /** @deprecated Use sessionOnErrorSamplingRate. Probability in [0, 1], default 0; multiplied by 100. Ignored when sessionOnErrorSamplingRate is supplied. */
   sessionOnErrorSampleRate?: number;
   enableAutoTrackUserAction?: boolean;
   enableAutoTrackError?: boolean;
