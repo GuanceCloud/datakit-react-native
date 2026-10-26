@@ -171,6 +171,24 @@ public class FTMobileImpl {
                 if (override.hasKey("logSampleRate") && !override.isNull("logSampleRate")) {
                     configBean.setLogSampleRate((float) override.getDouble("logSampleRate"));
                 }
+                if (override.hasKey("sessionSamplingRate") && !override.isNull("sessionSamplingRate")) {
+                    configBean.setSessionSamplingRate((float) override.getDouble("sessionSamplingRate"));
+                }
+                if (override.hasKey("sessionOnErrorSamplingRate") && !override.isNull("sessionOnErrorSamplingRate")) {
+                    configBean.setSessionOnErrorSamplingRate((float) override.getDouble("sessionOnErrorSamplingRate"));
+                }
+                if (override.hasKey("traceSamplingRate") && !override.isNull("traceSamplingRate")) {
+                    configBean.setTraceSamplingRate((float) override.getDouble("traceSamplingRate"));
+                }
+                if (override.hasKey("logSamplingRate") && !override.isNull("logSamplingRate")) {
+                    configBean.setLogSamplingRate((float) override.getDouble("logSamplingRate"));
+                }
+                if (override.hasKey("sessionReplaySamplingRate") && !override.isNull("sessionReplaySamplingRate")) {
+                    configBean.setSessionReplaySamplingRate((float) override.getDouble("sessionReplaySamplingRate"));
+                }
+                if (override.hasKey("sessionReplayOnErrorSamplingRate") && !override.isNull("sessionReplayOnErrorSamplingRate")) {
+                    configBean.setSessionReplayOnErrorSamplingRate((float) override.getDouble("sessionReplayOnErrorSamplingRate"));
+                }
                 if (override.hasKey("logLevelFilters") && !override.isNull("logLevelFilters")) {
                     ReadableArray filtersArray = override.getArray("logLevelFilters");
                     String[] filters = new String[filtersArray.size()];
@@ -531,6 +549,11 @@ public class FTMobileImpl {
       }
         FTSdk.install(sdkConfig);
 //        LogUtils.d("configCheck","sdkConfig:"+new Gson().toJson(sdkConfig));
+        promise.resolve(null);
+    }
+
+    public void resetVisitorId(Promise promise) {
+        FTSdk.resetVisitorId();
         promise.resolve(null);
     }
 

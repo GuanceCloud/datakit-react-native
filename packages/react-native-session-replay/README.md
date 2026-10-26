@@ -31,3 +31,16 @@ import {
 ## License
 
 Apache 2.0
+
+### Sampling percentages
+
+Use `sessionReplaySamplingRate` (default `100`) and `sessionReplayOnErrorSamplingRate` (default `0`) in `FTSessionReplayConfig`. Both accept percentages in `[0, 100]`: `0.1` means `0.1%`. Error sampling applies to sessions excluded by normal Replay sampling.
+
+Legacy `sampleRate` and `sessionReplayOnErrorSampleRate` remain probabilities in `[0, 1]`. The corresponding percentage field takes precedence when both are supplied, including zero. Omitting a field retains the native default.
+
+```typescript
+await FTReactNativeSessionReplay.sessionReplayConfig({
+  sessionReplaySamplingRate: 12.5,
+  sessionReplayOnErrorSamplingRate: 100,
+});
+```

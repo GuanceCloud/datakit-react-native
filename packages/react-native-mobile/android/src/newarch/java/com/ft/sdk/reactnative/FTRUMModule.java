@@ -60,6 +60,24 @@ public class FTRUMModule extends NativeFTReactNativeRUMSpec {
 
   @Override
   @ReactMethod
+  public void onCreateViewWithLoadStart(String viewName, double duration, double loadStartEpochMs, Promise promise) {
+    impl.onCreateViewWithLoadStart(viewName, duration, loadStartEpochMs, promise);
+  }
+
+  @Override
+  @ReactMethod
+  public void startViewWithTrackingType(String viewName, ReadableMap map, double trackingType, Promise promise) {
+    impl.startViewWithTrackingType(viewName, map, trackingType, promise);
+  }
+
+  @Override
+  @ReactMethod
+  public void updateViewLoadingTime(double duration, Promise promise) {
+    impl.updateViewLoadingTime(duration, promise);
+  }
+
+  @Override
+  @ReactMethod
   public void onCreateView(String viewName, double duration, Promise promise) {
     impl.onCreateView(viewName, duration, promise);
   }

@@ -9,12 +9,55 @@
 #import "FTReactNativeRUM.h"
 #import <GuanceSDK/FTMobileAgent.h>
 #import <GuanceSDK/FTExternalDataManager.h>
+#import <GuanceSDK/FTExternalDataManager+FrameworkIntegration.h>
+#import "FTReactNativeViewTiming.h"
 #import "FTReactNativeResource.h"
 #import <React/RCTConvert.h>
 #import <React/RCTBridge.h>
 #import <UIKit/UIKit.h>
 #import "FTReactNativeUtils.h"
 #import "FTJSLongTaskMonitor.h"
+#import <GuanceSDK/FTVisitorIDConfig+Private.h>
+#include <math.h>
+
+static FTVisitorIDConfig *FTVisitorIdConfigFromDictionary(id value, NSError **error) {
+  if (!value || value == NSNull.null) return nil;
+  NSString *reason = nil;
+  FTVisitorIDConfig *config = [FTVisitorIDConfig new];
+  if (![value isKindOfClass:NSDictionary.class]) {
+    reason = @"visitorIdConfig must be an object";
+  } else {
+    NSDictionary *map = value;
+    config.header = [map[@"header"] isKindOfClass:NSString.class] ? map[@"header"] : nil;
+    id hours = map[@"ttlHours"];
+    if (hours) {
+      double milliseconds = [hours isKindOfClass:NSNumber.class] ? [hours doubleValue] * 3600000 : NAN;
+      if (!isfinite(milliseconds) || milliseconds < 1 || milliseconds >= 9223372036854775807.0) reason = @"Visitor ID TTL is out of range";
+      else config.ttlHours = [hours doubleValue];
+    }
+    for (NSString *key in @[@"urlPrefixes", @"regularExpressions"]) {
+      id rules = map[key];
+      if (!rules) continue;
+      if (![rules isKindOfClass:NSArray.class]) { reason = @"Visitor ID rules must be arrays"; break; }
+      for (id rule in rules) {
+        if (![rule isKindOfClass:NSString.class] || [rule length] == 0) { reason = @"Invalid Visitor ID rule"; break; }
+        if ([key isEqualToString:@"urlPrefixes"]) {
+          [config addMatchWithURLPrefix:rule];
+        } else {
+          NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:rule options:0 error:error];
+          if (!expression) return nil;
+          [config addMatchWithRegularExpression:expression];
+        }
+      }
+      if (reason) break;
+    }
+  }
+  if (reason) {
+    if (error) *error = [NSError errorWithDomain:@"com.guance.rn.visitor-id-config" code:1 userInfo:@{NSLocalizedDescriptionKey: reason}];
+    return nil;
+  }
+  return [config validatedCopyWithError:error];
+}
 
 @interface FTReactNativeRUM ()
 @property (atomic, strong, nullable) FTJSLongTaskMonitor *jsLongTaskMonitor;
@@ -66,6 +109,21 @@ RCT_REMAP_METHOD(onCreateView,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject){
   [self onCreateView:viewName loadTime:loadTime resolve:resolve reject:reject];
+}
+RCT_REMAP_METHOD(onCreateViewWithLoadStart,
+                 viewName:(NSString *)viewName loadTime:(double)loadTime loadStartEpochMs:(double)loadStartEpochMs
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  [self onCreateViewWithLoadStart:viewName loadTime:loadTime loadStartEpochMs:loadStartEpochMs resolve:resolve reject:reject];
+}
+RCT_REMAP_METHOD(updateViewLoadingTime,
+                 duration:(double)duration
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  [self updateViewLoadingTime:duration resolve:resolve reject:reject];
+}
+RCT_REMAP_METHOD(startViewWithTrackingType,
+                 viewName:(NSString *)viewName property:(NSDictionary *)property trackingType:(double)trackingType
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  [self startViewWithTrackingType:viewName property:property trackingType:trackingType resolve:resolve reject:reject];
 }
 RCT_REMAP_METHOD(startView,
                   viewName:(NSString *)viewName property:(NSDictionary *)property
@@ -162,19 +220,51 @@ RCT_REMAP_METHOD(addResource,
   resolve(nil);
 }
 
+- (void)onCreateViewWithLoadStart:(NSString *)viewName loadTime:(double)loadTime loadStartEpochMs:(double)loadStartEpochMs resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  NSNumber *duration = FTViewDurationNanoseconds(loadTime);
+  [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:duration loadStartEpochNs:duration.longLongValue > 0 ? FTViewEpochNanoseconds(loadStartEpochMs) : nil];
+  resolve(nil);
+}
+
+- (void)startViewWithTrackingType:(NSString *)viewName property:(NSDictionary *)property trackingType:(double)trackingType resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  if (trackingType != 0 && trackingType != 1) {
+    reject(@"E_VIEW_TRACKING_TYPE", @"trackingType must be Manual (0) or Automatic (1)", nil);
+    return;
+  }
+  [[FTExternalDataManager sharedManager] startViewWithName:viewName property:property trackingType:(FTRUMViewTrackingType)(NSInteger)trackingType];
+  resolve(nil);
+}
+
 - (void)onCreateView:(NSString *)viewName loadTime:(double)loadTime resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject { 
   [[FTExternalDataManager sharedManager] onCreateView:viewName loadTime:@(loadTime)];
   resolve(nil);
 }
 
+- (void)updateViewLoadingTime:(double)duration resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  if (!isfinite(duration) || duration < 0 || duration > 9007199254740991.0 || duration != floor(duration)) {
+    reject(@"E_VIEW_LOADING_TIME", @"duration must be a non-negative safe integer in nanoseconds", nil);
+    return;
+  }
+  [[FTExternalDataManager sharedManager] updateViewLoadingTime:@((int64_t)duration)];
+  resolve(nil);
+}
+
 - (void)setConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  NSError *visitorError = nil;
+  FTVisitorIDConfig *visitorConfig = FTVisitorIdConfigFromDictionary(context[@"visitorIdConfig"], &visitorError);
+  if (visitorError) { reject(@"E_VISITOR_ID_CONFIG", visitorError.localizedDescription, visitorError); return; }
   NSString *rumAppId = [RCTConvert NSString:context[@"iOSAppId"]];
   FTRumConfig *rumConfig = [[FTRumConfig alloc]initWithAppid:rumAppId];
-  if ([context.allKeys containsObject:@"sampleRate"]) {
-    rumConfig.sampleRate = [RCTConvert double:context[@"sampleRate"]] * 100;
+  rumConfig.visitorIDConfig = visitorConfig;
+  if ([context.allKeys containsObject:@"sessionSamplingRate"]) {
+    rumConfig.sessionSamplingRate = [RCTConvert double:context[@"sessionSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sampleRate"]) {
+    rumConfig.sessionSamplingRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
-  if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
-    rumConfig.sessionOnErrorSampleRate  = [RCTConvert double:context[@"sessionOnErrorSampleRate"]]*100;
+  if ([context.allKeys containsObject:@"sessionOnErrorSamplingRate"]) {
+    rumConfig.sessionOnErrorSamplingRate = [RCTConvert double:context[@"sessionOnErrorSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sessionOnErrorSampleRate"]) {
+    rumConfig.sessionOnErrorSamplingRate = [RCTConvert double:context[@"sessionOnErrorSampleRate"]] * 100;
   }
   if ([context.allKeys containsObject:@"enableNativeUserAction"]) {
     rumConfig.enableTraceUserAction = [RCTConvert BOOL:context[@"enableNativeUserAction"]];

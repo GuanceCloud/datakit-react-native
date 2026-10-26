@@ -163,6 +163,8 @@ export type FTRemoteConfigOverrideMatch = {
 /**
  * Values that can be modified by remote config override rules.
  * These values will adjust the fetched remote configuration before it is applied.
+ * Omitted fields are not changed by this rule. Sampling percentages use [0, 100]
+ * and support fractions (12.5 means 12.5%); legacy probabilities use [0, 1].
  */
 export type FTRemoteConfigOverrideValues = {
   env?: string;
@@ -171,7 +173,21 @@ export type FTRemoteConfigOverrideValues = {
   compressIntakeRequests?: boolean;
   syncPageSize?: number;
   syncSleepTime?: number;
+  /** RUM session sampling percentage override in [0, 100]; takes precedence over rumSampleRate, including 0. */
+  sessionSamplingRate?: number;
+  /** Error session sampling percentage override in [0, 100]; takes precedence over rumSessionOnErrorSampleRate, including 0. */
+  sessionOnErrorSamplingRate?: number;
+  /** Trace sampling percentage override in [0, 100]; takes precedence over traceSampleRate, including 0. */
+  traceSamplingRate?: number;
+  /** Log sampling percentage override in [0, 100]; takes precedence over logSampleRate, including 0. */
+  logSamplingRate?: number;
+  /** Session Replay sampling percentage override in [0, 100]; fractional percentages are supported. */
+  sessionReplaySamplingRate?: number;
+  /** Error replay sampling percentage override in [0, 100]; fractional percentages are supported. */
+  sessionReplayOnErrorSamplingRate?: number;
+  /** @deprecated Use sessionSamplingRate. Legacy RUM probability override in [0, 1]; 0.125 maps to 12.5%. */
   rumSampleRate?: number;
+  /** @deprecated Use sessionOnErrorSamplingRate. Legacy error session probability override in [0, 1]. */
   rumSessionOnErrorSampleRate?: number;
   rumEnableTraceUserAction?: boolean;
   rumEnableTraceUserView?: boolean;
@@ -183,9 +199,11 @@ export type FTRemoteConfigOverrideValues = {
   rumEnableTrackAppANR?: boolean;
   rumEnableTraceWebView?: boolean;
   rumAllowWebViewHost?: Array<string>;
+  /** @deprecated Use traceSamplingRate. Legacy Trace probability override in [0, 1]. */
   traceSampleRate?: number;
   traceEnableAutoTrace?: boolean;
   traceType?: string;
+  /** @deprecated Use logSamplingRate. Legacy log probability override in [0, 1]. */
   logSampleRate?: number;
   logLevelFilters?: Array<string>;
   logEnableCustomLog?: boolean;
@@ -320,6 +338,8 @@ type FTMobileReactNativeType = {
    * @returns a Promise.
    */
   unbindRUMUserData(): Promise<void>;
+  /** Rotate the native anonymous Visitor ID for subsequent requests. */
+  resetVisitorId(): Promise<void>;
   /**
    * Add custom global parameters. Applies to RUM and Log data
    * @param context custom global parameters.
@@ -430,6 +450,9 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
     extra?: object
   ): Promise<void> {
     return this.sdk.bindRUMUserData(userId, userName, userEmail, extra);
+  }
+  resetVisitorId(): Promise<void> {
+    return this.sdk.resetVisitorId();
   }
   unbindRUMUserData(): Promise<void> {
     return this.sdk.unbindRUMUserData();

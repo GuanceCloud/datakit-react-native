@@ -27,7 +27,9 @@ public class FTSessionReplayImpl {
     HashMap<String, Object> map = context.toHashMap();
 
     Double sampleRate = map.get("sampleRate") instanceof Double ? (Double) map.get("sampleRate") : null;
+    Double sessionReplaySamplingRate = (Double) map.get("sessionReplaySamplingRate");
     Double sessionReplayOnErrorSampleRate = map.get("sessionReplayOnErrorSampleRate") instanceof Double ? (Double) map.get("sessionReplayOnErrorSampleRate") : null;
+    Double sessionReplayOnErrorSamplingRate = (Double) map.get("sessionReplayOnErrorSamplingRate");
     Integer privacy = ReactNativeUtils.convertToNativeInt(map.get("privacy"));
     String touchPrivacy = map.get("touchPrivacy") instanceof String ? (String) map.get("touchPrivacy") : null;
     String textAndInputPrivacy = map.get("textAndInputPrivacy") instanceof String ? (String) map.get("textAndInputPrivacy") : null;
@@ -36,12 +38,16 @@ public class FTSessionReplayImpl {
 
     FTSessionReplayConfig sessionReplayConfig = new FTSessionReplayConfig();
 
-    if (sampleRate != null) {
-      sessionReplayConfig.setSampleRate(sampleRate.floatValue());
+    if (sessionReplaySamplingRate != null) {
+      sessionReplayConfig.setSessionReplaySamplingRate(sessionReplaySamplingRate.floatValue());
+    } else if (sampleRate != null) {
+      sessionReplayConfig.setSessionReplaySamplingRate((float) (sampleRate * 100.0));
     }
 
-    if (sessionReplayOnErrorSampleRate != null) {
-      sessionReplayConfig.setSessionReplayOnErrorSampleRate(sessionReplayOnErrorSampleRate.floatValue());
+    if (sessionReplayOnErrorSamplingRate != null) {
+      sessionReplayConfig.setSessionReplayOnErrorSamplingRate(sessionReplayOnErrorSamplingRate.floatValue());
+    } else if (sessionReplayOnErrorSampleRate != null) {
+      sessionReplayConfig.setSessionReplayOnErrorSamplingRate((float) (sessionReplayOnErrorSampleRate * 100.0));
     }
 
     // Handle deprecated privacy setting for backward compatibility

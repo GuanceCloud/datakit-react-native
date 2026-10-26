@@ -7,6 +7,7 @@ const mockFTMobileReactNative = {
   setDatawayURL: jest.fn().mockResolvedValue(undefined),
   bindRUMUserData: jest.fn().mockResolvedValue(undefined),
   unbindRUMUserData: jest.fn().mockResolvedValue(undefined),
+  resetVisitorId: jest.fn().mockResolvedValue(undefined),
   appendGlobalContext: jest.fn().mockResolvedValue(undefined),
   appendRUMGlobalContext: jest.fn().mockResolvedValue(undefined),
   appendLogGlobalContext: jest.fn().mockResolvedValue(undefined),
@@ -23,6 +24,11 @@ const mockFTMobileReactNative = {
 };
 
 const mockFTReactNativeRUM = {
+  onCreateView: jest.fn().mockResolvedValue(undefined),
+  updateViewLoadingTime: jest.fn().mockResolvedValue(undefined),
+  onCreateViewWithLoadStart: jest.fn().mockResolvedValue(undefined),
+  startView: jest.fn().mockResolvedValue(undefined),
+  startViewWithTrackingType: jest.fn().mockResolvedValue(undefined),
   setConfig: jest.fn().mockResolvedValue(undefined),
   setLongTaskContext: jest.fn().mockReturnValue(true),
   stopLongTaskTracking: jest.fn().mockResolvedValue(undefined),
@@ -30,6 +36,10 @@ const mockFTReactNativeRUM = {
 
 const mockFTReactNativeLog = {
   logConfig: jest.fn().mockResolvedValue(undefined),
+};
+
+const mockFTReactNativeSessionReplay = {
+  sessionReplayConfig: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockFTReactNativeTrace = {
@@ -52,6 +62,7 @@ const mockNativeModules = {
   FTMobileReactNative: mockFTMobileReactNative,
   FTReactNativeRUM: mockFTReactNativeRUM,
   FTReactNativeLog: mockFTReactNativeLog,
+  FTReactNativeSessionReplay: mockFTReactNativeSessionReplay,
   FTReactNativeTrace: mockFTReactNativeTrace,
 };
 
@@ -74,6 +85,11 @@ const { FTMobileReactNative } = require('../ft_mobile_agent');
 const { FTReactNativeRUM } = require('../ft_rum');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTReactNativeLog } = require('../ft_logger');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const {
+  FTReactNativeSessionReplay,
+} = require('../../../react-native-session-replay/src/ft_session_replay');
+/* eslint-enable @typescript-eslint/no-var-requires */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { FTReactNativeTrace } = require('../ft_tracing');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -143,7 +159,15 @@ describe('FTMobileReactNative remote configuration APIs', () => {
       {
         id: 'force-log-sampling',
         match: { customKeys: { user_tier: 'internal' } },
-        override: { logSampleRate: 1 },
+        override: {
+          logSampleRate: 1,
+          logSamplingRate: 0.1,
+          sessionSamplingRate: 0,
+          sessionOnErrorSamplingRate: 12.5,
+          traceSamplingRate: 100,
+          sessionReplaySamplingRate: 12.5,
+          sessionReplayOnErrorSamplingRate: 0,
+        },
       },
     ];
 
@@ -709,5 +733,211 @@ describe('FTMobileReactNative shutdown', () => {
     await FTReactNativeTrace.setConfig({ enableNativeAutoTrace: true });
     expect(startTracking).toHaveBeenCalledTimes(1);
     expect(setTrace).toHaveBeenCalledWith(true);
+  });
+});
+
+describe('Native Adapter Logger and Session Replay configuration', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it.each([true, false, undefined])(
+    'forwards enableWebViewLog=%s without changing RN sampling units',
+    async (enableWebViewLog) => {
+      const config = {
+        sampleRate: 0.001,
+        ...(enableWebViewLog === undefined ? {} : { enableWebViewLog }),
+      };
+
+      await FTReactNativeLog.logConfig(config);
+
+      expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledTimes(1);
+      expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith({
+        sampleRate: 0.001,
+        ...(enableWebViewLog === undefined ? {} : { enableWebViewLog }),
+      });
+    }
+  );
+
+  it.each([0, 0.001, 0.125, 1])(
+    'forwards Session Replay probability %s unchanged for native conversion',
+    async (rate) => {
+      await FTReactNativeSessionReplay.sessionReplayConfig({
+        sampleRate: rate,
+        sessionReplayOnErrorSampleRate: rate,
+      });
+
+      expect(
+        mockFTReactNativeSessionReplay.sessionReplayConfig
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockFTReactNativeSessionReplay.sessionReplayConfig
+      ).toHaveBeenCalledWith({
+        sampleRate: rate,
+        sessionReplayOnErrorSampleRate: rate,
+      });
+    }
+  );
+
+  it('leaves omitted sampling fields to native defaults', async () => {
+    await FTReactNativeLog.logConfig({});
+    await FTReactNativeSessionReplay.sessionReplayConfig({});
+
+    expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith({});
+    expect(
+      mockFTReactNativeSessionReplay.sessionReplayConfig
+    ).toHaveBeenCalledWith({});
+  });
+});
+
+describe('percentage sampling configuration', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([0, 0.1, 12.5, 100])(
+    'forwards %s percent across all configs',
+    async (rate) => {
+      const log = { logSamplingRate: rate, sampleRate: 1 };
+      const rum = {
+        androidAppId: 'app',
+        iOSAppId: 'app',
+        sessionSamplingRate: rate,
+        sessionOnErrorSamplingRate: rate,
+        sampleRate: 1,
+        sessionOnErrorSampleRate: 1,
+      };
+      const trace = { traceSamplingRate: rate, sampleRate: 1 };
+      const replay = {
+        sessionReplaySamplingRate: rate,
+        sessionReplayOnErrorSamplingRate: rate,
+        sampleRate: 1,
+        sessionReplayOnErrorSampleRate: 1,
+      };
+      await FTReactNativeLog.logConfig(log);
+      await FTReactNativeRUM.setConfig(rum);
+      await FTReactNativeTrace.setConfig(trace);
+      await FTReactNativeSessionReplay.sessionReplayConfig(replay);
+      expect(mockFTReactNativeLog.logConfig).toHaveBeenCalledWith(log);
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith({
+        ...rum,
+        enableLongTask: false,
+        longTaskThresholdMs: 100,
+      });
+      expect(mockFTReactNativeTrace.setConfig).toHaveBeenCalledWith(trace);
+      expect(
+        mockFTReactNativeSessionReplay.sessionReplayConfig
+      ).toHaveBeenCalledWith(replay);
+    }
+  );
+});
+
+describe('Visitor ID configuration', () => {
+  beforeEach(() => jest.clearAllMocks());
+  const base = { androidAppId: 'app', iOSAppId: 'app' };
+  it('forwards declarative rules without changing lifetime units', async () => {
+    const visitorIdConfig = {
+      header: 'x-visitor-id',
+      ttlHours: 0.5,
+      urlPrefixes: ['https://api.example.com/v1/'],
+      regularExpressions: ['^https://api\\.example\\.com/orders/'],
+    };
+    await FTReactNativeRUM.setConfig({ ...base, visitorIdConfig });
+    expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ visitorIdConfig })
+    );
+  });
+  it.each([undefined, null])(
+    'allows disabled config %s',
+    async (visitorIdConfig) => {
+      await FTReactNativeRUM.setConfig({ ...base, visitorIdConfig });
+      expect(mockFTReactNativeRUM.setConfig).toHaveBeenCalledWith(
+        expect.objectContaining({ visitorIdConfig })
+      );
+    }
+  );
+  it.each([
+    { header: 'X-Visitor-Id', urlPrefixes: ['https://example.com/'] },
+    { header: 'x-visitor-id\n', urlPrefixes: ['https://example.com/'] },
+    { header: 'authorization', urlPrefixes: ['https://example.com/'] },
+    { header: 'x-api-key', urlPrefixes: ['https://example.com/'] },
+    { header: 'traceparent', urlPrefixes: ['https://example.com/'] },
+    { header: 'x-visitor-id' },
+    { header: 'x-visitor-id', urlPrefixes: [] },
+    { header: 'x-visitor-id', urlPrefixes: ['wss://example.com/'] },
+    { header: 'x-visitor-id', regularExpressions: [''] },
+    ...[0, -1, NaN, Infinity, 1e20].map((ttlHours) => ({
+      header: 'x-visitor-id',
+      ttlHours,
+      urlPrefixes: ['https://example.com/'],
+    })),
+  ])(
+    'rejects invalid config before configuring native RUM: %j',
+    async (visitorIdConfig) => {
+      await expect(
+        FTReactNativeRUM.setConfig({ ...base, visitorIdConfig })
+      ).rejects.toThrow();
+      expect(mockFTReactNativeRUM.setConfig).not.toHaveBeenCalled();
+    }
+  );
+  it('resets through the native SDK', async () => {
+    await FTMobileReactNative.resetVisitorId();
+    expect(mockFTMobileReactNative.resetVisitorId).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('public View APIs', () => {
+  beforeEach(() => jest.clearAllMocks());
+  it('updates the current View with exact nanoseconds, including zero', async () => {
+    await FTReactNativeRUM.updateViewLoadingTime(25500000);
+    await FTReactNativeRUM.updateViewLoadingTime(0);
+    await FTReactNativeRUM.updateViewLoadingTime(Number.MAX_SAFE_INTEGER);
+    expect(mockFTReactNativeRUM.updateViewLoadingTime.mock.calls).toEqual([
+      [25500000],
+      [0],
+      [9007199254740991],
+    ]);
+    expect(mockFTReactNativeRUM.onCreateView).not.toHaveBeenCalled();
+    expect(mockFTReactNativeRUM.startView).not.toHaveBeenCalled();
+  });
+  it.each([-1, NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    'rejects invalid loading duration %s without overwriting the current value',
+    async (duration) => {
+      await expect(
+        FTReactNativeRUM.updateViewLoadingTime(duration)
+      ).rejects.toThrow(
+        'duration must be a non-negative safe integer in nanoseconds'
+      );
+      expect(mockFTReactNativeRUM.updateViewLoadingTime).not.toHaveBeenCalled();
+    }
+  );
+  it('propagates native update failures to the caller', async () => {
+    const error = new Error('native update failed');
+    mockFTReactNativeRUM.updateViewLoadingTime.mockRejectedValueOnce(error);
+    await expect(FTReactNativeRUM.updateViewLoadingTime(25500000)).rejects.toBe(
+      error
+    );
+  });
+  it('keeps manual start and loading on their existing native APIs', async () => {
+    await FTReactNativeRUM.onCreateView('Home', 25000000);
+    await FTReactNativeRUM.startView('Home', { screen: 'home' });
+    expect(mockFTReactNativeRUM.onCreateView).toHaveBeenCalledWith(
+      'Home',
+      25000000
+    );
+    expect(mockFTReactNativeRUM.startView).toHaveBeenCalledWith(
+      'Home',
+      expect.objectContaining({ screen: 'home' })
+    );
+    expect(
+      mockFTReactNativeRUM.onCreateViewWithLoadStart
+    ).not.toHaveBeenCalled();
+    expect(
+      mockFTReactNativeRUM.startViewWithTrackingType
+    ).not.toHaveBeenCalled();
+  });
+  it('does not expose framework bridge methods or a tracking type enum', () => {
+    expect(FTReactNativeRUM).not.toHaveProperty('onCreateViewWithLoadStart');
+    expect(FTReactNativeRUM).not.toHaveProperty('startViewWithTrackingType');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    expect(require('../index')).not.toHaveProperty('FTRUMViewTrackingType');
   });
 });

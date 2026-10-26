@@ -2,6 +2,18 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
+# Unreleased
+
+* Added `FTReactNativeRUM.updateViewLoadingTime(duration)` to update the current View's loading duration in nanoseconds on iOS and Android.
+
+* Adapted automatic View tracking to native foreground/background lifecycle handling. Navigation adapters now use monotonic nanosecond loading durations with captured loading-start timestamps, restart Views on foreground without reusing loading data, and filter duplicate or stale callbacks. Manual View APIs remain compatible.
+
+* Added `FTRUMConfig.visitorIdConfig` for anonymous Visitor ID headers on matched HTTP(S) requests, with URL prefix/regex rules and a configurable fixed lifetime. Added `FTMobileReactNative.resetVisitorId()`. WebSocket requests are excluded.
+
+* Added unified percentage sampling fields (`0–100`) for Logger, RUM, Trace, Session Replay, and remote config overrides, with support for fractional percentages on iOS and Android. Legacy probability fields (`0–1`) remain supported; the new fields take precedence when both are set.
+* Upgraded compatibility to iOS `GuanceSDK 1.6.8`, Android `ft-sdk 1.7.6`, Android `ft-session-replay 0.1.9`, and Android `ft-native 1.1.4`. Added `FTLogConfig.enableWebViewLog` to collect Browser Logs SDK events from WebViews.
+
+---
 # 0.4.3-alpha.2
 * Fixed npm publishing for the Babel plugin.
 * Improved Babel plugin prerelease compatibility.

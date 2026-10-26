@@ -37,7 +37,9 @@ def verify(root, app, output, sdk):
     schema = output / "schema.json"
     if not run(["node", combine, str(schema),
                 str(source / "src/specs/NativeFTReactNativeWebSocket.ts"),
-                str(source / "src/specs/NativeFTReactNativeTrace.ts")]):
+                str(source / "src/specs/NativeFTReactNativeTrace.ts"),
+                str(source / "src/specs/NativeFTReactNativeRUM.ts"),
+                str(source / "src/specs/NativeFTMobileReactNative.ts")]):
         return False
     if not run(["node", str(rn / "scripts/generate-specs-cli.js"),
                 "-p", "ios", "-s", str(schema), "-o", str(output),
@@ -61,9 +63,9 @@ def verify(root, app, output, sdk):
         flags += ["-I", str(include)]
     passed = True
     for architecture in ["old", "new"]:
-        for bridge in ["WebSocket", "Trace"]:
+        for bridge in ["WebSocket", "Trace", "RUM", "Mobile"]:
             command = flags + (["-DRCT_NEW_ARCH_ENABLED=1"] if architecture == "new" else [])
-            command += ["-c", str(source / f"ios/FTReactNative{bridge}.mm"),
+            command += ["-c", str(source / ("ios/FTMobileReactNative.mm" if bridge == "Mobile" else f"ios/FTReactNative{bridge}.mm")),
                         "-o", str(output / f"{architecture}-{bridge}.o")]
             success = run(command)
             print(f"{'PASS' if success else 'FAIL'}: RN {version}, {architecture} architecture, "

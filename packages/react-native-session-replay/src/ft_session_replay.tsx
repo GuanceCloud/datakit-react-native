@@ -35,8 +35,10 @@ export enum TextAndInputPrivacyLevel {
 }
 /**
  * Set Session Replay configuration.
- * @param sampleRate Sampling rate
- * @param sessionReplayOnErrorSampleRate error session sampling rate. For sessions not sampled, if ERROR is hit, collect data 1 minute before the error occurs
+ * @param sessionReplaySamplingRate Session Replay sampling percentage in [0, 100], default 100. Supports fractional percentages and takes precedence over sampleRate.
+ * @param sessionReplayOnErrorSamplingRate Sampling percentage in [0, 100] for otherwise unsampled replay sessions when an error occurs, default 0. Supports fractional percentages and takes precedence over sessionReplayOnErrorSampleRate.
+ * @param sampleRate Deprecated Session Replay sampling probability in [0, 1], default 1. Used only when sessionReplaySamplingRate is omitted; multiplied by 100 before passing to Native.
+ * @param sessionReplayOnErrorSampleRate Deprecated error replay sampling probability in [0, 1], default 0. Used only when sessionReplayOnErrorSamplingRate is omitted; multiplied by 100 before passing to Native.
  * @param privacy Privacy level for content masking in session replay
  * @param touchPrivacy Privacy level for touch masking in session replay
  * @param textAndInputPrivacy Privacy level for text and input masking in session replay
@@ -45,7 +47,22 @@ export enum TextAndInputPrivacyLevel {
  * @returns a Promise.
  */
 export interface FTSessionReplayConfig {
+  /**
+   * Session Replay sampling percentage in [0, 100], default 100.
+   * Supports fractional percentages: 12.5 means 12.5%, not 0.125.
+   * Takes precedence over sampleRate when both are supplied, including 0.
+   * Setting 0 disables regular replay sampling; error replay sampling is separate.
+   */
+  sessionReplaySamplingRate?: number;
+  /** @deprecated Use sessionReplaySamplingRate. Probability in [0, 1], default 1; 0.125 maps to 12.5%. Ignored when sessionReplaySamplingRate is supplied. */
   sampleRate?: number;
+  /**
+   * Sampling percentage for otherwise unsampled replay sessions when an error occurs.
+   * Range [0, 100], default 0; fractional percentages are supported.
+   * Takes precedence over sessionReplayOnErrorSampleRate when both are supplied, including 0.
+   */
+  sessionReplayOnErrorSamplingRate?: number;
+  /** @deprecated Use sessionReplayOnErrorSamplingRate. Probability in [0, 1], default 0; multiplied by 100. Ignored when sessionReplayOnErrorSamplingRate is supplied. */
   sessionReplayOnErrorSampleRate?: number;
   privacy?: SessionReplayPrivacy;
   touchPrivacy?: TouchPrivacyLevel;

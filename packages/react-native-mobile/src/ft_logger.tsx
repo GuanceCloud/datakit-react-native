@@ -18,8 +18,10 @@ export enum FTLogCacheDiscard {
 }
 /**
  * Configure log output configuration.
- * @param sampleRate sampling rate
+ * @param logSamplingRate Log sampling percentage in [0, 100], default 100. Supports fractional percentages and takes precedence over sampleRate.
+ * @param sampleRate Deprecated log sampling probability in [0, 1], default 1. Used only when logSamplingRate is omitted; multiplied by 100 before passing to Native.
  * @param enableLinkRumData whether to link with RUM
+ * @param enableWebViewLog Collect Browser Logs SDK events from WebViews, default false
  * @param enableCustomLog whether to enable custom logs
  * @param discardStrategy log discard strategy
  * @param logLevelFilters log level filter
@@ -27,9 +29,17 @@ export enum FTLogCacheDiscard {
  * @param logCacheLimitCount get maximum log entry count limit [1000,), default 5000
  */
 export interface FTLogConfig {
+  /**
+   * Log sampling percentage in [0, 100], default 100.
+   * Supports fractional percentages: 12.5 means 12.5%, not 0.125.
+   * Takes precedence over sampleRate when both are supplied, including 0.
+   */
+  logSamplingRate?: number;
+  /** @deprecated Use logSamplingRate. Probability in [0, 1], default 1; 0.125 maps to 12.5%. Ignored when logSamplingRate is supplied. */
   sampleRate?: number;
   enableLinkRumData?: boolean;
   enableCustomLog?: boolean;
+  enableWebViewLog?: boolean;
   discardStrategy?: FTLogCacheDiscard;
   logLevelFilters?: Array<FTLogStatus>;
   globalContext?: object;

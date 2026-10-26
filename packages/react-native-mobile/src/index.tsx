@@ -61,3 +61,7 @@ export {
   FTBabelInteractionTracking,
   __ftExtractText,
 };
+
+export type { FTVisitorIdConfig } from './visitorIdConfig';
+
+export { FTRumViewTracking } from './rum/FTRumViewTracking';

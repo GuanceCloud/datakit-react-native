@@ -1,78 +1,60 @@
-import React from 'react'
-import { ComponentDidAppearEvent, Navigation ,PreviewCompletedEvent} from 'react-native-navigation';
-import { FTReactNativeRUM } from '@cloudcare/react-native-mobile';
+import React from 'react';
+import {Navigation} from 'react-native-navigation';
+import {FTRumViewTracking} from '@cloudcare/react-native-mobile';
 
-
-/**
- * RUM collection view when using react-native-navigation
- */
+/** RUM collection for react-native-navigation. */
 export class FTRumReactNativeNavigationTracking {
+  private static tracker = new FTRumViewTracking();
+  private static listeners = new Map<string, {remove(): void}>();
+  private static appearance = 0;
+  private static originalCreateElement?: typeof React.createElement;
 
-    private static isTracking = false
-    private static trackedComponentIds : Array<any> = [];
-    private static originalCreateElement: any = undefined
-    private static currentViewName: string | null = null;
-    private static currentViewStartTime: number = 0;
+  static startTracking(): void {
+    if (this.originalCreateElement) return;
+    this.tracker.start();
+    const original = React.createElement;
+    this.originalCreateElement = original;
+    React.createElement = (
+      element: any,
+      props: any,
+      ...children: any[]
+    ): any => {
+      const key = props?.componentId;
+      if (key && !this.listeners.has(key)) {
+        let generation: number | undefined;
+        let appearance: number | undefined;
+        const listener = Navigation.events().registerComponentListener(
+          {
+            componentWillAppear: event => {
+              appearance = ++this.appearance;
+              this.tracker.setCurrent({key, name: event.componentName});
+              this.tracker.beginLoad(key);
+            },
+            componentDidAppear: event => {
+              if (appearance !== undefined && appearance !== this.appearance)
+                return;
+              generation = this.tracker.show({key, name: event.componentName});
+            },
+            componentDidDisappear: () => {
+              // Foreground recovery creates a new generation. The disappearance
+              // from an old appearance cannot close that recovered View.
+              this.tracker.hide(key, generation);
+            },
+          },
+          key,
+        );
+        this.listeners.set(key, listener);
+      }
+      return original(element, props, ...children);
+    };
+  }
 
-
-    /**
-     * Start collecting page lifecycle
-     */
-    static startTracking(): void {
-        if (FTRumReactNativeNavigationTracking.isTracking) {
-            return
-        }
-        const original = React.createElement
-        FTRumReactNativeNavigationTracking.originalCreateElement = original
-        React.createElement = (element: any, props: any, ...children: any): any => {
-            if (props && props.componentId != undefined 
-                && !FTRumReactNativeNavigationTracking.trackedComponentIds.includes(props.componentId)
-            ) {
-                const componentId = props.componentId
-                var startTime:number|null = null; 
-                Navigation.events().registerComponentListener(
-                    {   
-                        componentWillAppear:() => {
-                           startTime = new Date().getTime(); 
-                           console.log("startTime:"+startTime);
-                        },
-                        componentDidAppear: (event: ComponentDidAppearEvent) => {
-                            const screenName = event.componentName;
-                            const endTime =  new Date().getTime(); 
-                            // Date timestamps are milliseconds; RUM loadTime uses nanoseconds.
-                            const duration = startTime != null ?(endTime - startTime)*1e6:0;
-                            FTReactNativeRUM.onCreateView(screenName,duration);
-                            FTReactNativeRUM.startView(screenName);
-                        },
-                        componentDidDisappear: () => {
-                            FTReactNativeRUM.stopView();
-                        },
-                        previewCompleted:(event:PreviewCompletedEvent) => {
-                           console.log('PreviewCompletedEvent: ' + event.componentName);
-                        }
-                    },
-                    componentId,
-                );
-  
-               FTRumReactNativeNavigationTracking.trackedComponentIds.push(componentId);
-            }
-
-            return original(element, props, ...children)
-        }
-        FTRumReactNativeNavigationTracking.isTracking = true
-    }
-
-    /**
-     * Stop collecting page navigation
-     */
-    static stopTracking(): void {
-        if (!FTRumReactNativeNavigationTracking.isTracking) {
-            return
-        }
-        if (FTRumReactNativeNavigationTracking.originalCreateElement != undefined) {
-            React.createElement = FTRumReactNativeNavigationTracking.originalCreateElement;
-        }
-        FTRumReactNativeNavigationTracking.trackedComponentIds.splice(0, FTRumReactNativeNavigationTracking.trackedComponentIds.length)
-        FTRumReactNativeNavigationTracking.isTracking = false
-    }
+  static stopTracking(): void {
+    if (!this.originalCreateElement) return;
+    React.createElement = this.originalCreateElement;
+    this.originalCreateElement = undefined;
+    this.listeners.forEach(listener => listener.remove());
+    this.listeners.clear();
+    this.tracker.stop();
+  }
 }

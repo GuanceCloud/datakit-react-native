@@ -14,6 +14,7 @@ import com.ft.sdk.FTRUMGlobalManager;
 import com.ft.sdk.FTSdk;
 import com.ft.sdk.RUMCacheDiscard;
 import com.ft.sdk.garble.bean.AppState;
+import com.ft.sdk.garble.bean.ViewTrackingType;
 import com.ft.sdk.garble.bean.NetStatusBean;
 import com.ft.sdk.garble.bean.ResourceParams;
 import com.ft.sdk.reactnative.utils.ReactNativeUtils;
@@ -47,9 +48,18 @@ public class FTRUMImpl implements LifecycleEventListener {
   @ReactMethod
   public void setConfig(ReadableMap context, Promise promise) {
     Map<String, Object> map = context.toHashMap();
+    com.ft.sdk.FTVisitorIdConfig visitorIdConfig;
+    try {
+      visitorIdConfig = VisitorIdConfigMapper.fromMap(map.get("visitorIdConfig"));
+    } catch (IllegalArgumentException error) {
+      promise.reject("E_VISITOR_ID_CONFIG", error.getMessage(), error);
+      return;
+    }
     String rumAppId = (String) map.get("androidAppId");
     Double sampleRate = (Double) map.get("sampleRate");
+    Double sessionSamplingRate = (Double) map.get("sessionSamplingRate");
     Double sessionOnErrorSampleRate = (Double) map.get("sessionOnErrorSampleRate");
+    Double sessionOnErrorSamplingRate = (Double) map.get("sessionOnErrorSamplingRate");
 
     Boolean enableNativeUserAction = (Boolean) map.get("enableNativeUserAction");
     Boolean enableNativeUserView = (Boolean) map.get("enableNativeUserView");
@@ -70,12 +80,16 @@ public class FTRUMImpl implements LifecycleEventListener {
     Boolean enableTraceWebView = (Boolean) map.get("enableTraceWebView");
     ArrayList<String> allowWebViewHost = (ArrayList<String>) map.get("allowWebViewHost");
 
-    FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId);
-    if (sampleRate != null) {
-      rumConfig.setSamplingRate(sampleRate.floatValue());
+    FTRUMConfig rumConfig = new FTRUMConfig().setRumAppId(rumAppId).setVisitorIdConfig(visitorIdConfig);
+    if (sessionSamplingRate != null) {
+      rumConfig.setSessionSamplingRate(sessionSamplingRate.floatValue());
+    } else if (sampleRate != null) {
+      rumConfig.setSessionSamplingRate((float) (sampleRate * 100.0));
     }
-    if (sessionOnErrorSampleRate != null) {
-      rumConfig.setSessionErrorSampleRate(sessionOnErrorSampleRate.floatValue());
+    if (sessionOnErrorSamplingRate != null) {
+      rumConfig.setSessionOnErrorSamplingRate(sessionOnErrorSamplingRate.floatValue());
+    } else if (sessionOnErrorSampleRate != null) {
+      rumConfig.setSessionOnErrorSamplingRate((float) (sessionOnErrorSampleRate * 100.0));
     }
     if (enableNativeUserAction != null) {
       rumConfig.setEnableTraceUserAction(enableNativeUserAction);
@@ -239,6 +253,36 @@ public class FTRUMImpl implements LifecycleEventListener {
     } else {
       FTRUMGlobalManager.get().addAction(actionName, actionType);
     }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void onCreateViewWithLoadStart(String viewName, double duration, double loadStartEpochMs, Promise promise) {
+    long nanoseconds = ViewTiming.durationNanoseconds(duration);
+    FTRUMGlobalManager.get().onCreateView(viewName, nanoseconds,
+        nanoseconds > 0 ? ViewTiming.epochNanoseconds(loadStartEpochMs) : 0);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void startViewWithTrackingType(String viewName, ReadableMap map, double trackingType, Promise promise) {
+    if (trackingType != 0 && trackingType != 1) {
+      promise.reject("E_VIEW_TRACKING_TYPE", "trackingType must be Manual (0) or Automatic (1)");
+      return;
+    }
+    FTRUMGlobalManager.get().startView(viewName, map == null ? null : map.toHashMap(),
+        trackingType == 1 ? ViewTrackingType.AUTOMATIC : ViewTrackingType.MANUAL);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void updateViewLoadingTime(double duration, Promise promise) {
+    if (Double.isNaN(duration) || Double.isInfinite(duration) || duration < 0
+        || duration > 9007199254740991d || duration != Math.floor(duration)) {
+      promise.reject("E_VIEW_LOADING_TIME", "duration must be a non-negative safe integer in nanoseconds");
+      return;
+    }
+    FTRUMGlobalManager.get().updateLoadTime((long) duration);
     promise.resolve(null);
   }
 

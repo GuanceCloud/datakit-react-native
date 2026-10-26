@@ -1,3 +1,4 @@
+import { FTVisitorIdConfig, validateVisitorIdConfig } from './visitorIdConfig';
 // import { NativeModules } from 'react-native';
 import { Platform } from 'react-native';
 import { FTRumErrorTracking } from './rum/FTRumErrorTracking';
@@ -76,8 +77,10 @@ export enum IOSCrashMonitoringType {
  * Set RUM tracking conditions.
  * @param androidAppId appId, apply during monitoring
  * @param iOSAppId appId, apply during monitoring
- * @param sampleRate sampling rate
- * @param sessionOnErrorSampleRate error session sampling rate. For sessions not sampled, if ERROR is hit, collect data 1 minute before the error occurs
+ * @param sessionSamplingRate RUM session sampling percentage in [0, 100], default 100. Supports fractional percentages and takes precedence over sampleRate.
+ * @param sessionOnErrorSamplingRate Sampling percentage in [0, 100] for otherwise unsampled sessions when an error occurs, default 0. Supports fractional percentages and takes precedence over sessionOnErrorSampleRate.
+ * @param sampleRate Deprecated RUM session sampling probability in [0, 1], default 1. Used only when sessionSamplingRate is omitted; multiplied by 100 before passing to Native.
+ * @param sessionOnErrorSampleRate Deprecated error session sampling probability in [0, 1], default 0. Used only when sessionOnErrorSamplingRate is omitted; multiplied by 100 before passing to Native.
  * @param enableAutoTrackUserAction whether to automatically collect react-native control click events, can set actionName with accessibilityLabel when enabled
  * @param enableTrackError whether to automatically collect react-native Error
  * @param enableTrackNativeCrash whether to collect Native Error
@@ -105,9 +108,26 @@ export enum IOSCrashMonitoringType {
  * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information.
  */
 export interface FTRUMConfig {
+  /** Valid config enables Visitor ID; omitted/null disables it. */
+  visitorIdConfig?: FTVisitorIdConfig | null;
   androidAppId: string;
   iOSAppId: string;
+  /**
+   * RUM session sampling percentage in [0, 100], default 100.
+   * Supports fractional percentages: 12.5 means 12.5%, not 0.125.
+   * Takes precedence over sampleRate when both are supplied, including 0.
+   * Setting 0 disables regular session sampling; error session sampling is separate.
+   */
+  sessionSamplingRate?: number;
+  /** @deprecated Use sessionSamplingRate. Probability in [0, 1], default 1; 0.125 maps to 12.5%. Ignored when sessionSamplingRate is supplied. */
   sampleRate?: number;
+  /**
+   * Sampling percentage for otherwise unsampled RUM sessions when an error occurs.
+   * Range [0, 100], default 0; fractional percentages are supported.
+   * Takes precedence over sessionOnErrorSampleRate when both are supplied, including 0.
+   */
+  sessionOnErrorSamplingRate?: number;
+  /** @deprecated Use sessionOnErrorSamplingRate. Probability in [0, 1], default 0; multiplied by 100. Ignored when sessionOnErrorSamplingRate is supplied. */
   sessionOnErrorSampleRate?: number;
   enableAutoTrackUserAction?: boolean;
   enableAutoTrackError?: boolean;
@@ -205,10 +225,17 @@ type FTReactNativeRUMType = {
   /**
    * view load duration.
    * @param viewName view name
-   * @param loadTime view load duration
+   * @param loadTime monotonic view load duration in nanoseconds
    * @returns a Promise.
    */
   onCreateView(viewName: string, loadTime: number): Promise<void>;
+  /**
+   * Replace the current active View's loading duration, between startView and stopView.
+   * @param duration monotonic elapsed time in nanoseconds; a non-negative safe integer.
+   * Zero clears loading time. Late calls can update a newer View; no View ID is supplied.
+   * @returns a Promise for the native call, not for data upload.
+   */
+  updateViewLoadingTime(duration: number): Promise<void>;
   /**
    * view start.
    * @param viewName page name
@@ -289,6 +316,13 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
     .default;
 
   setConfig(config: FTRUMConfig): Promise<void> {
+    if (config.visitorIdConfig != null) {
+      try {
+        validateVisitorIdConfig(config.visitorIdConfig);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    }
     bridgeContextManager.configureLongTaskContext(
       config.enableLongTask === true
     );
@@ -355,6 +389,16 @@ class FTReactNativeRUMWrapper implements FTReactNativeRUMType {
   }
   onCreateView(viewName: string, loadTime: number): Promise<void> {
     return this.rum.onCreateView(viewName, loadTime);
+  }
+  updateViewLoadingTime(duration: number): Promise<void> {
+    if (!Number.isSafeInteger(duration) || duration < 0) {
+      return Promise.reject(
+        new RangeError(
+          'duration must be a non-negative safe integer in nanoseconds'
+        )
+      );
+    }
+    return this.rum.updateViewLoadingTime(duration);
   }
   startView(viewName: string, property?: object): Promise<void> {
     // Automatically merge bridge context properties with local properties

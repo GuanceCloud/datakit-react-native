@@ -25,11 +25,15 @@ RCT_REMAP_METHOD(sessionReplayConfig,
 #endif
 - (void)sessionReplayConfig:(NSDictionary *)context resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject{
   FTSessionReplayConfig *config = [[FTSessionReplayConfig alloc]init];
-  if([context.allKeys containsObject:@"sampleRate"]){
-    config.sampleRate = [RCTConvert double:context[@"sampleRate"]]*100;
+  if ([context.allKeys containsObject:@"sessionReplaySamplingRate"]) {
+    config.sessionReplaySamplingRate = [RCTConvert double:context[@"sessionReplaySamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sampleRate"]) {
+    config.sessionReplaySamplingRate = [RCTConvert double:context[@"sampleRate"]] * 100;
   }
-  if([context.allKeys containsObject:@"sessionReplayOnErrorSampleRate"]){
-    config.sessionReplayOnErrorSampleRate = [RCTConvert double:context[@"sessionReplayOnErrorSampleRate"]]*100;
+  if ([context.allKeys containsObject:@"sessionReplayOnErrorSamplingRate"]) {
+    config.sessionReplayOnErrorSamplingRate = [RCTConvert double:context[@"sessionReplayOnErrorSamplingRate"]];
+  } else if ([context.allKeys containsObject:@"sessionReplayOnErrorSampleRate"]) {
+    config.sessionReplayOnErrorSamplingRate = [RCTConvert double:context[@"sessionReplayOnErrorSampleRate"]] * 100;
   }
   if([context.allKeys containsObject:@"privacy"]){
     int privacy = [context[@"privacy"] intValue];
