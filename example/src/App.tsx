@@ -18,7 +18,7 @@ import LocalWebViewScreen from './localWebView';
 import SessionReplayScreen from './sessionReplay';
 import WebSocketScreen from './webSocket';
 
-import { FTRumReactNavigationTracking } from './FTRumReactNavigationTracking';
+import { FTRumReactNavigationTracking } from '@cloudcare/mobile-react-navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 function Home() {
@@ -225,10 +225,11 @@ const homeStyles = StyleSheet.create({
 
 
 function App() {
+  React.useEffect(() => () => FTRumReactNavigationTracking.stopTrackingViews(), []);
   return (
     // react-navigation
     // Enable RUM View collection
-    // Drag the FTRumReactNavigationTracking.tsx file from example into your project;
+    // Install @cloudcare/mobile-react-navigation; no copied adapter is needed.
 
     // Method 1: If you use createNativeStackNavigator(); to create native navigation stack, it's recommended to use <Stack.Navigator screenListeners={FTRumReactNavigationTracking.StackListener} initialRouteName='Home'> to enable collection,
     //         this way you can get page load duration statistics

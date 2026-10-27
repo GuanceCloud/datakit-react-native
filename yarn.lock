@@ -1635,6 +1635,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cloudcare/mobile-react-native-navigation@workspace:packages/react-native-navigation":
+  version: 0.0.0-use.local
+  resolution: "@cloudcare/mobile-react-native-navigation@workspace:packages/react-native-navigation"
+  dependencies:
+    react-native-navigation: 7.40.1
+  peerDependencies:
+    "@cloudcare/react-native-mobile": ^0.4.3
+    react: ">=16.13.1"
+    react-native: ">=0.63.4 <1.0"
+    react-native-navigation: ^7.5.0
+  languageName: unknown
+  linkType: soft
+
+"@cloudcare/mobile-react-navigation@workspace:packages/react-navigation":
+  version: 0.0.0-use.local
+  resolution: "@cloudcare/mobile-react-navigation@workspace:packages/react-navigation"
+  dependencies:
+    "@react-navigation/native": ^6.1.18
+    "@react-navigation/native-stack": ^6.11.0
+    react-native-safe-area-context: ^3.3.2
+    react-native-screens: ^3.0.0
+  peerDependencies:
+    "@cloudcare/react-native-mobile": ^0.4.3
+    react: ">=16.13.1"
+    react-native: ">=0.63.4 <1.0"
+  languageName: unknown
+  linkType: soft
+
 "@cloudcare/react-native-mobile-babel-plugin@workspace:packages/react-native-babel-plugin":
   version: 0.0.0-use.local
   resolution: "@cloudcare/react-native-mobile-babel-plugin@workspace:packages/react-native-babel-plugin"
@@ -9239,6 +9267,7 @@ __metadata:
     react-native-builder-bob: ^0.17.1
     react-native-gradle-plugin: ^0.71.19
     typescript: ^4.1.3
+    yaml: 2.8.3
   languageName: unknown
   linkType: soft
 
@@ -15757,6 +15786,8 @@ __metadata:
     "@babel/core": ^7.20.0
     "@babel/preset-env": ^7.1.6
     "@babel/runtime": ^7.20.0
+    "@cloudcare/mobile-react-native-navigation": "workspace:packages/react-native-navigation"
+    "@cloudcare/mobile-react-navigation": "workspace:packages/react-navigation"
     "@cloudcare/react-native-mobile": "workspace:packages/react-native-mobile"
     "@cloudcare/react-native-mobile-babel-plugin": "workspace:packages/react-native-babel-plugin"
     "@cloudcare/react-native-mobile-cli": "file:../ft-react-native-mobile-cli-v1.0.0.tgz"
@@ -18979,19 +19010,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^1.10.0":
-  version: 1.10.3
-  resolution: "yaml@npm:1.10.3"
-  checksum: 6a2dd3582f4fbcc8d0e32dc26d1a42f72a901eb6ae8fad616bd720514b11a53a64eabc21dba97fbcd951c7c0e1963502313789d93a753e7786e7452376498be5
-  languageName: node
-  linkType: hard
-
-"yaml@npm:^2.2.1, yaml@npm:^2.6.0":
+"yaml@npm:2.8.3, yaml@npm:^2.2.1, yaml@npm:^2.6.0":
   version: 2.8.3
   resolution: "yaml@npm:2.8.3"
   bin:
     yaml: bin.mjs
   checksum: 6e33fa9a8a31a8ed7472fbafc83e587956611594ca6ae4dbc1ab0c8a3ad4f6ff061a9842ca34bbb2e7affa9df93322cf0d132fd34338bec308d984495432c905
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^1.10.0":
+  version: 1.10.3
+  resolution: "yaml@npm:1.10.3"
+  checksum: 6a2dd3582f4fbcc8d0e32dc26d1a42f72a901eb6ae8fad616bd720514b11a53a64eabc21dba97fbcd951c7c0e1963502313789d93a753e7786e7452376498be5
   languageName: node
   linkType: hard
 

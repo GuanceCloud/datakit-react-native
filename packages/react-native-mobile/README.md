@@ -97,10 +97,15 @@ resets its loading-state interval start to View start when updating).
 
 ### Automatic View framework integration
 
-Use the updated `example/src/FTRumReactNavigationTracking.tsx` (React Navigation)
-or `example/src/FTRumReactNativeNavigationTracking.tsx` (React Native Navigation)
-with this SDK. React Navigation supports either `StackListener` for transition
-load timing or `startTrackingViews(ref)` for route tracking; choose one.
+Install the plugin for your navigation framework:
+
+- React Navigation: `@cloudcare/mobile-react-navigation` ([setup](../react-navigation/README.md)).
+- Wix React Native Navigation: `@cloudcare/mobile-react-native-navigation` ([setup](../react-native-navigation/README.md)).
+
+Import the adapter directly from its plugin instead of copying example files.
+React Navigation supports either `StackListener` for transition loading or `startTrackingViews(ref)`
+for route tracking; choose one. React Native Navigation uses global screen events,
+including screens rendered with the automatic JSX runtime.
 Both adapters share `FTRumViewTracking`, which internally records the loading
 start and marks native Views as Automatic. Neither the loading-start parameter
 nor the tracking type is exposed on the application-facing `FTReactNativeRUM` API.

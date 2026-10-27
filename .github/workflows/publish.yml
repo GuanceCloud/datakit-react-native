@@ -1,7 +1,10 @@
-name: Publish npm packages
+name: Check and publish npm packages
 
 on:
+  pull_request:
   push:
+    branches:
+      - '**'
     tags:
       - 'agent_*'
   workflow_dispatch:
@@ -10,15 +13,61 @@ permissions:
   contents: read
 
 concurrency:
-  group: npm-publish
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Check release identity
+        if: github.ref_type == 'tag'
+        run: node scripts/publish-npm.cjs check
+      - name: Install dependencies
+        run: |
+          corepack enable
+          yarn install --immutable --mode=skip-build
+      - name: Validate versions
+        run: yarn check-version
+      - name: Lint
+        run: yarn lint
+      - name: Check types
+        run: yarn typescript
+      - name: Run unit tests
+        run: yarn test --runInBand
+      - name: Test navigation timing
+        run: node --test scripts/navigation-timing.test.cjs
+      - name: Test version policy
+        run: yarn test:version
+      - name: Test publishing workflow
+        run: yarn test:publish
+      - name: Build and verify all release packages
+        run: node scripts/publish-npm.cjs pack
+      - name: Verify navigation package consumers
+        run: yarn test:navigation:packages
+
   publish:
-    if: github.repository == 'GuanceCloud/datakit-react-native' && github.ref_type == 'tag'
+    needs: check
+    if: >-
+      github.repository == 'GuanceCloud/datakit-react-native' &&
+      github.ref_type == 'tag' &&
+      startsWith(github.ref, 'refs/tags/agent_') &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: npm-publish
+    concurrency:
+      group: npm-publish
+      cancel-in-progress: false
     permissions:
       contents: read
       id-token: write
@@ -37,13 +86,8 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn install --immutable
+          yarn install --immutable --mode=skip-build
       - name: Validate versions
         run: yarn check-version
-      - name: Test publishing workflow
-        run: yarn test:publish
-      - name: Test beta releases
-        if: contains(github.ref_name, '-beta')
-        run: yarn test --runInBand
       - name: Build, pack and publish with OIDC
         run: node scripts/publish-npm.cjs publish

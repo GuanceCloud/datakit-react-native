@@ -5,88 +5,144 @@ const { test } = require('node:test');
 const vm = require('node:vm');
 const ts = require('typescript');
 
-// Exercise the example's real lifecycle callbacks with a controlled millisecond clock.
-function loadExample(filename) {
+// Exercise real package exports and the real coordinator, with no native runtime.
+// Each plugin must load without resolving the other navigation library.
+function fixture(directory) {
   let now = 1000;
-  let componentListener;
   const reports = [];
-  const react = { createElement: () => null };
-  const rum = {
-    onCreateView: (name, duration) => reports.push({ name, duration }),
-    startView: () => {},
-    stopView: () => {},
+  const starts = [];
+  const callbacks = {};
+  const native = {
+    onCreateViewWithLoadStart: (name, duration, epoch) => {
+      reports.push({ name, duration, epoch });
+      return Promise.resolve();
+    },
+    startViewWithTrackingType: (name, properties, type) => {
+      starts.push({ name, properties, type });
+      return Promise.resolve();
+    },
   };
+  const events = Object.fromEntries(
+    ['WillAppear', 'DidAppear', 'DidDisappear'].map((event) => [
+      `registerComponent${event}Listener`,
+      (listener) => {
+        callbacks[event] = listener;
+        return { remove() {} };
+      },
+    ])
+  );
   const dependencies = {
-    'react': react,
-    'react-native': { AppState: { addEventListener: () => {} } },
-    '@cloudcare/react-native-mobile': { FTReactNativeRUM: rum },
-    'react-native-navigation': {
-      Navigation: {
-        events: () => ({
-          registerComponentListener: (listener) => { componentListener = listener; },
-        }),
+    'react-native': {
+      AppState: {
+        currentState: 'active',
+        addEventListener: () => ({ remove() {} }),
       },
     },
+    '../ft_rum': { FTReactNativeRUM: { stopView: () => Promise.resolve() } },
+    '../ft_mobile_agent': {
+      bridgeContextManager: { mergeWithLocalPropertiesSync: () => ({}) },
+    },
+    '../specs/NativeFTReactNativeRUM': { default: native },
   };
-  const source = fs.readFileSync(path.join(__dirname, '../example/src', filename), 'utf8');
-  const { outputText } = ts.transpileModule(source, {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2020,
-      esModuleInterop: true,
-    },
-    fileName: filename,
-  });
-  const exports = {};
-  vm.runInNewContext(outputText, {
-    exports,
-    require: (name) => {
-      assert.ok(Object.hasOwn(dependencies, name), `Unexpected dependency: ${name}`);
-      return dependencies[name];
-    },
-    Date: class extends Date { constructor() { super(now); } },
-    console: { log: () => {} },
-  }, { filename });
+  if (directory === 'react-native-navigation')
+    dependencies['react-native-navigation'] = {
+      Navigation: { events: () => events },
+    };
+
+  const modules = new Map();
+  function load(relativePath) {
+    const filename = path.resolve(__dirname, '..', relativePath);
+    if (modules.has(filename)) return modules.get(filename);
+    const { outputText } = ts.transpileModule(
+      fs.readFileSync(filename, 'utf8'),
+      {
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS,
+          target: ts.ScriptTarget.ES2020,
+        },
+        fileName: filename,
+      }
+    );
+    const exports = {};
+    modules.set(filename, exports);
+    vm.runInNewContext(
+      outputText,
+      {
+        exports,
+        require(name) {
+          if (Object.hasOwn(dependencies, name)) return dependencies[name];
+          if (name.startsWith('./'))
+            return load(path.resolve(path.dirname(filename), `${name}.ts`));
+          assert.ok(
+            Object.hasOwn(dependencies, name),
+            `Unexpected dependency: ${name}`
+          );
+          return dependencies[name];
+        },
+        Date: { now: () => 1700000000001 },
+        performance: { now: () => now },
+        console,
+      },
+      { filename }
+    );
+    return exports;
+  }
+  dependencies['@cloudcare/react-native-mobile'] = load(
+    'packages/react-native-mobile/src/rum/FTRumViewTracking.ts'
+  );
   return {
-    exports, react, reports,
-    setTime: (time) => { now = time; },
-    getComponentListener: () => componentListener,
+    exports: load(`packages/${directory}/src/index.ts`),
+    callbacks,
+    reports,
+    starts,
+    setTime(time) {
+      now = time;
+    },
   };
 }
 
-// Expected values follow the API's nanosecond unit: 1 millisecond = 1,000,000 ns.
-for (const [elapsedMs, expectedNs] of [[0, 0], [25, 25_000_000], [100, 100_000_000]]) {
-  test(`React Navigation reports ${elapsedMs} ms as ${expectedNs} ns`, () => {
-    const fixture = loadExample('FTRumReactNavigationTracking.tsx');
-    const { StackListener } = fixture.exports.FTRumReactNavigationTracking;
-    const route = { key: 'screen-1', name: 'Screen' };
-    StackListener.focus({ target: route.key });
-    StackListener.state({ data: { state: { index: 0, routes: [route] } } });
-    fixture.setTime(1000 + elapsedMs);
-    StackListener.transitionEnd({ target: route.key, data: { closing: false } });
-    assert.deepEqual(fixture.reports, [{ name: 'Screen', duration: expectedNs }]);
-  });
-
-  test(`React Native Navigation reports ${elapsedMs} ms as ${expectedNs} ns`, () => {
-    const fixture = loadExample('FTRumReactNativeNavigationTracking.tsx');
-    const tracking = fixture.exports.FTRumReactNativeNavigationTracking;
-    tracking.startTracking();
-    fixture.react.createElement('Screen', { componentId: 'screen-1' });
-    const listener = fixture.getComponentListener();
-    listener.componentWillAppear();
-    fixture.setTime(1000 + elapsedMs);
-    listener.componentDidAppear({ componentName: 'Screen' });
-    assert.deepEqual(fixture.reports, [{ name: 'Screen', duration: expectedNs }]);
-    tracking.stopTracking();
-  });
+for (const [elapsedMs, expectedNs] of [
+  [0, 0],
+  [25.5, 25500000],
+  [100, 100000000],
+]) {
+  for (const directory of ['react-navigation', 'react-native-navigation']) {
+    test(`${directory}: ${elapsedMs} ms produces ${expectedNs} ns`, () => {
+      const context = fixture(directory);
+      if (directory === 'react-navigation') {
+        const adapter = context.exports.FTRumReactNavigationTracking;
+        const listeners = adapter.StackListener;
+        const route = { key: 'screen', name: 'Screen' };
+        listeners.focus({ target: route.key });
+        listeners.state({ data: { state: { index: 0, routes: [route] } } });
+        context.setTime(1000 + elapsedMs);
+        listeners.transitionEnd({
+          target: route.key,
+          data: { closing: false },
+        });
+        adapter.stopTrackingViews();
+      } else {
+        const adapter = context.exports.FTRumReactNativeNavigationTracking;
+        adapter.startTracking();
+        const event = {
+          componentId: 'screen',
+          componentName: 'Screen',
+          componentType: 'Component',
+        };
+        context.callbacks.WillAppear(event);
+        context.setTime(1000 + elapsedMs);
+        context.callbacks.DidAppear(event);
+        adapter.stopTracking();
+      }
+      assert.deepEqual(
+        context.reports,
+        expectedNs > 0
+          ? [{ name: 'Screen', duration: expectedNs, epoch: 1700000000001 }]
+          : []
+      );
+      assert.equal(context.starts.length, 1);
+      assert.equal(context.starts[0].name, 'Screen');
+      assert.equal(context.starts[0].type, 1);
+    });
+  }
 }
-
-test('React Native Navigation preserves zero when the start callback is missing', () => {
-  const fixture = loadExample('FTRumReactNativeNavigationTracking.tsx');
-  const tracking = fixture.exports.FTRumReactNativeNavigationTracking;
-  tracking.startTracking();
-  fixture.react.createElement('Screen', { componentId: 'screen-1' });
-  fixture.getComponentListener().componentDidAppear({ componentName: 'Screen' });
-  assert.deepEqual(fixture.reports, [{ name: 'Screen', duration: 0 }]);
-  tracking.stopTracking();
-});

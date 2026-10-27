@@ -39,16 +39,27 @@ function fail(message) {
 }
 
 const lernaVersion = readJson('lerna.json').version;
+const navigationPackagePaths = new Set([
+  'packages/react-navigation/package.json',
+  'packages/react-native-navigation/package.json',
+]);
 const packagePaths = [
   'packages/react-native-mobile/package.json',
   'packages/react-native-session-replay/package.json',
   'packages/react-native-babel-plugin/package.json',
+  ...navigationPackagePaths,
 ];
 
 for (const packagePath of packagePaths) {
   const pkg = readJson(packagePath);
   if (pkg.version !== lernaVersion) {
     fail(`${packagePath} version ${pkg.version} does not match lerna.json ${lernaVersion}`);
+  }
+  if (
+    navigationPackagePaths.has(packagePath) &&
+    pkg.peerDependencies?.['@cloudcare/react-native-mobile'] !== `^${pkg.version}`
+  ) {
+    fail(`${packagePath} must declare @cloudcare/react-native-mobile@^${pkg.version} as a peer dependency`);
   }
 }
 

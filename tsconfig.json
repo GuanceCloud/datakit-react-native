@@ -7,6 +7,12 @@
       ],
       "@cloudcare/react-native-session-replay": [
         "./packages/react-native-session-replay/src/index"
+      ],
+      "@cloudcare/mobile-react-navigation": [
+        "./packages/react-navigation/src/index"
+      ],
+      "@cloudcare/mobile-react-native-navigation": [
+        "./packages/react-native-navigation/src/index"
       ]
     },
     "allowUnreachableCode": false,

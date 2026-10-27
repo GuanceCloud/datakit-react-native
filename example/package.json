@@ -12,6 +12,8 @@
     "build:android": "react-native bundle --entry-file='index.tsx' --bundle-output='./android/app/src/main/assets/index.android.bundle' --assets-dest='./android/app/src/main/res' --dev=false --platform='android'"
   },
   "dependencies": {
+    "@cloudcare/mobile-react-native-navigation": "workspace:packages/react-native-navigation",
+    "@cloudcare/mobile-react-navigation": "workspace:packages/react-navigation",
     "@cloudcare/react-native-mobile": "workspace:packages/react-native-mobile",
     "@cloudcare/react-native-session-replay": "workspace:packages/react-native-session-replay",
     "@react-native-async-storage/async-storage": "^1.24.0",

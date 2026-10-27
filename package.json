@@ -28,10 +28,14 @@
     "update-version": "./update-version.sh",
     "check-version": "node scripts/check-version.js",
     "pods": "cd example && pod-install --quiet",
-    "lint": "yarn workspace @cloudcare/react-native-mobile lint && yarn workspace @cloudcare/react-native-session-replay lint && yarn workspace @cloudcare/react-native-mobile-babel-plugin lint",
-    "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript && yarn workspace @cloudcare/react-native-mobile-babel-plugin typescript",
-    "test": "yarn workspace @cloudcare/react-native-mobile test && yarn workspace @cloudcare/react-native-mobile-babel-plugin test",
-    "test:publish": "node --test scripts/publish-npm.test.cjs"
+    "lint": "yarn workspace @cloudcare/react-native-mobile lint && yarn workspace @cloudcare/react-native-session-replay lint && yarn workspace @cloudcare/react-native-mobile-babel-plugin lint && yarn workspace @cloudcare/mobile-react-navigation lint && yarn workspace @cloudcare/mobile-react-native-navigation lint",
+    "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript && yarn workspace @cloudcare/react-native-mobile-babel-plugin typescript && yarn workspace @cloudcare/mobile-react-navigation typescript && yarn workspace @cloudcare/mobile-react-native-navigation typescript",
+    "test": "yarn workspace @cloudcare/react-native-mobile test && yarn workspace @cloudcare/react-native-mobile-babel-plugin test && yarn workspace @cloudcare/mobile-react-navigation test && yarn workspace @cloudcare/mobile-react-native-navigation test",
+    "test:publish": "node --test scripts/publish-npm.test.cjs scripts/publish-workflow.test.cjs",
+    "test:navigation": "yarn workspace @cloudcare/react-native-mobile test FTRumNavigationTracking --runInBand && yarn workspace @cloudcare/mobile-react-navigation test --runInBand && yarn workspace @cloudcare/mobile-react-native-navigation test --runInBand && node --test scripts/navigation-timing.test.cjs",
+    "test:navigation:packages": "node scripts/check-navigation-packages.cjs",
+    "test:navigation:compatibility": "node scripts/check-react-navigation-compatibility.cjs",
+    "test:version": "node --test scripts/check-version.test.cjs"
   },
   "prettier": {
     "quoteProps": "consistent",
@@ -60,7 +64,8 @@
     "react-native": "0.70.0",
     "react-native-builder-bob": "^0.17.1",
     "react-native-gradle-plugin": "^0.71.19",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "yaml": "2.8.3"
   },
   "engines": {
     "node": ">=18"
