@@ -292,6 +292,7 @@ describe('native adapter config forwarding', () => {
 
   it('reports a traced handshake through the native bridge with native resource collection disabled', async () => {
     FTRumWebSocketTracking.shutDown();
+    const wall = jest.spyOn(Date, 'now').mockReturnValue(1700000000001);
     const originalWebSocket = globalThis.WebSocket;
     const performanceDescriptor = Object.getOwnPropertyDescriptor(
       globalThis,
@@ -368,7 +369,11 @@ describe('native adapter config forwarding', () => {
       expect(mockWebSocketMetadata.addResource).toHaveBeenCalledWith(
         key,
         expect.objectContaining({ webSocketEvent: 'open', url: socket.url }),
-        { duration: 25000000 },
+        {
+          duration: 25000000,
+          fetchStartNsTimeInterval: '1700000000001000000',
+          fetchEndNsTimeInterval: '1700000000026000000',
+        },
         session
       );
       expect(mockFTReactNativeRUM.setConfig).toHaveBeenLastCalledWith({
@@ -377,6 +382,7 @@ describe('native adapter config forwarding', () => {
         longTaskThresholdMs: 100,
       });
     } finally {
+      wall.mockRestore();
       FTRumWebSocketTracking.shutDown();
       globalThis.WebSocket = originalWebSocket;
       if (performanceDescriptor) {

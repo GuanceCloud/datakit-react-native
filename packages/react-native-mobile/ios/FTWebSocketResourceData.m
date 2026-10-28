@@ -2,6 +2,32 @@
 #import <objc/message.h>
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
+
+static BOOL FTWebSocketEpochNanoseconds(id value, int64_t *result) {
+  if (![value isKindOfClass:NSString.class]) return NO;
+  NSString *text = value;
+  if (text.length == 0 || text.length > 19 || [text characterAtIndex:0] == '0') return NO;
+  int64_t number = 0;
+  for (NSUInteger index = 0; index < text.length; index++) {
+    unichar character = [text characterAtIndex:index];
+    if (character < '0' || character > '9') return NO;
+    int digit = character - '0';
+    if (number > (INT64_MAX - digit) / 10) return NO;
+    number = number * 10 + digit;
+  }
+  *result = number;
+  return YES;
+}
+
+BOOL FTWebSocketResourceInterval(NSDictionary *metrics, int64_t *start, int64_t *end) {
+  int64_t startNs, endNs;
+  if (!FTWebSocketEpochNanoseconds(metrics[@"fetchStartNsTimeInterval"], &startNs) ||
+      !FTWebSocketEpochNanoseconds(metrics[@"fetchEndNsTimeInterval"], &endNs) || endNs < startNs) return NO;
+  *start = startNs;
+  *end = endNs;
+  return YES;
+}
 
 BOOL FTWebSocketDiscardTraceResource(id interceptor, NSString *key) {
   if (!interceptor || !key.length) return NO;
@@ -70,6 +96,11 @@ NSDictionary *FTWebSocketResourceData(NSDictionary *content, NSDictionary *metri
   id duration = metrics[@"duration"];
   if ([duration isKindOfClass:NSNumber.class] && isfinite([duration doubleValue]) && [duration doubleValue] >= 0)
     resultMetrics[@"duration"] = duration; // JS event-boundary duration, already in nanoseconds.
+  int64_t startNs, endNs;
+  if (FTWebSocketResourceInterval(metrics, &startNs, &endNs)) {
+    resultMetrics[@"fetchStartNsTimeInterval"] = metrics[@"fetchStartNsTimeInterval"];
+    resultMetrics[@"fetchEndNsTimeInterval"] = metrics[@"fetchEndNsTimeInterval"];
+  }
   if ([metadata[@"httpProtocol"] isKindOfClass:NSString.class]) resultMetrics[@"resource_http_protocol"] = metadata[@"httpProtocol"];
   return @{@"content": resource, @"metrics": resultMetrics};
 }

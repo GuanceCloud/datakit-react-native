@@ -1,5 +1,14 @@
+export interface WebSocketTimingMetrics {
+  duration: number;
+  // Decimal int64 nanoseconds: epoch nanoseconds exceed JS number precision.
+  fetchStartNsTimeInterval?: string;
+  fetchEndNsTimeInterval?: string;
+}
+
 /** Measures only the JS-observed opening handshake; bridge delays are excluded. */
-export function startWebSocketTiming(): () => number | undefined {
+export function startWebSocketTiming(): () =>
+  | WebSocketTimingMetrics
+  | undefined {
   const wallStart = readWallTime();
   let monotonicNow: (() => number) | undefined;
   let monotonicStart: number | undefined;
@@ -36,8 +45,31 @@ export function startWebSocketTiming(): () => number | undefined {
     }
     // Resource metrics use nanoseconds. Do not send an invalid bridge number.
     const durationNs = Math.round(durationMs * 1e6);
-    return Number.isSafeInteger(durationNs) ? durationNs : undefined;
+    if (!Number.isSafeInteger(durationNs)) return undefined;
+    const metrics: WebSocketTimingMetrics = { duration: durationNs };
+    if (
+      wallStart !== undefined &&
+      Number.isSafeInteger(wallStart) &&
+      wallStart > 0
+    ) {
+      // Add the monotonic elapsed interval to the start epoch, not Date.now()
+      // at completion. Split milliseconds/remainder to avoid epoch-ns doubles.
+      const endMs = wallStart + Math.floor(durationNs / 1e6);
+      const start = `${wallStart}000000`;
+      const end = `${endMs}${String(durationNs % 1e6).padStart(6, '0')}`;
+      if (Number.isSafeInteger(endMs) && fitsInt64(start) && fitsInt64(end)) {
+        metrics.fetchStartNsTimeInterval = start;
+        metrics.fetchEndNsTimeInterval = end;
+      }
+    }
+    return metrics;
   };
+}
+
+function fitsInt64(value: string): boolean {
+  return (
+    value.length < 19 || (value.length === 19 && value <= '9223372036854775807')
+  );
 }
 
 function readWallTime(): number | undefined {

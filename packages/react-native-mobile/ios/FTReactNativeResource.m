@@ -1,4 +1,5 @@
 #import "FTReactNativeResource.h"
+#import "FTWebSocketResourceData.h"
 #import <GuanceSDK/FTExternalDataManager.h>
 #import <GuanceSDK/FTResourceMetricsModel.h>
 #import <GuanceSDK/FTResourceContentModel.h>
@@ -14,6 +15,11 @@ void FTAddReactNativeResource(NSString *key, NSDictionary *content, NSDictionary
   if (metrics.allKeys.count>0) {
       metricsModel = [[FTResourceMetricsModel alloc]init];
       metricsModel.duration = [RCTConvert NSNumber:metrics[@"duration"]];
+      int64_t startNs, endNs;
+      if ([content[@"webSocketHandshake"] boolValue] && FTWebSocketResourceInterval(metrics, &startNs, &endNs)) {
+        metricsModel.fetchStartNsTimeInterval = startNs;
+        metricsModel.fetchEndNsTimeInterval = endNs;
+      }
       metricsModel.resource_dns = [RCTConvert NSNumber:metrics[@"resource_dns"]];
       metricsModel.resource_tcp = [RCTConvert NSNumber:metrics[@"resource_tcp"]];
       metricsModel.resource_ssl = [RCTConvert NSNumber:metrics[@"resource_ssl"]];

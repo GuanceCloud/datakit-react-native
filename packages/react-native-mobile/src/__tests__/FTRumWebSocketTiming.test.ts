@@ -28,7 +28,11 @@ describe('WebSocket handshake timing', () => {
     const stop = startWebSocketTiming();
     now = 35.125;
     wallTime.mockReturnValue(1);
-    expect(stop()).toBe(25_125_000);
+    expect(stop()).toEqual({
+      duration: 25_125_000,
+      fetchStartNsTimeInterval: '1000000000',
+      fetchEndNsTimeInterval: '1025125000',
+    });
   });
 
   it.each(['missing', 'throws', 'invalid'])(
@@ -47,7 +51,11 @@ describe('WebSocket handshake timing', () => {
       const wallTime = jest.spyOn(Date, 'now').mockReturnValue(1000);
       const stop = startWebSocketTiming();
       wallTime.mockReturnValue(1025);
-      expect(stop()).toBe(25_000_000);
+      expect(stop()).toEqual({
+        duration: 25_000_000,
+        fetchStartNsTimeInterval: '1000000000',
+        fetchEndNsTimeInterval: '1025000000',
+      });
     }
   );
 
@@ -64,7 +72,12 @@ describe('WebSocket handshake timing', () => {
 
   it('preserves a measured zero duration', () => {
     setPerformanceClock(() => 0);
-    expect(startWebSocketTiming()()).toBe(0);
+    jest.spyOn(Date, 'now').mockReturnValue(1700000000001);
+    expect(startWebSocketTiming()()).toEqual({
+      duration: 0,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000001000000',
+    });
   });
 
   it('does not throw when both clocks throw', () => {
@@ -75,5 +88,50 @@ describe('WebSocket handshake timing', () => {
       throw new Error('wall clock unavailable');
     });
     expect(startWebSocketTiming()()).toBeUndefined();
+  });
+
+  it('keeps nanosecond precision when the interval crosses a millisecond boundary', () => {
+    let now = 10;
+    setPerformanceClock(() => now);
+    jest.spyOn(Date, 'now').mockReturnValue(1700000000999);
+    const stop = startWebSocketTiming();
+    now = 11.000001;
+    expect(stop()).toEqual({
+      duration: 1000001,
+      fetchStartNsTimeInterval: '1700000000999000000',
+      fetchEndNsTimeInterval: '1700000001000000001',
+    });
+  });
+
+  it.each([0, -1, NaN, Infinity, 1.5, 9223372036855])(
+    'omits the interval instead of inventing an epoch when start time is %s',
+    (epoch) => {
+      let now = 10;
+      setPerformanceClock(() => now);
+      jest.spyOn(Date, 'now').mockReturnValue(epoch);
+      const stop = startWebSocketTiming();
+      now = 35;
+      expect(stop()).toEqual({ duration: 25000000 });
+    }
+  );
+
+  it('omits an interval whose end exceeds int64 even when the start fits', () => {
+    let now = 0;
+    setPerformanceClock(() => now);
+    jest.spyOn(Date, 'now').mockReturnValue(9223372036854);
+    const stop = startWebSocketTiming();
+    now = 1;
+    expect(stop()).toEqual({ duration: 1000000 });
+  });
+
+  it('keeps a monotonic duration when the wall clock throws', () => {
+    let now = 10;
+    setPerformanceClock(() => now);
+    jest.spyOn(Date, 'now').mockImplementation(() => {
+      throw new Error('wall clock unavailable');
+    });
+    const stop = startWebSocketTiming();
+    now = 35;
+    expect(stop()).toEqual({ duration: 25000000 });
   });
 });

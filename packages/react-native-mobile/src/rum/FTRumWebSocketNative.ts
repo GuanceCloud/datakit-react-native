@@ -1,5 +1,6 @@
 import NativeWebSocket from '../specs/NativeFTReactNativeWebSocket';
 import { bridgeContextManager } from '../ft_mobile_agent';
+import type { WebSocketTimingMetrics } from './FTRumWebSocketTiming';
 
 export interface NativeWebSocketResource {
   url: string;
@@ -51,7 +52,7 @@ export class NativeWebSocketSession {
   addResource(
     key: string,
     content: NativeWebSocketResource,
-    metrics: { duration?: number }
+    metrics: Partial<WebSocketTimingMetrics>
   ): Promise<void> {
     return NativeWebSocket!.addResource(key, content, metrics, this.session);
   }

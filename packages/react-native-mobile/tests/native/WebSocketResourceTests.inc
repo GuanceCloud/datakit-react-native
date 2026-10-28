@@ -27,6 +27,12 @@ static NSDictionary *ResourceData(NSString *event, NSString *message, NSDictiona
 }
 
 static void TestNativeResourceReporting(void) {
+  NSDictionary *captureMetrics = @{
+    @"duration": @25000001,
+    @"fetchStartNsTimeInterval": @"1700000000001000000",
+    @"fetchEndNsTimeInterval": @"1700000000026000001"
+  };
+  Check([FTWebSocketResourceData(@{}, captureMetrics, nil, @"open")[@"metrics"] isEqual:captureMetrics]);
   [FTWebSocketMetadataStore sdkDidStart];
   atomic_store(&FTTestTime, 1000);
   // A missing RN module only disables enrichment, never native Resource policy.

@@ -153,6 +153,7 @@ describe('FTRumWebSocketTracking', () => {
     runtimeGlobal.WebSocket = MockWebSocket as unknown as typeof WebSocket;
     runtimeGlobal.__DEV__ = false;
     jest.clearAllMocks();
+    jest.spyOn(Date, 'now').mockReturnValue(1700000000001);
     mockMetadata.startCapture.mockResolvedValue(true);
     mockMetadata.startResource.mockResolvedValue(undefined);
     mockMetadata.stopResource.mockResolvedValue(undefined);
@@ -244,7 +245,11 @@ describe('FTRumWebSocketTracking', () => {
         webSocketHandshake: true,
         webSocketHandshakeState: 'success',
       },
-      { duration: expect.any(Number) }
+      {
+        duration: expect.any(Number),
+        fetchStartNsTimeInterval: '1700000000001000000',
+        fetchEndNsTimeInterval: expect.any(String),
+      }
     );
   });
 
@@ -277,6 +282,8 @@ describe('FTRumWebSocketTracking', () => {
     );
     expect(mockMetadata.addResource.mock.calls[0][2]).toEqual({
       duration: 25_000_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000026000000',
     });
   });
 
@@ -299,6 +306,8 @@ describe('FTRumWebSocketTracking', () => {
     expect(mockMetadata.addResource).toHaveBeenCalledTimes(1);
     expect(mockMetadata.addResource.mock.calls[0][2]).toEqual({
       duration: 25_000_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000026000000',
     });
     expect(mockStartResource).not.toHaveBeenCalled();
     expect(mockAddResource).not.toHaveBeenCalled();
@@ -350,8 +359,49 @@ describe('FTRumWebSocketTracking', () => {
     await flushResourceReport();
     expect(mockMetadata.addResource.mock.calls[0][2]).toEqual({
       duration: 25_000_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000026000000',
     });
   });
+
+  it.each([false, true])(
+    'preserves exact capture timestamps across delayed bridges and late events (native=%s)',
+    async (native) => {
+      mockNativeBridgeAvailable = native;
+      let now = 10;
+      setPerformanceClock(() => now);
+      const wall = jest.spyOn(Date, 'now').mockReturnValue(1700000000001);
+      const start = deferred();
+      const stop = deferred();
+      const reporter = native ? mockMetadata : resourceReporter;
+      reporter.startResource.mockReturnValueOnce(start.promise);
+      reporter.stopResource.mockReturnValueOnce(stop.promise);
+      FTRumWebSocketTracking.startTracking(resourceReporter);
+      const socket = new runtimeGlobal.WebSocket(
+        'wss://example.com/capture-boundaries'
+      ) as unknown as MockWebSocket;
+      socket.onopen = () => {
+        now = 1000;
+      };
+      now = 35.000001; // 25 ms + 1 ns; must survive an epoch > Number.MAX_SAFE_INTEGER ns.
+      wall.mockReturnValue(1); // Wall-clock correction must not move the end boundary.
+      socket.emit('open');
+      socket.emit('error', { message: 'late failure' });
+      start.resolve();
+      await flushResourceReport();
+      expect(reporter.addResource).not.toHaveBeenCalled();
+      now = 2000;
+      stop.resolve();
+      await flushResourceReport();
+      socket.emit('close');
+      expect(reporter.addResource).toHaveBeenCalledTimes(1);
+      expect(reporter.addResource.mock.calls[0][2]).toEqual({
+        duration: 25000001,
+        fetchStartNsTimeInterval: '1700000000001000000',
+        fetchEndNsTimeInterval: '1700000000026000001',
+      });
+    }
+  );
 
   it.each(['throw', 'reject'])(
     'releases a native start %s without switching to the RUM bridge',
@@ -485,7 +535,11 @@ describe('FTRumWebSocketTracking', () => {
       new Set(mockMetadata.addResource.mock.calls.map((call) => call[0])).size
     ).toBe(100);
     mockMetadata.addResource.mock.calls.forEach((call) =>
-      expect(call[2]).toEqual({ duration: 25_000_000 })
+      expect(call[2]).toEqual({
+        duration: 25_000_000,
+        fetchStartNsTimeInterval: '1700000000001000000',
+        fetchEndNsTimeInterval: '1700000000026000000',
+      })
     );
     sockets.forEach((socket) =>
       expect(socket.listeners).toEqual({ open: [], error: [], close: [] })
@@ -684,6 +738,8 @@ describe('FTRumWebSocketTracking', () => {
       );
       expect(mockAddResource.mock.calls[0][2]).toEqual({
         duration: 25_000_000,
+        fetchStartNsTimeInterval: '1700000000001000000',
+        fetchEndNsTimeInterval: '1700000000026000000',
       });
       now = 10000;
       socket.emit('error', { message });
@@ -791,7 +847,11 @@ describe('FTRumWebSocketTracking', () => {
     expect(mockAddResource.mock.calls[0][1].webSocketHandshakeState).toBe(
       'rejected'
     );
-    expect(mockAddResource.mock.calls[0][2]).toEqual({ duration: 25_000_000 });
+    expect(mockAddResource.mock.calls[0][2]).toEqual({
+      duration: 25_000_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000026000000',
+    });
   });
 
   describe.each(['legacy JS', 'native bridge'])(
@@ -815,7 +875,11 @@ describe('FTRumWebSocketTracking', () => {
         expect(stops()).toHaveBeenCalledTimes(1);
         expect(reports()).toHaveBeenCalledTimes(1);
         const [, content, metrics] = reports().mock.calls[0];
-        expect(metrics).toEqual({ duration: 25_000_000 });
+        expect(metrics).toEqual({
+          duration: 25_000_000,
+          fetchStartNsTimeInterval: '1700000000001000000',
+          fetchEndNsTimeInterval: '1700000000026000000',
+        });
         if (expectedMessage) expect(content.errorMessage).toBe(expectedMessage);
         else expect(content).not.toHaveProperty('errorMessage');
         if (nativeRoute) {
@@ -1059,7 +1123,11 @@ describe('FTRumWebSocketTracking', () => {
         );
         reports().mock.calls.forEach(([, content, metrics], index) => {
           expect(content.errorMessage).toBe(`network failure ${index}`);
-          expect(metrics).toEqual({ duration: 25_000_000 });
+          expect(metrics).toEqual({
+            duration: 25_000_000,
+            fetchStartNsTimeInterval: '1700000000001000000',
+            fetchEndNsTimeInterval: '1700000000026000000',
+          });
         });
         const reconnected = createSocket();
         now = 60;
@@ -1073,7 +1141,11 @@ describe('FTRumWebSocketTracking', () => {
         expect(reports().mock.calls[20][1].errorMessage).toBe(
           'reconnected failure'
         );
-        expect(reports().mock.calls[20][2]).toEqual({ duration: 25_000_000 });
+        expect(reports().mock.calls[20][2]).toEqual({
+          duration: 25_000_000,
+          fetchStartNsTimeInterval: '1700000000001000000',
+          fetchEndNsTimeInterval: '1700000000026000000',
+        });
       });
     }
   );
@@ -1116,7 +1188,11 @@ describe('FTRumWebSocketTracking', () => {
       webSocketHandshakeState: 'failed',
     });
     expect(mockAddResource.mock.calls[0][1]).not.toHaveProperty('errorMessage');
-    expect(mockAddResource.mock.calls[0][2]).toEqual({ duration: 25_000_000 });
+    expect(mockAddResource.mock.calls[0][2]).toEqual({
+      duration: 25_000_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000026000000',
+    });
   });
 
   it('reports constructor failures and preserves the original exception', async () => {
@@ -1378,7 +1454,11 @@ describe('FTRumWebSocketTracking', () => {
     stop.resolve();
     await flushResourceReport();
     expect(socket.onopen).toHaveBeenCalledTimes(1);
-    expect(mockAddResource.mock.calls[0][2]).toEqual({ duration: 25_250_000 });
+    expect(mockAddResource.mock.calls[0][2]).toEqual({
+      duration: 25_250_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000026250000',
+    });
     expect(mockAddResource.mock.calls[0][1]).not.toHaveProperty('duration');
     now = 100000;
     socket.emit('close');
@@ -1407,7 +1487,11 @@ describe('FTRumWebSocketTracking', () => {
       webSocketHandshakeState: 'failed',
       errorMessage: 'opening failed',
     });
-    expect(mockAddResource.mock.calls[0][2]).toEqual({ duration: 10_000_000 });
+    expect(mockAddResource.mock.calls[0][2]).toEqual({
+      duration: 10_000_000,
+      fetchStartNsTimeInterval: '1700000000001000000',
+      fetchEndNsTimeInterval: '1700000000011000000',
+    });
   });
 
   it('does not read close codes or reasons or turn them into a network error', async () => {
@@ -1886,7 +1970,11 @@ describe('FTRumWebSocketTracking', () => {
       expect(resource).not.toHaveProperty('responseBody');
       expect(resource).not.toHaveProperty('resourceSize');
       expect(resource).not.toHaveProperty('duration');
-      expect(Object.keys(metrics)).toEqual(['duration']);
+      expect(Object.keys(metrics)).toEqual([
+        'duration',
+        'fetchStartNsTimeInterval',
+        'fetchEndNsTimeInterval',
+      ]);
     });
   });
 });

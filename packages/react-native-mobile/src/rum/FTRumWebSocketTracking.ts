@@ -2,6 +2,7 @@
 import { Platform } from 'react-native';
 import NativeFTReactNativeTrace from '../specs/NativeFTReactNativeTrace';
 import { startWebSocketTiming } from './FTRumWebSocketTiming';
+import type { WebSocketTimingMetrics } from './FTRumWebSocketTiming';
 import {
   clearNativeWebSocketSessions,
   startNativeWebSocketSession,
@@ -42,7 +43,7 @@ interface FTRumWebSocketResourceReporter {
   addResource(
     key: string,
     resource: FTRUMWebSocketResource,
-    metrics?: { duration?: number; resource_http_protocol?: string }
+    metrics?: WebSocketTimingMetrics
   ): Promise<void>;
 }
 
@@ -330,7 +331,7 @@ export class FTRumWebSocketTracking {
         return;
       }
       completed = true;
-      const duration = stopTiming();
+      const timing = stopTiming();
       // Freeze the observed boundary before inspecting or parsing error data.
       const error = getError?.();
       if (
@@ -368,7 +369,7 @@ export class FTRumWebSocketTracking {
             requestHeader: requestHeaders,
             webSocketEvent: event,
           },
-          duration,
+          timing,
           error,
           errorReady
         );
@@ -383,7 +384,7 @@ export class FTRumWebSocketTracking {
         requestHeaders,
         resourceStatus,
         state,
-        duration,
+        timing,
         error,
         errorReady
       );
@@ -620,7 +621,7 @@ export class FTRumWebSocketTracking {
     requestHeader: Record<string, unknown>,
     resourceStatus: number,
     webSocketHandshakeState: WebSocketHandshakeState,
-    duration: number | undefined,
+    timing: WebSocketTimingMetrics | undefined,
     error?: WebSocketHandshakeError,
     errorReady?: Promise<void>
   ): Promise<void> {
@@ -657,14 +658,8 @@ export class FTRumWebSocketTracking {
         webSocketHandshakeState,
       };
       if (error?.message) resource.errorMessage = error.message;
-      const metrics: { duration?: number } = {};
-      if (duration !== undefined) metrics.duration = duration;
       if (isCurrentLifecycle()) {
-        await resourceReporter.addResource(
-          resourceKey,
-          resource,
-          Object.keys(metrics).length ? metrics : undefined
-        );
+        await resourceReporter.addResource(resourceKey, resource, timing);
       }
     } catch {
       if (isCurrentLifecycle()) {
@@ -679,7 +674,7 @@ export class FTRumWebSocketTracking {
     key: string,
     started: Promise<boolean>,
     content: NativeWebSocketResource,
-    duration: number | undefined,
+    timing: WebSocketTimingMetrics | undefined,
     error?: WebSocketHandshakeError,
     errorReady?: Promise<void>
   ): Promise<void> {
@@ -703,7 +698,7 @@ export class FTRumWebSocketTracking {
       await session.addResource(
         key,
         error?.message ? { ...content, errorMessage: error.message } : content,
-        duration === undefined ? {} : { duration }
+        timing ?? {}
       );
     } catch {
       session.release(key);

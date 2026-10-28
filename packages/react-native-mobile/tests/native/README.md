@@ -33,6 +33,25 @@ workspace with `--app example` or `--app example-new-architecture`.
 
 These tests do not perform RUM upload or console acceptance checks.
 
+WebSocket capture-boundary and native duration checks:
+
+```sh
+python3 packages/react-native-mobile/tests/native/run-websocket-timing.py
+```
+
+Requires GuanceSDK 1.6.8 sources installed in `example/ios/Pods`. The runner compiles
+the production Resource normalizer and bridge conversion against the installed
+SDK's model headers, and extracts its actual interval-selection, fetch-interval,
+and final duration calculation code. Platform conversion/reporting dependencies
+are doubles; this is not a complete RUM pipeline or device upload test.
+It asserts exact epoch nanoseconds and a 25,000,001 ns duration across delayed
+start/stop processing, including both calls processed at the same time. Both
+reporting routes and missing response metadata are covered, along with measured
+zero, one-nanosecond precision, Int64 limits, malformed/missing/reversed timestamps,
+HTTP protocol preservation, and unchanged public manual HTTP metric mapping.
+The JS WebSocket tests separately cover delayed Promise replies, business callback
+work, duplicate/late events, wall-clock corrections, and unavailable clocks.
+
 Visitor ID mapping checks:
 
 ```sh

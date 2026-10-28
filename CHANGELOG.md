@@ -4,6 +4,8 @@
 
 # Unreleased
 
+* Fixed iOS React Native WebSocket handshake duration by forwarding capture start/end timestamps, preserving nanosecond precision and excluding later native bridge processing delays.
+
 ---
 # 0.4.3-alpha.3
 

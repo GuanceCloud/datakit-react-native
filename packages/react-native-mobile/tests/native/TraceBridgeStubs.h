@@ -23,7 +23,7 @@ typedef void (^RCTPromiseRejectBlock)(NSString *, NSString *, NSError *);
 
 typedef NSInteger FTNetworkTraceType;
 @interface FTTraceConfig : NSObject
-@property (nonatomic) double sampleRate;
+@property (nonatomic) double traceSamplingRate;
 @property (nonatomic) FTNetworkTraceType networkTraceType;
 @property (nonatomic) BOOL enableLinkRumData;
 @property (nonatomic) BOOL enableAutoTrace;
