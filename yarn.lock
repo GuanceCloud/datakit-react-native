@@ -1641,7 +1641,7 @@ __metadata:
   dependencies:
     react-native-navigation: 7.40.1
   peerDependencies:
-    "@cloudcare/react-native-mobile": ^0.4.3-alpha.3
+    "@cloudcare/react-native-mobile": ^0.4.3
     react: ">=16.13.1"
     react-native: ">=0.63.4 <1.0"
     react-native-navigation: ^7.5.0
@@ -1657,7 +1657,7 @@ __metadata:
     react-native-safe-area-context: ^3.3.2
     react-native-screens: ^3.0.0
   peerDependencies:
-    "@cloudcare/react-native-mobile": ^0.4.3-alpha.3
+    "@cloudcare/react-native-mobile": ^0.4.3
     react: ">=16.13.1"
     react-native: ">=0.63.4 <1.0"
   languageName: unknown

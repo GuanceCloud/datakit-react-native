@@ -3,7 +3,7 @@ PODS:
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.5)
   - fmt (9.1.0)
-  - FTMobileReactNativeSDK (0.4.3-alpha.2):
+  - FTMobileReactNativeSDK (0.4.3):
     - DoubleConversion
     - glog
     - GuanceSDK (= 1.6.8)
@@ -25,7 +25,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - FTSessionReplayReactNative (0.4.3-alpha.2):
+  - FTSessionReplayReactNative (0.4.3):
     - DoubleConversion
     - glog
     - GuanceSDK (= 1.6.8)
@@ -1642,8 +1642,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  FTMobileReactNativeSDK: 5631a8100044df5337bf59beddef4fb3d98874a0
-  FTSessionReplayReactNative: 3b8dc89a8a3ea4874f07372880cdcdeb5b462cf1
+  FTMobileReactNativeSDK: b7ec707f9e48dc8dd2254236498b1e511892521e
+  FTSessionReplayReactNative: c515b5109d9af76d0626c9091a402f5a6a2a9e06
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   GuanceSDK: 3d16fa9d5e9f8c4dce3889e0bcd1d79758963158
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8

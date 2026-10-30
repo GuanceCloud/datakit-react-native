@@ -2,9 +2,21 @@
 > * [Android](https://github.com/GuanceCloud/datakit-android/blob/dev/ft-sdk/CHANGELOG.md)
 > * [iOS ](https://github.com/GuanceCloud/datakit-ios/blob/develop/CHANGELOG.md)
 
-# Unreleased
+# 0.4.3
 
-* Fixed iOS React Native WebSocket handshake duration by forwarding capture start/end timestamps, preserving nanosecond precision and excluding later native bridge processing delays.
+* Upgraded compatibility to iOS `GuanceSDK 1.6.8` and Android `ft-sdk 1.7.6`, `ft-plugin 1.3.8`, `ft-session-replay 0.1.9`, and `ft-native 1.1.4`.
+* Added unified percentage sampling fields (`0–100`) for RUM, Log, Trace, Session Replay, and remote configuration, with support for fractional percentages. Legacy probability fields (`0–1`) remain supported; the new fields take precedence when both are set.
+* Added `visitorIdConfig` and `resetVisitorId()` to inject anonymous Visitor ID headers into matched HTTP(S) requests, configure identifier lifetime, and reset the identifier. WebSocket requests are excluded.
+* Added optional `@cloudcare/mobile-react-navigation` and `@cloudcare/mobile-react-native-navigation` packages for automatic RUM View tracking, with foreground/background lifecycle handling.
+* Improved View loading duration collection and corrected nanosecond conversion in navigation examples. Added `FTReactNativeRUM.updateViewLoadingTime(duration)` to update the current View's loading duration in nanoseconds.
+* Added iOS WebSocket handshake Resource collection via `FTRUMConfig.enableIOSWebSocketResource` (default `false`), independent of `enableNativeUserResource`. Handshake duration uses capture start/end timestamps to exclude native bridge processing delays. Android WebSocket handshakes continue to use native automatic collection controlled by `enableNativeUserResource`.
+* Improved development Resource filtering to exclude Metro, Inspector, HMR, and debugger WebSocket requests.
+* Added the optional `@cloudcare/react-native-mobile-babel-plugin` package for build-time interaction tracking and readable RUM `action_name` values.
+* Added JavaScript long task monitoring via `FTRUMConfig.enableLongTask`, with a configurable detection threshold through `longTaskThresholdMs`.
+* Added `FTLogConfig.enableWebViewLog` to collect Browser Logs SDK events from WebViews, with remote configuration and override rules through `logEnableWebViewLog`.
+* Added `FTMobileConfig.allowWebViewHost` to configure a shared WebView host allowlist for RUM and Log, with fallback to the legacy RUM setting when omitted.
+* Added support for SDK initialization without an upload URL; applications can configure the upload endpoint later.
+* Fixed remote configuration updates and callbacks under React Native New Architecture on iOS and Android.
 
 ---
 # 0.4.3-alpha.3
