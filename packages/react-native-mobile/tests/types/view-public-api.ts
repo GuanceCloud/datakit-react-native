@@ -18,3 +18,26 @@ export function checkPublicViewAPI(): void {
 
 // @ts-expect-error The package must not export a public tracking type enum.
 export type NoPublicTrackingType = MobileSDK.FTRUMViewTrackingType;
+
+// WebView host selection is available before configuring RUM or Log.
+export function checkPublicWebViewHostAPI(): void {
+  const configs: MobileSDK.FTMobileConfig[] = [
+    {},
+    { allowWebViewHost: null },
+    { allowWebViewHost: [] },
+    { allowWebViewHost: ['example.com'] },
+  ];
+  void configs;
+  // @ts-expect-error Hosts must be an array or null, not a single string.
+  const invalid: MobileSDK.FTMobileConfig = { allowWebViewHost: 'example.com' };
+  void invalid;
+}
+
+export function checkPublicWebViewLogOverrideAPI(): void {
+  const configs: MobileSDK.FTRemoteConfigOverrideValues[] = [
+    {},
+    { logEnableWebViewLog: true },
+    { logEnableWebViewLog: false },
+  ];
+  void configs;
+}

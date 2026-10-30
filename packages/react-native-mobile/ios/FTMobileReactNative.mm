@@ -300,6 +300,9 @@ RCT_EXPORT_MODULE()
     if ([override.allKeys containsObject:@"logEnableCustomLog"]) {
       model.logEnableCustomLog = @([RCTConvert double:override[@"logEnableCustomLog"]]);
     }
+    if ([override.allKeys containsObject:@"logEnableWebViewLog"] && override[@"logEnableWebViewLog"] != [NSNull null]) {
+      model.logEnableWebViewLog = @([RCTConvert BOOL:override[@"logEnableWebViewLog"]]);
+    }
     
     NSString *ruleId = [RCTConvert NSString:rule[@"id"]];
     [appliedRuleIds addObject:ruleId.length > 0 ? ruleId : [NSString stringWithFormat:@"rule_%lu", (unsigned long)idx]];
@@ -451,6 +454,9 @@ RCT_REMAP_METHOD(clearAllData,
     }
     if ([context.allKeys containsObject:@"dataFilters"]) {
       config.dataFilters = [RCTConvert NSDictionary:context[@"dataFilters"]];
+    }
+    if ([context.allKeys containsObject:@"allowWebViewHost"]) {
+      config.allowWebViewHost = [RCTConvert NSArray:context[@"allowWebViewHost"]];
     }
     if ([context.allKeys containsObject:@"globalContext"]) {
       config.globalContext = [RCTConvert NSDictionary:context[@"globalContext"]];

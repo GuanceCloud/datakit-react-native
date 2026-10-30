@@ -200,6 +200,9 @@ public class FTMobileImpl {
                 if (override.hasKey("logEnableCustomLog") && !override.isNull("logEnableCustomLog")) {
                     configBean.setLogEnableCustomLog(override.getBoolean("logEnableCustomLog"));
                 }
+                if (override.hasKey("logEnableWebViewLog") && !override.isNull("logEnableWebViewLog")) {
+                    configBean.setLogEnableWebViewLog(override.getBoolean("logEnableWebViewLog"));
+                }
                 if (override.hasKey("logEnableConsoleLog") && !override.isNull("logEnableConsoleLog")) {
                     configBean.setLogEnableConsoleLog(override.getBoolean("logEnableConsoleLog"));
                 }
@@ -425,6 +428,11 @@ public class FTMobileImpl {
             ? context.getArray("remoteConfigOverrideRules") : null;
 
         FTSDKConfig sdkConfig = buildSDKConfig(datakitUrl, datawayUrl, cliToken);
+
+        if (map.containsKey("allowWebViewHost")) {
+            List<String> hosts = (List<String>) map.get("allowWebViewHost");
+            sdkConfig.setAllowWebViewHost(hosts == null ? null : hosts.toArray(new String[0]));
+        }
 
         if (env != null) {
             EnvType envType;

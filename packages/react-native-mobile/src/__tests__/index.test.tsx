@@ -181,6 +181,31 @@ describe('FTMobileReactNative remote configuration APIs', () => {
     ).toHaveBeenCalledWith(0, rules);
   });
 
+  it.each([true, false])(
+    'forwards logEnableWebViewLog=%s in initial and manual override rules',
+    async (logEnableWebViewLog) => {
+      const rules = [
+        {
+          match: { customKeys: { user_tier: 'internal' } },
+          override: { logEnableWebViewLog },
+        },
+      ];
+      const config = {
+        remoteConfiguration: true,
+        remoteConfigOverrideRules: rules,
+      };
+      await FTMobileReactNative.sdkConfig(config);
+      expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledWith(config);
+      await FTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval(
+        0,
+        rules
+      );
+      expect(
+        mockFTMobileReactNative.updateRemoteConfigWithMiniUpdateInterval
+      ).toHaveBeenCalledWith(0, rules);
+    }
+  );
+
   it('subscribes to automatic remote configuration callbacks', () => {
     const listener = jest.fn();
 
@@ -242,6 +267,34 @@ describe('native adapter config forwarding', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
+
+  it.each([
+    [{}, {}],
+    [{ allowWebViewHost: undefined }, {}],
+    [{ allowWebViewHost: null }, { allowWebViewHost: null }],
+    [{ allowWebViewHost: [] }, { allowWebViewHost: [] }],
+    [
+      { allowWebViewHost: ['example.com'] },
+      { allowWebViewHost: ['example.com'] },
+    ],
+  ])(
+    'preserves SDK WebView host configuration %p at the native boundary',
+    async (hosts, expected) => {
+      const config = { datakitUrl: 'http://localhost:9529', ...hosts };
+      await FTMobileReactNative.sdkConfig(config);
+      expect(mockFTMobileReactNative.sdkConfig).toHaveBeenCalledTimes(1);
+      const forwarded = mockFTMobileReactNative.sdkConfig.mock.calls[0]![0];
+      expect(forwarded).toEqual({
+        datakitUrl: 'http://localhost:9529',
+        ...expected,
+      });
+      expect(
+        Object.prototype.hasOwnProperty.call(forwarded, 'allowWebViewHost')
+      ).toBe(
+        Object.prototype.hasOwnProperty.call(expected, 'allowWebViewHost')
+      );
+    }
+  );
 
   it('forwards RUM sampling and WebView hosts to the native module', async () => {
     const config = {

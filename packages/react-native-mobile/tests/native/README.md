@@ -82,3 +82,22 @@ load timing, one-time consumption, background recovery, expiry, duplicate/late
 callbacks and delayed native Promise completion. `run-websocket-bridge.py` also
 compiles the new RUM framework selectors against old/new architecture codegen.
 These checks do not replace native SDK AppStateHistory or device upload tests.
+
+Shared WebView host configuration checks:
+
+```sh
+python3 packages/react-native-mobile/tests/native/run-webview-host-config.py \
+  --android-sdk-repo /path/to/ft-sdk-android
+```
+
+Requires Xcode command-line tools, a JDK supporting `javac --release 8`, installed
+GuanceSDK 1.6.8 sources in `example/ios/Pods` (or `--ios-sdk-sources`), and an Android
+SDK checkout containing the `agent_1.7.6` tag. It compiles the production RN host
+mapping blocks with the native SDK's host setters and selection policy. It checks
+omitted, null, empty and explicit host lists, legacy RUM fallback, base configuration
+precedence, operation without RUM, and remote configuration precedence. Android
+code compiles with Java 8 compatibility. Remaining SDK/RN dependencies are doubles;
+this does not exercise a device WebView or remote configuration fetching.
+It also verifies `logEnableWebViewLog` override mapping and the native log config
+merge for true/false values, leaving the remote value unchanged when an override
+is omitted or null, and retaining the local log switch when no remote value exists.

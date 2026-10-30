@@ -167,10 +167,8 @@ public class FTRUMImpl implements LifecycleEventListener {
     if (allowWebViewHost != null) {
       String[] allowWebViewHostArr = new String[allowWebViewHost.size()];
       allowWebViewHost.toArray(allowWebViewHostArr);
-      FTSdk ftSdk = FTSdk.get();
-      if (ftSdk != null) {
-        ftSdk.getBaseConfig().setAllowWebViewHost(allowWebViewHostArr);
-      }
+      // Let the native SDK apply legacy hosts only when base hosts are omitted.
+      rumConfig.setAllowWebViewHost(allowWebViewHostArr);
     }
 
     FTSdk.initRUMWithConfig(rumConfig);

@@ -104,7 +104,7 @@ export enum IOSCrashMonitoringType {
  * @param rumCacheLimitCount RUM max cache size, default 100_000
  * @param rumDiscardStrategy RUM data discard strategy
  * @param enableTraceWebView Set whether to enable WebView data collection, default true
- * @param allowWebViewHost Set specific hosts or domains allowed to collect WebView data, nil means collect all
+ * @param allowWebViewHost Deprecated; use FTMobileConfig.allowWebViewHost for shared WebView host filtering.
  * @param iosCrashMonitoringType iOS crash monitoring type , default is highCompatibility, which does not include Mach exceptions for better compatibility. you must enable system crash monitoring to get crash stack traces and crash information.
  */
 export interface FTRUMConfig {
@@ -149,7 +149,8 @@ export interface FTRUMConfig {
   rumCacheLimitCount?: number;
   rumDiscardStrategy?: FTRUMCacheDiscard;
   enableTraceWebView?: boolean;
-  allowWebViewHost?: Array<string>;
+  /** @deprecated Configure the shared host allowlist in FTMobileConfig.allowWebViewHost. */
+  allowWebViewHost?: Array<string> | null;
   iosCrashMonitoringType?: IOSCrashMonitoringType;
 }
 /**

@@ -207,6 +207,7 @@ export type FTRemoteConfigOverrideValues = {
   logSampleRate?: number;
   logLevelFilters?: Array<string>;
   logEnableCustomLog?: boolean;
+  logEnableWebViewLog?: boolean;
   logEnableConsoleLog?: boolean;
 };
 
@@ -287,6 +288,10 @@ export interface FTMobileConfig {
   compressIntakeRequests?: boolean;
   enableDataFilter?: boolean;
   dataFilters?: Record<string, Array<string>>;
+  /** Shared WebView host allowlist for RUM and Log. Omitted uses the legacy RUM
+   * config; null allows every host; [] disables bridge access. Remote config wins.
+   */
+  allowWebViewHost?: Array<string> | null;
   globalContext?: object;
   groupIdentifiers?: Array<string>;
   enableLimitWithDbSize?: boolean;
@@ -435,7 +440,12 @@ class FTMobileReactNativeWrapper implements FTMobileReactNativeType {
     ) {
       config.datakitUrl = config.serverUrl;
     }
-    return this.sdk.sdkConfig(config);
+    const nativeConfig = { ...config };
+    // Keep undefined equivalent to omission; explicit null overrides legacy hosts.
+    if (nativeConfig.allowWebViewHost === undefined) {
+      delete nativeConfig.allowWebViewHost;
+    }
+    return this.sdk.sdkConfig(nativeConfig);
   }
   setDatakitURL(datakitUrl: string): Promise<void> {
     return this.sdk.setDatakitURL(datakitUrl);
