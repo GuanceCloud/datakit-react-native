@@ -6,7 +6,10 @@ const mockNativeRUM = {
   onCreateViewWithLoadStart: jest.fn().mockResolvedValue(undefined),
   startViewWithTrackingType: jest.fn().mockResolvedValue(undefined),
 };
-const mockRUM = { stopView: jest.fn().mockResolvedValue(undefined) };
+const mockRUM = {
+  stopView: jest.fn().mockResolvedValue(undefined),
+  updateViewLoadingTime: jest.fn().mockResolvedValue(undefined),
+};
 jest.doMock(
   root + '/packages/react-native-mobile/src/specs/NativeFTReactNativeRUM',
   () => ({ default: mockNativeRUM })
@@ -137,7 +140,7 @@ test('exact screenshot dependency versions', () => {
   );
   expect(require('@react-navigation/core/package.json').version).toBe('7.6.0');
   expect(require('@react-navigation/native-stack/package.json').version).toBe(
-    '6.9.26'
+    process.env.GUANCE_NATIVE_STACK_VERSION || '6.9.26'
   );
   // Check the versions actually resolved by the libraries, not just the fixture.
   const path = require('path');
@@ -196,28 +199,36 @@ test('stack collection: real state and focus events plus native appearance bound
   time = 125.5;
   await act(async () => activeScreen().props.onAppear());
   expect(views()).toEqual(['Home']);
+  expect(mockRUM.updateViewLoadingTime.mock.calls).toEqual([[25500000]]);
+  mockRUM.updateViewLoadingTime.mockClear();
   mockNativeRUM.onCreateViewWithLoadStart.mockClear();
   time = 200;
   await act(async () => ref.navigate('Detail'));
+  const hasOpeningStart =
+    typeof activeScreen().props.onWillAppear === 'function';
+  expect(hasOpeningStart).toBe(
+    (process.env.GUANCE_NATIVE_STACK_VERSION || '6.9.26') !== '6.9.26'
+  );
   time = 210;
+  if (hasOpeningStart)
+    await act(async () => activeScreen().props.onWillAppear());
+  time = 215;
   await act(async () => ref.setParams({ id: 1 }));
-  expect(views()).toEqual(['Home']);
+  expect(views()).toEqual(['Home', 'Detail']);
   time = 225.5;
   await act(async () => activeScreen().props.onAppear());
   expect(views()).toEqual(['Home', 'Detail']);
-  expect(mockNativeRUM.onCreateViewWithLoadStart.mock.calls).toEqual([
-    ['Detail', 25500000, 1700000000000],
-  ]);
+  expect(mockRUM.updateViewLoadingTime.mock.calls).toEqual([[25500000]]);
   await act(async () => activeScreen().props.onAppear());
   expect(views()).toEqual(['Home', 'Detail']);
-  expect(mockNativeRUM.onCreateViewWithLoadStart).toHaveBeenCalledTimes(1);
+  expect(mockRUM.updateViewLoadingTime).toHaveBeenCalledTimes(1);
   time = 300;
   await act(async () => ref.goBack());
+  if (hasOpeningStart)
+    await act(async () => activeScreen().props.onWillAppear());
   time = 340;
   await act(async () => activeScreen().props.onAppear());
   expect(views()).toEqual(['Home', 'Detail', 'Home']);
-  expect(mockNativeRUM.onCreateViewWithLoadStart.mock.calls).toEqual([
-    ['Detail', 25500000, 1700000000000],
-    ['Home', 40000000, 1700000000000],
-  ]);
+  expect(mockRUM.updateViewLoadingTime.mock.calls).toEqual([[25500000]]);
+  expect(mockNativeRUM.onCreateViewWithLoadStart).not.toHaveBeenCalled();
 });

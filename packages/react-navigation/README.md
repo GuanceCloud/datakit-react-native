@@ -60,13 +60,22 @@ import { FTRumReactNavigationTracking } from '@cloudcare/mobile-react-navigation
 FTRumReactNavigationTracking.stopTrackingViews();
 ```
 
-Loading is the monotonic elapsed time from the observed `focus` callback to the
-matching opening `transitionEnd` callback, reported in nanoseconds. For example,
-25.5 ms is 25,500,000 ns. This measures the observed navigation transition, not
-network completion or the full time until all screen content is rendered.
-If a start boundary is absent or the duration is non-positive, the View is still
-tracked without loading data. The initial screen may have no animated transition;
-use route mode if every initial route must be recorded immediately.
+Views start when the selected route changes, including the initial screen and
+screens without animations. Loading is recorded only for a route instance's
+first appearance, from its first observed `focus` to the matching opening
+`transitionEnd`. The interval uses a monotonic clock and is reported in
+nanoseconds; for example, 500 ms is 500,000,000 ns. Repeated focus events do not
+replace the original start, and `transitionStart` is not required.
+
+Returning to an existing route, changing tabs, and foreground recovery create
+Views without repeating loading measurements. An outer stack's transition is
+never assigned to a nested leaf screen. Missing, cancelled, backgrounded, or
+invalid intervals are discarded. Loading is applied only while the same View
+appearance remains active.
+
+This measures the interval between JavaScript focus and transition-end callbacks. It does not
+measure network completion or when all screen content is ready, and native-to-JS
+event delivery delays can affect the observed interval.
 
 Use one mode on one root container/owning stack at a time. Do not attach separate
 timing listeners to every level of a nested navigator. Starting route tracking

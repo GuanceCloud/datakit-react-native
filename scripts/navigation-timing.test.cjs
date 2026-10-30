@@ -38,7 +38,15 @@ function fixture(directory) {
         addEventListener: () => ({ remove() {} }),
       },
     },
-    '../ft_rum': { FTReactNativeRUM: { stopView: () => Promise.resolve() } },
+    '../ft_rum': {
+      FTReactNativeRUM: {
+        stopView: () => Promise.resolve(),
+        updateViewLoadingTime: (duration) => {
+          reports.push({ name: starts[starts.length - 1].name, duration });
+          return Promise.resolve();
+        },
+      },
+    },
     '../ft_mobile_agent': {
       bridgeContextManager: { mergeWithLocalPropertiesSync: () => ({}) },
     },
@@ -137,7 +145,15 @@ for (const [elapsedMs, expectedNs] of [
       assert.deepEqual(
         context.reports,
         expectedNs > 0
-          ? [{ name: 'Screen', duration: expectedNs, epoch: 1700000000001 }]
+          ? [
+              {
+                name: 'Screen',
+                duration: expectedNs,
+                ...(directory === 'react-native-navigation'
+                  ? { epoch: 1700000000001 }
+                  : {}),
+              },
+            ]
           : []
       );
       assert.equal(context.starts.length, 1);

@@ -26,17 +26,45 @@ try {
     '--no-fund',
     '--registry=https://registry.npmjs.org',
   ]);
-  for (const platform of ['ios', 'android'])
-    run(
-      process.execPath,
-      [
-        path.join(root, 'node_modules/jest/bin/jest.js'),
-        '--config',
-        path.join(output, 'jest.config.cjs'),
-        '--runInBand',
-      ],
-      { GUANCE_TEST_PLATFORM: platform }
-    );
+  const stackDirectory = path.join(
+    output,
+    'node_modules/@react-navigation/native-stack'
+  );
+  const workspaceStack = path.join(
+    root,
+    'node_modules/@react-navigation/native-stack'
+  );
+  const workspaceVersion = require(path.join(
+    workspaceStack,
+    'package.json'
+  )).version;
+  // The older release has no opening transitionStart. Both versions must
+  // measure first focus through transitionEnd without relying on that event.
+  for (const version of ['6.9.26', workspaceVersion]) {
+    if (version !== '6.9.26') {
+      fs.rmSync(stackDirectory, { recursive: true, force: true });
+      fs.cpSync(workspaceStack, stackDirectory, {
+        recursive: true,
+        dereference: true,
+      });
+    }
+    for (const platform of ['ios', 'android'])
+      run(
+        process.execPath,
+        [
+          path.join(root, 'node_modules/jest/bin/jest.js'),
+          '--config',
+          path.join(output, 'jest.config.cjs'),
+          '--runInBand',
+        ],
+        { GUANCE_TEST_PLATFORM: platform, GUANCE_NATIVE_STACK_VERSION: version }
+      );
+  }
+  execFileSync(
+    'yarn',
+    ['workspace', '@cloudcare/react-native-mobile', 'prepare'],
+    { cwd: root, stdio: 'inherit' }
+  );
   execFileSync(
     'yarn',
     ['workspace', '@cloudcare/mobile-react-navigation', 'prepare'],
@@ -62,7 +90,7 @@ try {
     'public-api.ts',
   ]);
   console.log(
-    'React Navigation 7.0.17 / core 7.6.0 / native-stack 6.9.26 verified'
+    `React Navigation 7.0.17 / core 7.6.0 / native-stack 6.9.26 and ${workspaceVersion} verified`
   );
 } finally {
   fs.rmSync(output, { recursive: true, force: true });

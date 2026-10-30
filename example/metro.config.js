@@ -6,9 +6,11 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
 const root = path.resolve(__dirname, '..');
 
-const modules = Object.keys({
-  ...pakCore.peerDependencies,
-});
+const modules = [
+  ...Object.keys(pakCore.peerDependencies),
+  // The app and workspace adapter must load the same copy of the navigation library.
+  'react-native-navigation',
+];
 
 /**
  * Metro configuration

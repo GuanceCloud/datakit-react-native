@@ -32,7 +32,7 @@
     "typescript": "yarn workspace @cloudcare/react-native-mobile typescript && yarn workspace @cloudcare/react-native-session-replay typescript && yarn workspace @cloudcare/react-native-mobile-babel-plugin typescript && yarn workspace @cloudcare/mobile-react-navigation typescript && yarn workspace @cloudcare/mobile-react-native-navigation typescript",
     "test": "yarn workspace @cloudcare/react-native-mobile test && yarn workspace @cloudcare/react-native-mobile-babel-plugin test && yarn workspace @cloudcare/mobile-react-navigation test && yarn workspace @cloudcare/mobile-react-native-navigation test",
     "test:publish": "node --test scripts/publish-npm.test.cjs scripts/publish-workflow.test.cjs",
-    "test:navigation": "yarn workspace @cloudcare/react-native-mobile test FTRumNavigationTracking --runInBand && yarn workspace @cloudcare/mobile-react-navigation test --runInBand && yarn workspace @cloudcare/mobile-react-native-navigation test --runInBand && node --test scripts/navigation-timing.test.cjs",
+    "test:navigation": "yarn workspace @cloudcare/react-native-mobile test FTRumNavigationTracking --runInBand && yarn workspace @cloudcare/mobile-react-navigation test --runInBand && yarn workspace @cloudcare/mobile-react-native-navigation test --runInBand && node --test scripts/navigation-timing.test.cjs scripts/metro-navigation.test.cjs",
     "test:navigation:packages": "node scripts/check-navigation-packages.cjs",
     "test:navigation:compatibility": "node scripts/check-react-navigation-compatibility.cjs",
     "test:version": "node --test scripts/check-version.test.cjs"

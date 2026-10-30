@@ -2,6 +2,7 @@ const mockRUM = {
   onCreateView: jest.fn().mockResolvedValue(undefined),
   startView: jest.fn().mockResolvedValue(undefined),
   stopView: jest.fn().mockResolvedValue(undefined),
+  updateViewLoadingTime: jest.fn().mockResolvedValue(undefined),
 };
 const mockNativeRUM = {
   onCreateViewWithLoadStart: jest.fn().mockResolvedValue(undefined),
@@ -219,5 +220,22 @@ describe('automatic View lifecycle coordinator', () => {
     change('active');
     expect(mockNativeRUM.startViewWithTrackingType).toHaveBeenCalledTimes(1);
     expect(mockNativeRUM.onCreateViewWithLoadStart).not.toHaveBeenCalled();
+  });
+
+  it('updates only the current active appearance without awaiting start completion', () => {
+    const first = tracker.show(home);
+    tracker.updateLoadingTime(home.key, first, 500000000);
+    const next = tracker.show(detail);
+    tracker.updateLoadingTime(home.key, first, 100000000);
+    change('background');
+    tracker.updateLoadingTime(detail.key, next, 200000000);
+    change('active');
+    tracker.updateLoadingTime(detail.key, next, 300000000);
+    const resumed = tracker.show(detail);
+    tracker.updateLoadingTime(detail.key, resumed, 250000000);
+    expect(mockRUM.updateViewLoadingTime.mock.calls).toEqual([
+      [500000000],
+      [250000000],
+    ]);
   });
 });

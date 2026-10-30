@@ -18,6 +18,8 @@ export class FTRumViewTracking {
   private subscription?: { remove(): void };
   private loading = new Map<string, Loading>();
 
+  constructor(private readonly onBackground?: () => void) {}
+
   start(): void {
     if (this.subscription) return;
     this.state = AppState.currentState;
@@ -93,6 +95,25 @@ export class FTRumViewTracking {
     return this.active.generation;
   }
 
+  /** Apply a completed interval only to the appearance that started it. */
+  updateLoadingTime(
+    key: string,
+    generation: number | undefined,
+    durationNs: number
+  ): void {
+    if (
+      this.state !== 'active' ||
+      !this.active ||
+      this.active.key !== key ||
+      this.active.generation !== generation ||
+      !Number.isSafeInteger(durationNs) ||
+      durationNs <= 0
+    )
+      return;
+    // Enqueue immediately; never let a Promise continuation update another View.
+    this.report(FTReactNativeRUM.updateViewLoadingTime(durationNs));
+  }
+
   /** Only the appearance that owns the active generation may close it. */
   hide(key: string, generation: number | undefined): void {
     if (this.state !== 'active') return;
@@ -126,6 +147,7 @@ export class FTRumViewTracking {
       // Native closes Automatic Views at its own history boundary. No JS stop.
       this.active = undefined;
       this.loading.clear();
+      this.onBackground?.();
     } else if (state === 'active' && this.current) {
       this.show(this.current);
     }
